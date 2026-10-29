@@ -23,6 +23,7 @@ python -m app.db
 # 5. Ingest paintings and build the palette index (both are resumable)
 python -m ingest.aic --limit 200
 python -m ingest.build_index
+python -m ingest.wiki          # Wikipedia + AIC description chunks, embedded with Gemini
 
 # Tests
 pytest tests
@@ -30,14 +31,19 @@ pytest tests
 # 6. Run the API, then match an image
 uvicorn app.main:app --reload
 curl -F file=@some_image.jpg localhost:8000/match
+# then POST /explain with {"query_palette": [...], "artwork_ids": [...]} from the /match response
 ```
+
+Gemini's free tier allows 1,000 embedding requests per day (each chunk counts as one), so
+`ingest.wiki` may stop with a 429 on a large corpus. It is resumable: re-run it after the quota resets.
+Set `GEMINI_MODEL` in `.env` to override the generation model (default `gemini-3-flash-preview`).
 
 ## Status
 - [x] Phase 0–1: scaffold + schema
 - [x] Phase 2: AIC ingestion
 - [x] Phase 3: palette extraction + histograms
 - [x] Phase 4: two-stage retrieval
-- [ ] Phase 5: RAG explanations
+- [x] Phase 5: RAG explanations (corpus: partially embedded, see quota note)
 - [ ] Phase 6: frontend
 - [ ] Phase 7: evaluation
 - [ ] Phase 8: deploy

@@ -4,8 +4,10 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from PIL import UnidentifiedImageError
+from pydantic import BaseModel, Field
 
 from app.db import connect
+from app.rag import explain_matches
 from app.retrieve import match_image
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
@@ -41,3 +43,23 @@ async def match(
     except (UnidentifiedImageError, OSError) as e:
         raise HTTPException(400, f"could not read image: {e}") from e
     return {"query_palette": palette, "results": results}
+
+
+class SwatchIn(BaseModel):
+    lab: list[float] = Field(min_length=3, max_length=3)
+    hex: str
+    weight: float = Field(ge=0, le=1)
+
+
+class ExplainRequest(BaseModel):
+    query_palette: list[SwatchIn] = Field(min_length=1, max_length=12)
+    artwork_ids: list[int] = Field(min_length=1, max_length=10)
+
+
+@app.post("/explain")
+def explain(req: ExplainRequest) -> dict:
+    with connect() as conn:
+        result = explain_matches(conn, [s.model_dump() for s in req.query_palette], req.artwork_ids)
+    if not result["artworks"]:
+        raise HTTPException(404, "none of the artwork_ids exist")
+    return result
