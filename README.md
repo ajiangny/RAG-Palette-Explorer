@@ -19,12 +19,19 @@ cp ../.env.example .env   # fill in DATABASE_URL and GEMINI_API_KEY
 
 # 4. Check the connection
 python -m app.db
+
+# 5. Ingest paintings and build the palette index (both are resumable)
+python -m ingest.aic --limit 200
+python -m ingest.build_index
+
+# Tests
+pytest tests
 ```
 
 ## Status
 - [x] Phase 0–1: scaffold + schema
-- [ ] Phase 2: AIC ingestion
-- [ ] Phase 3: palette extraction + histograms
+- [x] Phase 2: AIC ingestion
+- [x] Phase 3: palette extraction + histograms
 - [ ] Phase 4: two-stage retrieval
 - [ ] Phase 5: RAG explanations
 - [ ] Phase 6: frontend

@@ -9,6 +9,7 @@ not downloaded again, so re-running with a larger --limit picks up where it left
 
 import argparse
 import html
+import io
 import os
 import re
 import time
@@ -16,6 +17,7 @@ from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
+from PIL import Image
 
 from app.db import connect
 
@@ -95,6 +97,10 @@ def download_image(client: httpx.Client, image_id: str, cache: Path) -> bool:
     time.sleep(REQUEST_DELAY)
     if r.status_code != 200 or not r.headers.get("content-type", "").startswith("image/"):
         return False
+    try:  # IIIF occasionally returns truncated JPEGs; fully decode before caching.
+        Image.open(io.BytesIO(r.content)).load()
+    except OSError:
+        return False
     tmp = path.with_suffix(".part")
     tmp.write_bytes(r.content)
     tmp.rename(path)
@@ -120,12 +126,13 @@ def ingest(limit: int) -> None:
             data = fetch_page(client, page)
             if not data["data"]:
                 break
-            batch = []
+            batch, failed = [], []
             for art in data["data"]:
                 if saved + len(batch) >= limit:
                     break
                 image_id = art.get("image_id")
                 if not image_id or not download_image(client, image_id, cache):
+                    failed.append(art["id"])
                     skipped += 1
                     continue
                 batch.append({
@@ -141,7 +148,10 @@ def ingest(limit: int) -> None:
             # Short-lived connection per page: downloads are slow and the pooler
             # drops connections that sit idle across them.
             with connect() as conn, conn.cursor() as cur:
-                cur.executemany(UPSERT_SQL, batch)
+                if batch:
+                    cur.executemany(UPSERT_SQL, batch)
+                # Drop rows saved by an earlier run whose image is now unusable.
+                cur.execute("delete from artworks where aic_id = any(%s)", (failed,))
             saved += len(batch)
             total_pages = data["pagination"]["total_pages"]
             print(f"page {page}/{total_pages}: {saved} saved, {skipped} skipped", flush=True)
