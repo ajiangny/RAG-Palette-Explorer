@@ -26,13 +26,17 @@ python -m ingest.build_index
 
 # Tests
 pytest tests
+
+# 6. Run the API, then match an image
+uvicorn app.main:app --reload
+curl -F file=@some_image.jpg localhost:8000/match
 ```
 
 ## Status
 - [x] Phase 0–1: scaffold + schema
 - [x] Phase 2: AIC ingestion
 - [x] Phase 3: palette extraction + histograms
-- [ ] Phase 4: two-stage retrieval
+- [x] Phase 4: two-stage retrieval
 - [ ] Phase 5: RAG explanations
 - [ ] Phase 6: frontend
 - [ ] Phase 7: evaluation
