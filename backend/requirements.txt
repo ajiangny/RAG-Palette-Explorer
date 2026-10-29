@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+numpy
+scipy
+scikit-learn
+scikit-image
+pillow
+httpx
+psycopg[binary]
+pgvector
+google-genai
+python-dotenv
+pytest
