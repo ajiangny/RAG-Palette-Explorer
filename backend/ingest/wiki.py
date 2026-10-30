@@ -5,6 +5,10 @@ Usage (from backend/):
 
 Resumable: artists that already have Wikipedia chunks and artworks whose
 description is already stored are skipped.
+
+Only Wikipedia chunks are embedded. On Gemini's free tier every text embedded counts
+as one request (1,000/day), so descriptions, which /explain fetches by artwork id,
+are stored without an embedding, and articles are packed into a few large chunks.
 """
 
 import re
@@ -14,15 +18,15 @@ import unicodedata
 import httpx
 
 from app.db import connect
-from app.gemini import embed
+from app.gemini import DailyQuotaExceeded, embed
 from ingest.aic import get_with_retry
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 HEADERS = {"User-Agent": "palette-rag-explorer/0.1 (andrewjiang74@gmail.com)"}
 REQUEST_DELAY = 0.5
 
-CHUNK_CHARS = 2000  # ≈ 500 tokens
-MAX_CHUNKS_PER_ARTICLE = 20
+CHUNK_CHARS = 3500  # ≈ 900 tokens; gemini-embedding-001 accepts up to 2,048
+MAX_CHUNKS_PER_ARTICLE = 8  # /explain uses the top 3 per artist
 SKIP_SECTIONS = {"references", "external links", "see also", "further reading", "notes",
                  "bibliography", "sources", "citations", "gallery", "footnotes",
                  "selected works", "list of works", "works cited", "exhibitions"}
@@ -117,26 +121,33 @@ def pack(paragraphs: list[str], max_chars: int = CHUNK_CHARS) -> list[str]:
 
 
 def chunk_article(text: str) -> list[str]:
-    """Chunks of one article, each prefixed with its section, color-relevant sections first."""
-    chunks = []
+    """Chunks of one article, each prefixed with its top-level section, color-relevant sections first.
+
+    Subsections are packed together under their top-level heading so chunks come out
+    near CHUNK_CHARS instead of one small chunk per subsection.
+    """
+    groups: dict[str, tuple[list[str], bool]] = {}
     for heading, body in split_sections(text):
-        paras = [p.strip() for p in body.split("\n") if len(p.strip()) > 40]
-        for c in pack(paras, CHUNK_CHARS - len(heading) - 4):
-            chunks.append((heading, f"[{heading}] {c}" if heading else c))
-    lead = [c for h, c in chunks if not h]
-    prio = [c for h, c in chunks if h and PRIORITY_SECTIONS.search(h)]
-    rest = [c for h, c in chunks if h and not PRIORITY_SECTIONS.search(h)]
-    return (lead + prio + rest)[:MAX_CHUNKS_PER_ARTICLE]
+        top = heading.split(" / ")[0]
+        paras, prio = groups.setdefault(top, ([], False))
+        paras.extend(p.strip() for p in body.split("\n") if len(p.strip()) > 40)
+        groups[top] = (paras, prio or bool(heading and PRIORITY_SECTIONS.search(heading)))
+    lead, prio_chunks, rest = [], [], []
+    for top, (paras, prio) in groups.items():
+        chunks = [f"[{top}] {c}" if top else c for c in pack(paras, CHUNK_CHARS - len(top) - 3)]
+        (lead if not top else prio_chunks if prio else rest).extend(chunks)
+    return (lead + prio_chunks + rest)[:MAX_CHUNKS_PER_ARTICLE]
 
 
 INSERT_SQL = """
 insert into text_chunks (artwork_id, artist, source_title, source_url, content, embedding)
 values (%s, %s, %s, %s, %s, %s)
-on conflict (source_url, content) do nothing
+on conflict (source_url, md5(content)) do nothing
 """
 
 
-def ingest_wikipedia() -> None:
+def ingest_wikipedia() -> bool:
+    """Returns False if it stopped early on the daily embedding quota."""
     with connect() as conn:
         artists = [r[0] for r in conn.execute("""
             select distinct a.artist from artworks a
@@ -154,13 +165,19 @@ def ingest_wikipedia() -> None:
                 continue
             title, url, text = article
             chunks = chunk_article(text)
-            vectors = embed([f"{title}\n{c}" for c in chunks])
+            try:
+                vectors = embed([f"{title}\n{c}" for c in chunks])
+            except DailyQuotaExceeded:
+                print(f"daily embedding quota reached with {len(artists) - n + 1} artists left; "
+                      "re-run after midnight Pacific to resume", flush=True)
+                return False
             with connect() as conn, conn.cursor() as cur:
                 cur.executemany(INSERT_SQL, [(None, artist, f"{title} — Wikipedia", url, c, v)
                                              for c, v in zip(chunks, vectors)])
             found += 1
             print(f"[{n}/{len(artists)}] {artist} → {title}: {len(chunks)} chunks", flush=True)
     print(f"wikipedia: {found}/{len(artists)} artists matched")
+    return True
 
 
 def ingest_descriptions() -> None:
@@ -170,22 +187,19 @@ def ingest_descriptions() -> None:
             where a.description is not null
               and not exists (select 1 from text_chunks c where c.artwork_id = a.id)
             order by a.id""").fetchall()
-    print(f"{len(rows)} AIC descriptions to embed", flush=True)
-    for i in range(0, len(rows), 50):
-        batch = rows[i:i + 50]
-        docs = [(art_id, artist, f"{title} — Art Institute of Chicago",
-                 f"https://www.artic.edu/artworks/{aic_id}", chunk)
-                for art_id, aic_id, title, artist, desc in batch
-                for chunk in pack([desc])]
-        vectors = embed([f"{d[2]}\n{d[4]}" for d in docs])
-        with connect() as conn, conn.cursor() as cur:
-            cur.executemany(INSERT_SQL, [(*d, v) for d, v in zip(docs, vectors)])
-        print(f"{min(i + 50, len(rows))}/{len(rows)} descriptions", flush=True)
+    # No embedding: /explain looks these up by artwork_id, never by vector search.
+    docs = [(art_id, artist, f"{title} — Art Institute of Chicago",
+             f"https://www.artic.edu/artworks/{aic_id}", chunk, None)
+            for art_id, aic_id, title, artist, desc in rows
+            for chunk in pack([desc])]
+    with connect() as conn, conn.cursor() as cur:
+        cur.executemany(INSERT_SQL, docs)
+    print(f"{len(rows)} AIC descriptions stored", flush=True)
 
 
 if __name__ == "__main__":
-    ingest_wikipedia()
     ingest_descriptions()
+    ingest_wikipedia()
     with connect() as conn:
         print("text_chunks:", conn.execute(
             "select count(*), count(distinct artist), count(*) filter (where embedding is null) from text_chunks"

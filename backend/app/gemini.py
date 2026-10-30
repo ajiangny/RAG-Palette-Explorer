@@ -25,13 +25,18 @@ def client() -> genai.Client:
     return genai.Client(api_key=key, http_options=types.HttpOptions(timeout=60_000))
 
 
+class DailyQuotaExceeded(RuntimeError):
+    """The free tier's per-day request quota is used up; retrying won't help until it resets."""
+
+
 def _with_backoff(fn, attempts: int = 6):
     for attempt in range(attempts):
         try:
             return fn()
         except errors.APIError as e:
-            daily_quota = e.code == 429 and "PerDay" in str(e)  # won't clear by retrying
-            if e.code not in (429, 500, 503) or daily_quota or attempt == attempts - 1:
+            if e.code == 429 and "PerDay" in str(e):
+                raise DailyQuotaExceeded(str(e)) from e
+            if e.code not in (429, 500, 503) or attempt == attempts - 1:
                 raise
             time.sleep(min(60, 2 ** attempt * 2))
     raise AssertionError("unreachable")
