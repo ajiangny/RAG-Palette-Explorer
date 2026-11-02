@@ -22,7 +22,7 @@ python -m app.db
 
 # 5. Ingest paintings and build the palette index (both are resumable)
 python -m ingest.aic --limit 200
-python -m ingest.build_index
+python -m ingest.build_index    # palettes, histograms, and precomputed palette edges
 python -m ingest.wiki          # Wikipedia + AIC description chunks, embedded with Gemini
 
 # Tests
@@ -32,7 +32,16 @@ pytest tests
 uvicorn app.main:app --reload
 curl -F file=@some_image.jpg localhost:8000/match
 # then POST /explain with {"query_palette": [...], "artwork_ids": [...]} from the /match response
+
+# Web map: start from a painting, or from an upload
+curl 'localhost:8000/graph/1?depth=2&k=6'
+curl -F file=@some_image.jpg 'localhost:8000/graph?depth=2&k=6'
+# Why are two nodes linked? (source_id, or source_palette for the uploaded image)
+curl -X POST localhost:8000/explain-edge -H 'Content-Type: application/json' -d '{"source_id": 1, "target_id": 2}'
 ```
+
+After the corpus grows, run `python -m ingest.build_index --rebuild-edges` so existing paintings'
+edges can point at the new ones.
 
 Gemini's free tier allows 1,000 embedding requests per day, and every text embedded counts as
 one request even inside a batched call. To stay under it, only Wikipedia chunks are embedded (≤ 8
@@ -47,6 +56,7 @@ Set `GEMINI_MODEL` in `.env` to override the generation model (default `gemini-3
 - [x] Phase 3: palette extraction + histograms
 - [x] Phase 4: two-stage retrieval
 - [x] Phase 5: RAG explanations
+- [x] Phase 5b: web map backend (`/graph`, `/explain-edge`)
 - [ ] Phase 6: frontend
 - [ ] Phase 7: evaluation
 - [ ] Phase 8: deploy

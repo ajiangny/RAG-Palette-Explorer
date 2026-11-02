@@ -10,6 +10,7 @@ import psycopg
 
 from app import gemini
 from app.palette import Swatch
+from app.retrieve import matched_colors, palette_distance
 
 PER_ARTIST_CHUNKS = 3
 MAX_ARTWORKS = 5
@@ -107,3 +108,31 @@ def explain_matches(conn: psycopg.Connection, query_palette: Sequence[Swatch],
     task = ("In 2–4 short paragraphs, explain how the artists of these paintings used color, "
             "and how that relates to the user's palette. Cite sources inline.")
     return {"artworks": [a["id"] for a in artworks], **answer(context, task, retrieve_sources(conn, artworks))}
+
+
+def explain_edge(conn: psycopg.Connection, target_id: int, source_id: int | None = None,
+                 source_palette: Sequence[Swatch] | None = None) -> dict[str, Any] | None:
+    """Why two nodes of the web are linked. The source is a painting or the uploaded image's palette."""
+    ids = [i for i in (source_id, target_id) if i is not None]
+    artworks = fetch_artworks(conn, ids)
+    if len(artworks) != len(ids):
+        return None
+    target = artworks[-1]
+    if source_id is not None:
+        palette_a, label_a = artworks[0]["palette"], f"Painting A: {describe_artwork(artworks[0])}"
+    else:
+        assert source_palette is not None
+        palette_a, label_a = source_palette, f"Image A (the user's upload); palette: {format_palette(source_palette)}"
+    distance = palette_distance(palette_a, target["palette"])
+    pairs = matched_colors(palette_a, target["palette"])
+    context = "\n".join([
+        label_a,
+        f"Painting B: {describe_artwork(target)}",
+        f"Palette distance (weighted CIEDE2000, 0 = identical): {distance:.1f}",
+        "Matched colors (A ↔ B, share of pixels, ΔE):",
+        *(f"- {p['a']} ↔ {p['b']}, {p['share'] * 100:.0f}%, ΔE {p['delta_e']}" for p in pairs),
+    ])
+    task = ("In 1–2 short paragraphs, explain why A and B are linked by palette, referring to the "
+            "matched colors, and how the artists' approaches to color compare. Cite sources inline.")
+    return {"source": source_id, "target": target_id, "palette_distance": round(distance, 3),
+            "matched_colors": pairs, **answer(context, task, retrieve_sources(conn, artworks))}

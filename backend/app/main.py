@@ -4,10 +4,11 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from PIL import UnidentifiedImageError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.db import connect
-from app.rag import explain_matches
+from app.graph import graph_for_artwork, graph_for_upload
+from app.rag import explain_edge, explain_matches
 from app.retrieve import match_image
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
@@ -62,4 +63,53 @@ def explain(req: ExplainRequest) -> dict:
         result = explain_matches(conn, [s.model_dump() for s in req.query_palette], req.artwork_ids)
     if not result["artworks"]:
         raise HTTPException(404, "none of the artwork_ids exist")
+    return result
+
+
+GraphK = Annotated[int, Query(ge=1, le=10)]
+GraphDepth = Annotated[int, Query(ge=1, le=3)]
+
+
+@app.get("/graph/{artwork_id}")
+def graph_from_artwork(artwork_id: int, k: GraphK = 6, depth: GraphDepth = 2) -> dict:
+    with connect() as conn:
+        result = graph_for_artwork(conn, artwork_id, k=k, depth=depth)
+    if result is None:
+        raise HTTPException(404, "artwork not found")
+    return result
+
+
+@app.post("/graph")
+async def graph_from_upload(file: Annotated[UploadFile, File()], k: GraphK = 6,
+                            depth: GraphDepth = 2) -> dict:
+    data = await read_upload(file)
+    try:
+        with connect() as conn:
+            return graph_for_upload(conn, data, k=k, depth=depth)
+    except (UnidentifiedImageError, OSError) as e:
+        raise HTTPException(400, f"could not read image: {e}") from e
+
+
+class ExplainEdgeRequest(BaseModel):
+    """An edge of the web: target is a painting; source is a painting or the uploaded image's palette."""
+    target_id: int
+    source_id: int | None = None
+    source_palette: list[SwatchIn] | None = Field(default=None, min_length=1, max_length=12)
+
+    @model_validator(mode="after")
+    def one_source(self):
+        if (self.source_id is None) == (self.source_palette is None):
+            raise ValueError("give exactly one of source_id or source_palette")
+        if self.source_id == self.target_id:
+            raise ValueError("source and target are the same artwork")
+        return self
+
+
+@app.post("/explain-edge")
+def explain_edge_endpoint(req: ExplainEdgeRequest) -> dict:
+    palette = [s.model_dump() for s in req.source_palette] if req.source_palette else None
+    with connect() as conn:
+        result = explain_edge(conn, req.target_id, source_id=req.source_id, source_palette=palette)
+    if result is None:
+        raise HTTPException(404, "artwork not found")
     return result

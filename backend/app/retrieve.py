@@ -29,8 +29,11 @@ def _as_arrays(palette: Sequence[Swatch]) -> tuple[np.ndarray, np.ndarray]:
     return lab, w / w.sum()
 
 
-def palette_distance(p: Sequence[Swatch], q: Sequence[Swatch]) -> float:
-    """Weighted CIEDE2000 matching cost between two palettes (EMD; 0 = identical)."""
+def palette_matching(p: Sequence[Swatch], q: Sequence[Swatch]) -> tuple[float, np.ndarray, np.ndarray]:
+    """EMD between two palettes with CIEDE2000 ground distance → (distance, flow, cost).
+
+    flow[i, j] is the share of pixels matched from p[i] to q[j]; cost[i, j] is their ΔE.
+    """
     lab_p, w_p = _as_arrays(p)
     lab_q, w_q = _as_arrays(q)
     n, m = len(w_p), len(w_q)
@@ -46,7 +49,21 @@ def palette_distance(p: Sequence[Swatch], q: Sequence[Swatch]) -> float:
                   bounds=(0, None), method="highs")
     if not res.success:
         raise RuntimeError(f"palette EMD failed: {res.message}")
-    return float(res.fun)
+    return float(res.fun), res.x.reshape(n, m), cost
+
+
+def palette_distance(p: Sequence[Swatch], q: Sequence[Swatch]) -> float:
+    """Weighted CIEDE2000 matching cost between two palettes (0 = identical)."""
+    return palette_matching(p, q)[0]
+
+
+def matched_colors(p: Sequence[Swatch], q: Sequence[Swatch], min_share: float = 0.05) -> list[dict[str, Any]]:
+    """The color pairs the EMD actually matched, largest share first (explains *why* two palettes are close)."""
+    _, flow, cost = palette_matching(p, q)
+    pairs = [{"a": p[i]["hex"], "b": q[j]["hex"], "share": round(float(flow[i, j]), 3),
+              "delta_e": round(float(cost[i, j]), 1)}
+             for i, j in zip(*np.nonzero(flow >= min_share))]
+    return sorted(pairs, key=lambda x: x["share"], reverse=True)
 
 
 def palette_similarity(distance: float) -> float:
@@ -71,14 +88,25 @@ from match_palettes(%s::vector, %s)
 """
 
 
-def stage1(conn: psycopg.Connection, hist: np.ndarray, candidates: int = 100,
-           exclude_id: int | None = None) -> list[dict[str, Any]]:
-    rows = conn.execute(STAGE1_SQL, (hist, candidates + (exclude_id is not None))).fetchall()
-    return [
-        {"id": r[0], "aic_id": r[1], "title": r[2], "artist": r[3], "image_url": r[4],
-         "palette": r[5], "hist_similarity": round(float(r[6]), 4)}
-        for r in rows if r[0] != exclude_id and r[5]
-    ][:candidates]
+def _candidate(r: tuple) -> dict[str, Any]:
+    return {"id": r[0], "aic_id": r[1], "title": r[2], "artist": r[3], "image_url": r[4],
+            "palette": r[5], "hist_similarity": round(float(r[6]), 4)}
+
+
+def stage1(conn: psycopg.Connection, hist: np.ndarray, candidates: int = 100) -> list[dict[str, Any]]:
+    return [_candidate(r) for r in conn.execute(STAGE1_SQL, (hist, candidates)) if r[5]]
+
+
+def live_neighbors(conn: psycopg.Connection, artwork_id: int, k: int = 20,
+                   candidates: int = 100) -> list[dict[str, Any]]:
+    """Top-k reranked neighbors of a painting already in the collection (itself excluded)."""
+    row = conn.execute("select palette from artworks where id = %s", (artwork_id,)).fetchone()
+    if not row or not row[0]:
+        return []
+    pool = [_candidate(r) for r in conn.execute(
+        "select id, aic_id, title, artist, image_url, palette, similarity from match_palettes_by_id(%s, %s)",
+        (artwork_id, candidates)) if r[5]]
+    return rerank(row[0], pool, k)
 
 
 def match_image(conn: psycopg.Connection, image: ImageInput, k: int = 10, candidates: int = 100,
