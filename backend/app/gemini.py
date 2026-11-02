@@ -19,10 +19,15 @@ GENERATE_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
 
 @cache
 def client() -> genai.Client:
+    http = types.HttpOptions(timeout=60_000)
+    # Vertex AI (billed to a GCP project, no free-tier daily cap): the SDK reads
+    # GOOGLE_CLOUD_PROJECT / GOOGLE_CLOUD_LOCATION and gcloud's application-default credentials.
+    if os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() in ("1", "true"):
+        return genai.Client(http_options=http)
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
-        raise RuntimeError("GEMINI_API_KEY is not set")
-    return genai.Client(api_key=key, http_options=types.HttpOptions(timeout=60_000))
+        raise RuntimeError("GEMINI_API_KEY is not set (or set GOOGLE_GENAI_USE_VERTEXAI=true)")
+    return genai.Client(api_key=key, http_options=http)
 
 
 class DailyQuotaExceeded(RuntimeError):
