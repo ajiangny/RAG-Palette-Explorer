@@ -1,6 +1,6 @@
 # Retrieval evaluation
 
-Automatic test set: 200 queries made from 100 collection paintings (a 40–70% crop and a photo-like copy of each), searched against all 5757 paintings. Ground truth is the source painting. Configs were tuned on the dev half; numbers below are the held-out **test** half (100 queries). Exact cosine search, in memory.
+Automatic test set: 200 queries made from 100 collection paintings (a 40–70% crop and a photo-like copy of each), searched against all 4831 paintings. Ground truth is the source painting. Configs were tuned on the dev half; numbers below are the held-out **test** half (100 queries). Exact cosine search, in memory.
 
 | System | Hit@1 | Hit@5 | Hit@10 | MRR | Hit@5 crop | Hit@5 photo |
 |---|---|---|---|---|---|---|
