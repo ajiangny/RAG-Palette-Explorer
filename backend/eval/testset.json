@@ -1,0 +1,1402 @@
+[
+ {
+  "query": "crop_2368.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2368,
+  "source_title": "Poem in Cursive Script"
+ },
+ {
+  "query": "photo_2368.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2368,
+  "source_title": "Poem in Cursive Script"
+ },
+ {
+  "query": "crop_22.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 22,
+  "source_title": "Cupid Chastised"
+ },
+ {
+  "query": "photo_22.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 22,
+  "source_title": "Cupid Chastised"
+ },
+ {
+  "query": "crop_3504.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3504,
+  "source_title": "Portrait of a Man in a Red Cap"
+ },
+ {
+  "query": "photo_3504.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3504,
+  "source_title": "Portrait of a Man in a Red Cap"
+ },
+ {
+  "query": "crop_330.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 330,
+  "source_title": "Trompe-l'Oeil Still Life with a Flower Garland and a Curtain"
+ },
+ {
+  "query": "photo_330.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 330,
+  "source_title": "Trompe-l'Oeil Still Life with a Flower Garland and a Curtain"
+ },
+ {
+  "query": "crop_1700.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1700,
+  "source_title": "Woman with a Green Book (Louisa Gallond Cook)"
+ },
+ {
+  "query": "photo_1700.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1700,
+  "source_title": "Woman with a Green Book (Louisa Gallond Cook)"
+ },
+ {
+  "query": "crop_339.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 339,
+  "source_title": "Irises"
+ },
+ {
+  "query": "photo_339.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 339,
+  "source_title": "Irises"
+ },
+ {
+  "query": "crop_1436.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1436,
+  "source_title": "Portrait of a Woman"
+ },
+ {
+  "query": "photo_1436.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1436,
+  "source_title": "Portrait of a Woman"
+ },
+ {
+  "query": "crop_2225.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2225,
+  "source_title": "Portrait of an Aged Courtier"
+ },
+ {
+  "query": "photo_2225.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2225,
+  "source_title": "Portrait of an Aged Courtier"
+ },
+ {
+  "query": "crop_1654.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1654,
+  "source_title": "Portrait of a Gentleman"
+ },
+ {
+  "query": "photo_1654.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1654,
+  "source_title": "Portrait of a Gentleman"
+ },
+ {
+  "query": "crop_1298.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1298,
+  "source_title": "Abigail Inskeep Bradford"
+ },
+ {
+  "query": "photo_1298.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1298,
+  "source_title": "Abigail Inskeep Bradford"
+ },
+ {
+  "query": "crop_1111.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1111,
+  "source_title": "Virgin and Child"
+ },
+ {
+  "query": "photo_1111.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1111,
+  "source_title": "Virgin and Child"
+ },
+ {
+  "query": "crop_2329.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2329,
+  "source_title": "The Out-Post"
+ },
+ {
+  "query": "photo_2329.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2329,
+  "source_title": "The Out-Post"
+ },
+ {
+  "query": "crop_1996.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1996,
+  "source_title": "Saint Augustine and an Augustinian Canoness"
+ },
+ {
+  "query": "photo_1996.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1996,
+  "source_title": "Saint Augustine and an Augustinian Canoness"
+ },
+ {
+  "query": "crop_1798.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1798,
+  "source_title": "The Tête-à-tête"
+ },
+ {
+  "query": "photo_1798.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1798,
+  "source_title": "The Tête-à-tête"
+ },
+ {
+  "query": "crop_1372.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1372,
+  "source_title": "Nude Girl in Doorway"
+ },
+ {
+  "query": "photo_1372.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1372,
+  "source_title": "Nude Girl in Doorway"
+ },
+ {
+  "query": "crop_1662.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1662,
+  "source_title": "Dr. Jonathan Potts (1745-1781)"
+ },
+ {
+  "query": "photo_1662.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1662,
+  "source_title": "Dr. Jonathan Potts (1745-1781)"
+ },
+ {
+  "query": "crop_1634.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1634,
+  "source_title": "Saint John the Baptist in the Wilderness"
+ },
+ {
+  "query": "photo_1634.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1634,
+  "source_title": "Saint John the Baptist in the Wilderness"
+ },
+ {
+  "query": "crop_3033.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3033,
+  "source_title": "Festival"
+ },
+ {
+  "query": "photo_3033.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3033,
+  "source_title": "Festival"
+ },
+ {
+  "query": "crop_2272.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2272,
+  "source_title": "Portrait of an Artist"
+ },
+ {
+  "query": "photo_2272.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2272,
+  "source_title": "Portrait of an Artist"
+ },
+ {
+  "query": "crop_1644.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1644,
+  "source_title": "Giafar"
+ },
+ {
+  "query": "photo_1644.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1644,
+  "source_title": "Giafar"
+ },
+ {
+  "query": "crop_3527.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3527,
+  "source_title": "Under the Cypress Trees at Corfu"
+ },
+ {
+  "query": "photo_3527.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3527,
+  "source_title": "Under the Cypress Trees at Corfu"
+ },
+ {
+  "query": "crop_1881.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1881,
+  "source_title": "Taima Mandala"
+ },
+ {
+  "query": "photo_1881.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1881,
+  "source_title": "Taima Mandala"
+ },
+ {
+  "query": "crop_1049.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1049,
+  "source_title": "Virgil Reading the \"Aeneid\" to Augustus, Octavia, and Livia"
+ },
+ {
+  "query": "photo_1049.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1049,
+  "source_title": "Virgil Reading the \"Aeneid\" to Augustus, Octavia, and Livia"
+ },
+ {
+  "query": "crop_2402.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2402,
+  "source_title": "Portrait of Tao Yuanming"
+ },
+ {
+  "query": "photo_2402.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2402,
+  "source_title": "Portrait of Tao Yuanming"
+ },
+ {
+  "query": "crop_1290.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1290,
+  "source_title": "Virgin and Child with the Young Saint John the Baptist"
+ },
+ {
+  "query": "photo_1290.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1290,
+  "source_title": "Virgin and Child with the Young Saint John the Baptist"
+ },
+ {
+  "query": "crop_3220.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3220,
+  "source_title": "Ragini Gaudi, Page from a Jaipur Ragamala Set"
+ },
+ {
+  "query": "photo_3220.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3220,
+  "source_title": "Ragini Gaudi, Page from a Jaipur Ragamala Set"
+ },
+ {
+  "query": "crop_2937.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2937,
+  "source_title": "Sancho Panza Being Tossed in a Blanket"
+ },
+ {
+  "query": "photo_2937.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2937,
+  "source_title": "Sancho Panza Being Tossed in a Blanket"
+ },
+ {
+  "query": "crop_3277.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3277,
+  "source_title": "Lotus 荷花牙柄团扇"
+ },
+ {
+  "query": "photo_3277.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3277,
+  "source_title": "Lotus 荷花牙柄团扇"
+ },
+ {
+  "query": "crop_972.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 972,
+  "source_title": "On a Balcony"
+ },
+ {
+  "query": "photo_972.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 972,
+  "source_title": "On a Balcony"
+ },
+ {
+  "query": "crop_78.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 78,
+  "source_title": "Salome with the Head of Saint John the Baptist"
+ },
+ {
+  "query": "photo_78.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 78,
+  "source_title": "Salome with the Head of Saint John the Baptist"
+ },
+ {
+  "query": "crop_2204.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2204,
+  "source_title": "Still Life: Melon, Fish Jar"
+ },
+ {
+  "query": "photo_2204.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2204,
+  "source_title": "Still Life: Melon, Fish Jar"
+ },
+ {
+  "query": "crop_3274.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3274,
+  "source_title": "Red-Whiskered Bulbul and Azaleas in Moonlight 花鸟竹柄团扇"
+ },
+ {
+  "query": "photo_3274.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3274,
+  "source_title": "Red-Whiskered Bulbul and Azaleas in Moonlight 花鸟竹柄团扇"
+ },
+ {
+  "query": "crop_968.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 968,
+  "source_title": "Étretat: The Beach and the Falaise d'Amont"
+ },
+ {
+  "query": "photo_968.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 968,
+  "source_title": "Étretat: The Beach and the Falaise d'Amont"
+ },
+ {
+  "query": "crop_2191.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2191,
+  "source_title": "Miss Vanderveer, or Miss Vandeveer"
+ },
+ {
+  "query": "photo_2191.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2191,
+  "source_title": "Miss Vanderveer, or Miss Vandeveer"
+ },
+ {
+  "query": "crop_1590.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1590,
+  "source_title": "The Essex Canal"
+ },
+ {
+  "query": "photo_1590.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1590,
+  "source_title": "The Essex Canal"
+ },
+ {
+  "query": "crop_98.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 98,
+  "source_title": "Gian Lodovico Madruzzo"
+ },
+ {
+  "query": "photo_98.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 98,
+  "source_title": "Gian Lodovico Madruzzo"
+ },
+ {
+  "query": "crop_3130.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3130,
+  "source_title": "Family Group on a Terrace"
+ },
+ {
+  "query": "photo_3130.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3130,
+  "source_title": "Family Group on a Terrace"
+ },
+ {
+  "query": "crop_1612.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1612,
+  "source_title": "Don Quixote and the Windmills"
+ },
+ {
+  "query": "photo_1612.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1612,
+  "source_title": "Don Quixote and the Windmills"
+ },
+ {
+  "query": "crop_1157.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1157,
+  "source_title": "Landscape at Chailly"
+ },
+ {
+  "query": "photo_1157.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1157,
+  "source_title": "Landscape at Chailly"
+ },
+ {
+  "query": "crop_1367.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1367,
+  "source_title": "Still Life with Fruit and Wine Jug"
+ },
+ {
+  "query": "photo_1367.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1367,
+  "source_title": "Still Life with Fruit and Wine Jug"
+ },
+ {
+  "query": "crop_1603.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1603,
+  "source_title": "Portrait of Dr. William McNeill Whistler"
+ },
+ {
+  "query": "photo_1603.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1603,
+  "source_title": "Portrait of Dr. William McNeill Whistler"
+ },
+ {
+  "query": "crop_2586.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2586,
+  "source_title": "John Van der Wall"
+ },
+ {
+  "query": "photo_2586.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2586,
+  "source_title": "John Van der Wall"
+ },
+ {
+  "query": "crop_2485.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2485,
+  "source_title": "Mark Pringle"
+ },
+ {
+  "query": "photo_2485.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2485,
+  "source_title": "Mark Pringle"
+ },
+ {
+  "query": "crop_2252.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 2252,
+  "source_title": "Eight Views of the Xiao and Xiang Rivers"
+ },
+ {
+  "query": "photo_2252.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 2252,
+  "source_title": "Eight Views of the Xiao and Xiang Rivers"
+ },
+ {
+  "query": "crop_3481.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3481,
+  "source_title": "Calligraphy Accompanying Xugu's Painting"
+ },
+ {
+  "query": "photo_3481.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3481,
+  "source_title": "Calligraphy Accompanying Xugu's Painting"
+ },
+ {
+  "query": "crop_1689.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1689,
+  "source_title": "French Street Scene"
+ },
+ {
+  "query": "photo_1689.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1689,
+  "source_title": "French Street Scene"
+ },
+ {
+  "query": "crop_3554.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3554,
+  "source_title": "Ship paintings"
+ },
+ {
+  "query": "photo_3554.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3554,
+  "source_title": "Ship paintings"
+ },
+ {
+  "query": "crop_1255.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 1255,
+  "source_title": "Portrait of a Woman"
+ },
+ {
+  "query": "photo_1255.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 1255,
+  "source_title": "Portrait of a Woman"
+ },
+ {
+  "query": "crop_7.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 7,
+  "source_title": "Two Sisters (On the Terrace)"
+ },
+ {
+  "query": "photo_7.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 7,
+  "source_title": "Two Sisters (On the Terrace)"
+ },
+ {
+  "query": "crop_3121.jpg",
+  "kind": "crop",
+  "split": "dev",
+  "source_id": 3121,
+  "source_title": "The Raising of Lazarus"
+ },
+ {
+  "query": "photo_3121.jpg",
+  "kind": "photo",
+  "split": "dev",
+  "source_id": 3121,
+  "source_title": "The Raising of Lazarus"
+ },
+ {
+  "query": "crop_3562.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3562,
+  "source_title": "Spinning Cloth, Preparing Tea Leaves, Preparing Silk"
+ },
+ {
+  "query": "photo_3562.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3562,
+  "source_title": "Spinning Cloth, Preparing Tea Leaves, Preparing Silk"
+ },
+ {
+  "query": "crop_2734.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2734,
+  "source_title": "Phebe Russell Swain Welch"
+ },
+ {
+  "query": "photo_2734.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2734,
+  "source_title": "Phebe Russell Swain Welch"
+ },
+ {
+  "query": "crop_1044.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1044,
+  "source_title": "After a Summer Shower"
+ },
+ {
+  "query": "photo_1044.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1044,
+  "source_title": "After a Summer Shower"
+ },
+ {
+  "query": "crop_1213.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1213,
+  "source_title": "Entrance to the Port of Honfleur"
+ },
+ {
+  "query": "photo_1213.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1213,
+  "source_title": "Entrance to the Port of Honfleur"
+ },
+ {
+  "query": "crop_3282.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3282,
+  "source_title": "Self-Portrait"
+ },
+ {
+  "query": "photo_3282.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3282,
+  "source_title": "Self-Portrait"
+ },
+ {
+  "query": "crop_1553.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1553,
+  "source_title": "Book Binding"
+ },
+ {
+  "query": "photo_1553.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1553,
+  "source_title": "Book Binding"
+ },
+ {
+  "query": "crop_2852.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2852,
+  "source_title": "Flowering Lotus"
+ },
+ {
+  "query": "photo_2852.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2852,
+  "source_title": "Flowering Lotus"
+ },
+ {
+  "query": "crop_1692.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1692,
+  "source_title": "Fish"
+ },
+ {
+  "query": "photo_1692.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1692,
+  "source_title": "Fish"
+ },
+ {
+  "query": "crop_3530.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3530,
+  "source_title": "Saint Jerome in Penitence"
+ },
+ {
+  "query": "photo_3530.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3530,
+  "source_title": "Saint Jerome in Penitence"
+ },
+ {
+  "query": "crop_3356.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3356,
+  "source_title": "Triptych of Calligraphy"
+ },
+ {
+  "query": "photo_3356.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3356,
+  "source_title": "Triptych of Calligraphy"
+ },
+ {
+  "query": "crop_2555.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2555,
+  "source_title": "The Carousal (Scene from Faust?)"
+ },
+ {
+  "query": "photo_2555.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2555,
+  "source_title": "The Carousal (Scene from Faust?)"
+ },
+ {
+  "query": "crop_2678.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2678,
+  "source_title": "Trepanning a Recruit"
+ },
+ {
+  "query": "photo_2678.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2678,
+  "source_title": "Trepanning a Recruit"
+ },
+ {
+  "query": "crop_1244.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1244,
+  "source_title": "Apollo Granting Phaeton Permission to Drive the Chariot of the Sun"
+ },
+ {
+  "query": "photo_1244.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1244,
+  "source_title": "Apollo Granting Phaeton Permission to Drive the Chariot of the Sun"
+ },
+ {
+  "query": "crop_2459.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2459,
+  "source_title": "Calligraphy"
+ },
+ {
+  "query": "photo_2459.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2459,
+  "source_title": "Calligraphy"
+ },
+ {
+  "query": "crop_2983.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2983,
+  "source_title": "Mother and Child"
+ },
+ {
+  "query": "photo_2983.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2983,
+  "source_title": "Mother and Child"
+ },
+ {
+  "query": "crop_2957.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2957,
+  "source_title": "The Flight into Egypt"
+ },
+ {
+  "query": "photo_2957.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2957,
+  "source_title": "The Flight into Egypt"
+ },
+ {
+  "query": "crop_3516.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3516,
+  "source_title": "Horses in Stables (Umaya-zu byobu)"
+ },
+ {
+  "query": "photo_3516.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3516,
+  "source_title": "Horses in Stables (Umaya-zu byobu)"
+ },
+ {
+  "query": "crop_3236.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3236,
+  "source_title": "Ragini Desavaradi, Page from a Jaipur Ragamala Set"
+ },
+ {
+  "query": "photo_3236.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3236,
+  "source_title": "Ragini Desavaradi, Page from a Jaipur Ragamala Set"
+ },
+ {
+  "query": "crop_994.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 994,
+  "source_title": "The Crystal Palace"
+ },
+ {
+  "query": "photo_994.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 994,
+  "source_title": "The Crystal Palace"
+ },
+ {
+  "query": "crop_1214.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1214,
+  "source_title": "Souvenir of the Environs of Lake Nemi"
+ },
+ {
+  "query": "photo_1214.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1214,
+  "source_title": "Souvenir of the Environs of Lake Nemi"
+ },
+ {
+  "query": "crop_1748.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1748,
+  "source_title": "Paddling the Wounded British Officer"
+ },
+ {
+  "query": "photo_1748.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1748,
+  "source_title": "Paddling the Wounded British Officer"
+ },
+ {
+  "query": "crop_1597.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1597,
+  "source_title": "Domenico da Gambassi"
+ },
+ {
+  "query": "photo_1597.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1597,
+  "source_title": "Domenico da Gambassi"
+ },
+ {
+  "query": "crop_3187.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3187,
+  "source_title": "Self-Portrait"
+ },
+ {
+  "query": "photo_3187.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3187,
+  "source_title": "Self-Portrait"
+ },
+ {
+  "query": "crop_3271.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3271,
+  "source_title": "Narcissus"
+ },
+ {
+  "query": "photo_3271.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3271,
+  "source_title": "Narcissus"
+ },
+ {
+  "query": "crop_1016.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1016,
+  "source_title": "On the Road"
+ },
+ {
+  "query": "photo_1016.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1016,
+  "source_title": "On the Road"
+ },
+ {
+  "query": "crop_1147.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1147,
+  "source_title": "The Dreamer (La Rêveuse)"
+ },
+ {
+  "query": "photo_1147.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1147,
+  "source_title": "The Dreamer (La Rêveuse)"
+ },
+ {
+  "query": "crop_65.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 65,
+  "source_title": "The Nativity"
+ },
+ {
+  "query": "photo_65.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 65,
+  "source_title": "The Nativity"
+ },
+ {
+  "query": "crop_1697.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1697,
+  "source_title": "Little Girl Pouting"
+ },
+ {
+  "query": "photo_1697.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1697,
+  "source_title": "Little Girl Pouting"
+ },
+ {
+  "query": "crop_1739.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1739,
+  "source_title": "Mrs. Allan Maconochie"
+ },
+ {
+  "query": "photo_1739.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1739,
+  "source_title": "Mrs. Allan Maconochie"
+ },
+ {
+  "query": "crop_2264.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2264,
+  "source_title": "Portrait of a Man"
+ },
+ {
+  "query": "photo_2264.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2264,
+  "source_title": "Portrait of a Man"
+ },
+ {
+  "query": "crop_80.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 80,
+  "source_title": "Friar Pedro Shoots El Maragato as His Horse Runs Off"
+ },
+ {
+  "query": "photo_80.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 80,
+  "source_title": "Friar Pedro Shoots El Maragato as His Horse Runs Off"
+ },
+ {
+  "query": "crop_1103.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1103,
+  "source_title": "Alexander at the Tomb of Cyrus the Great"
+ },
+ {
+  "query": "photo_1103.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1103,
+  "source_title": "Alexander at the Tomb of Cyrus the Great"
+ },
+ {
+  "query": "crop_1252.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1252,
+  "source_title": "Still Life with a Basket of Fruit and a Bunch of Asparagus"
+ },
+ {
+  "query": "photo_1252.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1252,
+  "source_title": "Still Life with a Basket of Fruit and a Bunch of Asparagus"
+ },
+ {
+  "query": "crop_1562.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1562,
+  "source_title": "Woman's Head"
+ },
+ {
+  "query": "photo_1562.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1562,
+  "source_title": "Woman's Head"
+ },
+ {
+  "query": "crop_1670.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1670,
+  "source_title": "Captain John Garish"
+ },
+ {
+  "query": "photo_1670.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1670,
+  "source_title": "Captain John Garish"
+ },
+ {
+  "query": "crop_2913.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2913,
+  "source_title": "The Carousal (Scene from Faust?)"
+ },
+ {
+  "query": "photo_2913.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2913,
+  "source_title": "The Carousal (Scene from Faust?)"
+ },
+ {
+  "query": "crop_1127.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1127,
+  "source_title": "Arleux-Palluel, The Bridge of Trysts"
+ },
+ {
+  "query": "photo_1127.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1127,
+  "source_title": "Arleux-Palluel, The Bridge of Trysts"
+ },
+ {
+  "query": "crop_3535.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3535,
+  "source_title": "Pair of Manuscript Covers from the Glorification of the Great Goddess (Devimahatmya)"
+ },
+ {
+  "query": "photo_3535.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3535,
+  "source_title": "Pair of Manuscript Covers from the Glorification of the Great Goddess (Devimahatmya)"
+ },
+ {
+  "query": "crop_10.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 10,
+  "source_title": "At the Moulin Rouge"
+ },
+ {
+  "query": "photo_10.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 10,
+  "source_title": "At the Moulin Rouge"
+ },
+ {
+  "query": "crop_2920.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2920,
+  "source_title": "Bamboo"
+ },
+ {
+  "query": "photo_2920.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2920,
+  "source_title": "Bamboo"
+ },
+ {
+  "query": "crop_1660.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1660,
+  "source_title": "Alexander Comforts the Dying Darius, page from a copy of the Shahnama of Firdausi"
+ },
+ {
+  "query": "photo_1660.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1660,
+  "source_title": "Alexander Comforts the Dying Darius, page from a copy of the Shahnama of Firdausi"
+ },
+ {
+  "query": "crop_3358.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3358,
+  "source_title": "Triptych of Calligraphy"
+ },
+ {
+  "query": "photo_3358.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3358,
+  "source_title": "Triptych of Calligraphy"
+ },
+ {
+  "query": "crop_2451.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2451,
+  "source_title": "Amitayus Buddha Surrounded by One Hundred Buddhas"
+ },
+ {
+  "query": "photo_2451.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2451,
+  "source_title": "Amitayus Buddha Surrounded by One Hundred Buddhas"
+ },
+ {
+  "query": "crop_1449.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1449,
+  "source_title": "Resurrection of Christ"
+ },
+ {
+  "query": "photo_1449.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1449,
+  "source_title": "Resurrection of Christ"
+ },
+ {
+  "query": "crop_2728.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2728,
+  "source_title": "Recluse Dwellings in the Autumn Mountains"
+ },
+ {
+  "query": "photo_2728.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2728,
+  "source_title": "Recluse Dwellings in the Autumn Mountains"
+ },
+ {
+  "query": "crop_1264.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1264,
+  "source_title": "Forêt de Compiègne"
+ },
+ {
+  "query": "photo_1264.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1264,
+  "source_title": "Forêt de Compiègne"
+ },
+ {
+  "query": "crop_1560.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1560,
+  "source_title": "Adam Rolland of Gask II"
+ },
+ {
+  "query": "photo_1560.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1560,
+  "source_title": "Adam Rolland of Gask II"
+ },
+ {
+  "query": "crop_1210.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 1210,
+  "source_title": "Snow at Louveciennes"
+ },
+ {
+  "query": "photo_1210.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 1210,
+  "source_title": "Snow at Louveciennes"
+ },
+ {
+  "query": "crop_2860.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 2860,
+  "source_title": "Landscape after Wang Meng"
+ },
+ {
+  "query": "photo_2860.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 2860,
+  "source_title": "Landscape after Wang Meng"
+ },
+ {
+  "query": "crop_3519.jpg",
+  "kind": "crop",
+  "split": "test",
+  "source_id": 3519,
+  "source_title": "Venus Healing Aeneas"
+ },
+ {
+  "query": "photo_3519.jpg",
+  "kind": "photo",
+  "split": "test",
+  "source_id": 3519,
+  "source_title": "Venus Healing Aeneas"
+ }
+]

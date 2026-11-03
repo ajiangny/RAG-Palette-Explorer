@@ -65,10 +65,12 @@ def test_rerank_orders_by_palette_and_blends_with_alpha():
         {"id": 2, "palette": [swatch(ORANGE, 1.0)], "hist_similarity": 0.10},
         {"id": 3, "palette": [swatch(RED, 1.0)], "hist_similarity": 0.50},
     ]
-    assert [c["id"] for c in rerank(query, candidates, k=3)] == [3, 2, 1]
+    assert [c["id"] for c in rerank(query, candidates, k=3, alpha=0.0)] == [3, 2, 1]
     assert [c["id"] for c in rerank(query, candidates, k=3, alpha=1.0)] == [1, 3, 2]
-    top = rerank(query, candidates, k=1)
+    top = rerank(query, candidates, k=1, alpha=0.0)
     assert len(top) == 1 and top[0]["score"] == pytest.approx(palette_similarity(0), abs=1e-3)
+    # Default blend: an exact palette match with middling histogram similarity still wins.
+    assert rerank(query, candidates, k=1)[0]["id"] == 3
 
 
 def png_bytes(rgb) -> bytes:

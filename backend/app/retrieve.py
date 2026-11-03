@@ -21,6 +21,9 @@ from app.palette import ImageInput, Swatch, extract_palette, load_lab
 # Palette distance → similarity: exp(-d / SCALE). ΔE ≈ 25 between palettes is
 # already "clearly different", so this maps d=25 to ~0.37.
 DISTANCE_SCALE = 25.0
+# Weight of the stage-1 histogram similarity in the final score. Tuned on the eval dev split
+# (eval/RESULTS.md): 0.5 beat pure palette reranking (0) on both dev and held-out test.
+DEFAULT_ALPHA = 0.5
 
 
 def _as_arrays(palette: Sequence[Swatch]) -> tuple[np.ndarray, np.ndarray]:
@@ -71,7 +74,7 @@ def palette_similarity(distance: float) -> float:
 
 
 def rerank(query_palette: Sequence[Swatch], candidates: list[dict[str, Any]],
-           k: int = 10, alpha: float = 0.0) -> list[dict[str, Any]]:
+           k: int = 10, alpha: float = DEFAULT_ALPHA) -> list[dict[str, Any]]:
     """Score candidates by palette similarity, blended with stage-1 `hist_similarity` by `alpha`."""
     scored = []
     for c in candidates:
@@ -110,7 +113,7 @@ def live_neighbors(conn: psycopg.Connection, artwork_id: int, k: int = 20,
 
 
 def match_image(conn: psycopg.Connection, image: ImageInput, k: int = 10, candidates: int = 100,
-                alpha: float = 0.0, config: HistConfig = DEFAULT_CONFIG,
+                alpha: float = DEFAULT_ALPHA, config: HistConfig = DEFAULT_CONFIG,
                 ) -> tuple[list[Swatch], list[dict[str, Any]]]:
     """Full pipeline for an uploaded image: (query palette, top-k reranked matches)."""
     lab = load_lab(image)

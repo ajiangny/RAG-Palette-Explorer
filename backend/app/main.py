@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, model_validator
 from app.db import connect
 from app.graph import graph_for_artwork, graph_for_upload
 from app.rag import explain_edge, explain_matches
-from app.retrieve import match_image
+from app.retrieve import DEFAULT_ALPHA, match_image
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
@@ -54,7 +54,7 @@ async def match(
     file: Annotated[UploadFile, File()],
     k: Annotated[int, Query(ge=1, le=50)] = 10,
     candidates: Annotated[int, Query(ge=1, le=500)] = 100,
-    alpha: Annotated[float, Query(ge=0, le=1)] = 0.0,
+    alpha: Annotated[float, Query(ge=0, le=1)] = DEFAULT_ALPHA,
 ) -> dict:
     data = await read_upload(file)
     try:

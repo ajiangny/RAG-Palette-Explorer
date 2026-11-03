@@ -7,3 +7,5 @@ data/
 node_modules/
 dist/
 .DS_Store
+# labeling page embeds the evaluator's own photos
+backend/eval/labeling.html

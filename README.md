@@ -40,6 +40,20 @@ curl -F file=@some_image.jpg 'localhost:8000/graph?depth=2&k=6'
 curl -X POST localhost:8000/explain-edge -H 'Content-Type: application/json' -d '{"source_id": 1, "target_id": 2}'
 ```
 
+## Evaluation
+
+```bash
+cd backend
+python -m eval.make_queries   # 200 crop / photo-like queries from 100 paintings (seeded)
+python -m eval.run_eval       # sweep → eval/results.csv, eval/RESULTS.md
+
+# Human-judged precision@5: put ~30 photos/designs in backend/data/eval_human/, then
+python -m eval.label build    # open eval/labeling.html, label blind, download labels
+python -m eval.label score ~/Downloads/human_labels.json
+```
+
+Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md).
+
 ## Frontend
 
 ```bash
@@ -69,5 +83,5 @@ Set `GEMINI_MODEL` in `.env` to override the generation model (default `gemini-3
 - [x] Phase 5: RAG explanations
 - [x] Phase 5b: web map backend (`/graph`, `/explain-edge`)
 - [x] Phase 6: frontend (React + TS, react-force-graph-2d)
-- [ ] Phase 7: evaluation
+- [ ] Phase 7: evaluation (automatic test set done; human-labeled P@5 pending)
 - [ ] Phase 8: deploy
