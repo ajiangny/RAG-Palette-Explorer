@@ -73,16 +73,22 @@ def get_with_retry(client: httpx.Client, method: str, url: str, **kw) -> httpx.R
     raise AssertionError("unreachable")
 
 
-def fetch_page(client: httpx.Client, page: int) -> dict:
+def fetch_page(client: httpx.Client, after_id: int) -> dict:
+    """Next page of paintings with id > after_id, in id order.
+
+    Keyset pagination: AIC's search rejects offsets past 1,000 results (403), so we
+    never page; each request asks for the ids after the last one seen.
+    """
     body = {
         "query": {"bool": {"filter": [
             {"term": {"is_public_domain": True}},
             {"term": {"artwork_type_id": 1}},  # Painting
             {"exists": {"field": "image_id"}},
+            {"range": {"id": {"gt": after_id}}},
         ]}},
+        "sort": [{"id": "asc"}],
         "fields": FIELDS,
         "limit": PAGE_SIZE,
-        "page": page,
     }
     r = get_with_retry(client, "POST", API_URL, json=body)
     r.raise_for_status()
@@ -120,12 +126,13 @@ on conflict (aic_id) do update set
 def ingest(limit: int) -> None:
     cache = image_cache_dir()
     saved = skipped = 0
-    page = 1
+    after_id = 0
     with httpx.Client(headers=HEADERS, timeout=30) as client:
         while saved < limit:
-            data = fetch_page(client, page)
+            data = fetch_page(client, after_id)
             if not data["data"]:
                 break
+            after_id = data["data"][-1]["id"]
             batch, failed = [], []
             for art in data["data"]:
                 if saved + len(batch) >= limit:
@@ -153,11 +160,8 @@ def ingest(limit: int) -> None:
                 # Drop rows saved by an earlier run whose image is now unusable.
                 cur.execute("delete from artworks where aic_id = any(%s)", (failed,))
             saved += len(batch)
-            total_pages = data["pagination"]["total_pages"]
-            print(f"page {page}/{total_pages}: {saved} saved, {skipped} skipped", flush=True)
-            if page >= total_pages:
-                break
-            page += 1
+            remaining = data["pagination"]["total"] - len(data["data"])
+            print(f"{saved} saved, {skipped} skipped, {remaining} left", flush=True)
             time.sleep(REQUEST_DELAY)
     print(f"done: {saved} artworks saved, {skipped} skipped (no image)")
 
