@@ -11,3 +11,20 @@ Automatic test set: 200 queries made from 100 collection paintings (a 40–70% c
 | Histogram + rerank, best on dev (12x12x12, k=6, 50 cand., α=0.5) | 90% | 94% | 96% | 0.920 | 100% | 88% |
 
 With 100 test queries, one query is 1 point of Hit@k, so gaps of a few points are within noise. Every config and split is in `results.csv`.
+
+## Human-judged precision@5
+
+28 outside images (photos, designs). The top 5 of every system were pooled and shuffled, then labeled blind as good / poor palette matches.
+
+| System | P@5 |
+|---|---|
+| Histogram only (stage 1, 8x8x8) | 33% |
+| Histogram + palette rerank, α=0 (initial design) | 31% |
+| Histogram + palette rerank, α=0.5 (deployed) | 34% |
+
+Difference from *Histogram only (stage 1, 8x8x8)* (paired bootstrap over images, 95% CI):
+
+- Histogram + palette rerank, α=0 (initial design): -1.4 points (-10.7 to +7.1); better on 7, worse on 9, tied on 12 images
+- Histogram + palette rerank, α=0.5 (deployed): +1.4 points (-5.7 to +8.6); better on 8, worse on 9, tied on 11 images
+
+Good matches per image among the ~9 pooled paintings: median 2 (min 0, max 8). A perfect reordering of the pooled set would score 51% P@5, so the collection, not the ranking, is the main limit for outside images.

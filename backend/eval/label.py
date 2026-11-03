@@ -133,10 +133,27 @@ def score(labels_path: Path) -> None:
              f"{len(pool)} outside images (photos, designs). The top {TOP} of every system were pooled and "
              "shuffled, then labeled blind as good / poor palette matches.", "",
              "| System | P@5 |", "|---|---|"]
-    for name in SYSTEMS:
-        hits = [labels[q["query"]][str(i)] for q in pool for i in q["results"][name]]
-        lines.append(f"| {name} | {np.mean(hits):.0%} |")
-    lines.append("")
+    per_query = {name: np.array([np.mean([labels[q["query"]][str(i)] for i in q["results"][name]]) for q in pool])
+                 for name in SYSTEMS}
+    for name, p in per_query.items():
+        lines.append(f"| {name} | {p.mean():.0%} |")
+
+    # Paired bootstrap over queries: is each system really different from histogram-only?
+    rng = np.random.default_rng(0)
+    base_name, *others = SYSTEMS
+    lines += ["", f"Difference from *{base_name}* (paired bootstrap over images, 95% CI):", ""]
+    for name in others:
+        d = per_query[name] - per_query[base_name]
+        boots = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(10_000)]
+        lo, hi = np.percentile(boots, [2.5, 97.5])
+        lines.append(f"- {name}: {d.mean() * 100:+.1f} points ({lo * 100:+.1f} to {hi * 100:+.1f}); "
+                     f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images")
+    goods = np.array([sum(labels[q["query"]].values()) for q in pool])
+    oracle = np.mean(np.minimum(goods, TOP) / TOP)
+    lines += ["", f"Good matches per image among the ~{np.mean([len(q['pooled']) for q in pool]):.0f} pooled paintings: "
+              f"median {np.median(goods):.0f} (min {goods.min()}, max {goods.max()}). A perfect reordering of the "
+              f"pooled set would score {oracle:.0%} P@5, so the collection, not the ranking, is the main limit "
+              "for outside images.", ""]
     text = RESULTS.read_text().split("\n## Human-judged precision@5")[0].rstrip("\n") + "\n"
     RESULTS.write_text(text + "\n".join(lines))
     (EVAL_DIR / "human_labels.json").write_text(json.dumps(labels, indent=1) + "\n")

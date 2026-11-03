@@ -1,0 +1,1258 @@
+[
+ {
+  "query": "09f2c926ddbb3e4cc386d5d82ac3fe35.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1438,
+    36,
+    1516,
+    3106,
+    1164
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    3279,
+    3275,
+    36,
+    1516,
+    52
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    36,
+    1516,
+    1438,
+    3275,
+    2333
+   ]
+  },
+  "pooled": [
+   3275,
+   2333,
+   52,
+   1438,
+   1516,
+   1164,
+   36,
+   3279,
+   3106
+  ],
+  "palette": [
+   "#0c0909",
+   "#947172",
+   "#eed3bf",
+   "#464574",
+   "#b97946",
+   "#f6d489"
+  ]
+ },
+ {
+  "query": "0d21ff75219fd28efbca0d2b55d0f4e9.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    336,
+    153,
+    1026,
+    962,
+    986
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    352,
+    157,
+    962,
+    1020,
+    1052
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    336,
+    962,
+    352,
+    153,
+    1020
+   ]
+  },
+  "pooled": [
+   336,
+   153,
+   352,
+   1052,
+   1020,
+   157,
+   962,
+   986,
+   1026
+  ],
+  "palette": [
+   "#afb6d2",
+   "#7496be",
+   "#1757ac",
+   "#50526c",
+   "#c8ac93",
+   "#4f5a3e"
+  ]
+ },
+ {
+  "query": "0f47f6d98d5e68851b03706cc1b52812.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    9,
+    1118,
+    148,
+    971,
+    1283
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    148,
+    990,
+    9,
+    1283,
+    90
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    148,
+    9,
+    990,
+    1283,
+    90
+   ]
+  },
+  "pooled": [
+   90,
+   1118,
+   971,
+   148,
+   990,
+   9,
+   1283
+  ],
+  "palette": [
+   "#867a75",
+   "#323434",
+   "#6c8da1",
+   "#9bbce4",
+   "#526644",
+   "#8c524a"
+  ]
+ },
+ {
+  "query": "16696d255ada950b425365e829d47482.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1384,
+    2084,
+    9,
+    1013,
+    1118
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    326,
+    1309,
+    1500,
+    985,
+    1157
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    2084,
+    1384,
+    9,
+    326,
+    985
+   ]
+  },
+  "pooled": [
+   1384,
+   9,
+   2084,
+   1013,
+   985,
+   1157,
+   1309,
+   1500,
+   326,
+   1118
+  ],
+  "palette": [
+   "#5e8db2",
+   "#5a6168",
+   "#2e2a25",
+   "#634f3d",
+   "#a0c6e5",
+   "#b59e89"
+  ]
+ },
+ {
+  "query": "3bdeddac2d87b60e73dd61fceda1cb97.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1200,
+    132,
+    146,
+    1708,
+    3255
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1200,
+    146,
+    132,
+    1087,
+    3182
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1200,
+    132,
+    146,
+    1087,
+    1708
+   ]
+  },
+  "pooled": [
+   132,
+   3182,
+   1708,
+   146,
+   3255,
+   1200,
+   1087
+  ],
+  "palette": [
+   "#4a5424",
+   "#363428",
+   "#596267",
+   "#9f846e",
+   "#8f9a44",
+   "#cbc5bb"
+  ]
+ },
+ {
+  "query": "3d79b69f0b99afa72cf19d53f98ee69e.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    2612,
+    1528,
+    1209,
+    1239,
+    47
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    2612,
+    40,
+    1245,
+    12,
+    1525
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    2612,
+    40,
+    1245,
+    353,
+    1087
+   ]
+  },
+  "pooled": [
+   353,
+   40,
+   47,
+   1209,
+   2612,
+   1528,
+   1239,
+   12,
+   1087,
+   1525,
+   1245
+  ],
+  "palette": [
+   "#92bf62",
+   "#acdd6a",
+   "#5b5f58",
+   "#393120",
+   "#9e764b",
+   "#68834c"
+  ]
+ },
+ {
+  "query": "3d8a2271f8399bb85387fad4f484eeb9.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1851,
+    3254,
+    3559,
+    3562,
+    3549
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    3559,
+    3564,
+    3562,
+    3558,
+    3557
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    3559,
+    3562,
+    1851,
+    3254,
+    3557
+   ]
+  },
+  "pooled": [
+   3564,
+   3559,
+   3562,
+   3254,
+   3549,
+   3557,
+   3558,
+   1851
+  ],
+  "palette": [
+   "#f1f1f1",
+   "#7b7c60",
+   "#4b4c34",
+   "#b2b788",
+   "#bfbfaf",
+   "#ad774c"
+  ]
+ },
+ {
+  "query": "4370d2af04759e0dede3605795b1de6c.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1545,
+    1686,
+    1413,
+    1637,
+    1531
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1138,
+    154,
+    1686,
+    1531,
+    1160
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1686,
+    1545,
+    1531,
+    1138,
+    1160
+   ]
+  },
+  "pooled": [
+   1160,
+   1413,
+   154,
+   1545,
+   1637,
+   1531,
+   1686,
+   1138
+  ],
+  "palette": [
+   "#0d1813",
+   "#244427",
+   "#aeba60",
+   "#dce9d0",
+   "#557539",
+   "#78957e"
+  ]
+ },
+ {
+  "query": "4398cfe7b6acf70455b78c69c5b2f735.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    353,
+    6,
+    1347,
+    991,
+    1132
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1050,
+    339,
+    1347,
+    1132,
+    329
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1050,
+    1347,
+    991,
+    339,
+    1132
+   ]
+  },
+  "pooled": [
+   1050,
+   1347,
+   1132,
+   353,
+   991,
+   339,
+   6,
+   329
+  ],
+  "palette": [
+   "#3f7079",
+   "#5b8c7f",
+   "#5d956b",
+   "#294630",
+   "#c7bebb",
+   "#909f43"
+  ]
+ },
+ {
+  "query": "4b5535c576a4a09ca7103b14653f49a6.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    30,
+    347,
+    357,
+    143,
+    2784
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1001,
+    143,
+    1347,
+    3555,
+    3447
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1001,
+    143,
+    1347,
+    2784,
+    353
+   ]
+  },
+  "pooled": [
+   30,
+   353,
+   1001,
+   2784,
+   1347,
+   347,
+   3555,
+   143,
+   357,
+   3447
+  ],
+  "palette": [
+   "#6fa68d",
+   "#233d4e",
+   "#dfe3d3",
+   "#376563",
+   "#cad099",
+   "#7a583c"
+  ]
+ },
+ {
+  "query": "528538e00ef7f484d8788dc134c8c774.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    3507,
+    65,
+    3506,
+    2393,
+    95
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    3507,
+    67,
+    3506,
+    3434,
+    3445
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    3507,
+    3506,
+    67,
+    3445,
+    2393
+   ]
+  },
+  "pooled": [
+   67,
+   3506,
+   3445,
+   95,
+   2393,
+   3434,
+   65,
+   3507
+  ],
+  "palette": [
+   "#f7f3eb",
+   "#d4714b",
+   "#665849",
+   "#969b8f",
+   "#e5b68f",
+   "#291e17"
+  ]
+ },
+ {
+  "query": "5f015e7a1856d554e3fcd7a39b84deec.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1102,
+    3559,
+    982,
+    3555,
+    1007
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1102,
+    3559,
+    1079,
+    1007,
+    3564
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1102,
+    3559,
+    1007,
+    3564,
+    3560
+   ]
+  },
+  "pooled": [
+   1102,
+   3564,
+   1079,
+   982,
+   3559,
+   3560,
+   1007,
+   3555
+  ],
+  "palette": [
+   "#698459",
+   "#93d0f6",
+   "#e2ddd9",
+   "#526150",
+   "#a2bb73",
+   "#989a98"
+  ]
+ },
+ {
+  "query": "6045759282f09e03ec3c5b22e3c4b48b.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    963,
+    3042,
+    85,
+    1220,
+    3136
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1187,
+    3588,
+    3162,
+    1577,
+    2625
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1187,
+    1577,
+    1220,
+    3042,
+    3136
+   ]
+  },
+  "pooled": [
+   1187,
+   1577,
+   1220,
+   85,
+   3042,
+   3588,
+   2625,
+   3162,
+   963,
+   3136
+  ],
+  "palette": [
+   "#58452f",
+   "#726641",
+   "#3b312c",
+   "#9999e1",
+   "#7d6f76",
+   "#ba9261"
+  ]
+ },
+ {
+  "query": "6431d3d47fa6ce1414f5737b05c6189e.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1229,
+    3550,
+    2773,
+    3552,
+    3554
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1185,
+    1241,
+    2680,
+    40,
+    1470
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1229,
+    3554,
+    3552,
+    2773,
+    3548
+   ]
+  },
+  "pooled": [
+   40,
+   2680,
+   1229,
+   3548,
+   3552,
+   1185,
+   2773,
+   1241,
+   3554,
+   1470,
+   3550
+  ],
+  "palette": [
+   "#98cd89",
+   "#fafcf4",
+   "#5a9c46",
+   "#d8e8b2",
+   "#aed558",
+   "#2a5a30"
+  ]
+ },
+ {
+  "query": "8315bae62525355e893d02469ba54904.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    4,
+    1310,
+    1208,
+    1008,
+    1067
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1208,
+    2506,
+    1166,
+    1571,
+    1223
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1208,
+    2506,
+    1008,
+    1310,
+    4
+   ]
+  },
+  "pooled": [
+   1208,
+   1166,
+   1008,
+   4,
+   1067,
+   1310,
+   1223,
+   2506,
+   1571
+  ],
+  "palette": [
+   "#603f34",
+   "#1f1817",
+   "#967b64",
+   "#8c9baa",
+   "#5b595e",
+   "#cecdc5"
+  ]
+ },
+ {
+  "query": "97ba9a5645239f1c06b89d854f095ba7.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1740,
+    330,
+    1348,
+    1014,
+    1989
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    71,
+    1014,
+    1013,
+    1032,
+    1348
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1740,
+    1348,
+    1014,
+    330,
+    1032
+   ]
+  },
+  "pooled": [
+   1014,
+   1740,
+   71,
+   330,
+   1013,
+   1348,
+   1032,
+   1989
+  ],
+  "palette": [
+   "#181917",
+   "#294553",
+   "#337193",
+   "#e19c34",
+   "#d64e11",
+   "#764623"
+  ]
+ },
+ {
+  "query": "a90fba440716897eff32e6474b7fc003.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    3099,
+    3033,
+    1589,
+    1599,
+    95
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    3099,
+    1678,
+    3033,
+    3296,
+    104
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    3099,
+    3033,
+    1678,
+    95,
+    1599
+   ]
+  },
+  "pooled": [
+   1599,
+   3296,
+   3099,
+   1589,
+   104,
+   3033,
+   95,
+   1678
+  ],
+  "palette": [
+   "#e3d6c0",
+   "#bda67a",
+   "#c49456",
+   "#7a5237",
+   "#32251d",
+   "#d67a27"
+  ]
+ },
+ {
+  "query": "bad95bf6994643e44dcfe2a00f239f65.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    92,
+    158,
+    357,
+    1097,
+    2575
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1283,
+    984,
+    2784,
+    968,
+    158
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    158,
+    18,
+    984,
+    357,
+    92
+   ]
+  },
+  "pooled": [
+   968,
+   357,
+   158,
+   2575,
+   984,
+   1283,
+   2784,
+   92,
+   18,
+   1097
+  ],
+  "palette": [
+   "#68999f",
+   "#204876",
+   "#dfb882",
+   "#806f5f",
+   "#edebd3",
+   "#d77749"
+  ]
+ },
+ {
+  "query": "c01606b61bb30cfa06d4d5965c83af1c.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    137,
+    30,
+    357,
+    11,
+    1333
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    991,
+    137,
+    11,
+    329,
+    30
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    137,
+    30,
+    11,
+    991,
+    6
+   ]
+  },
+  "pooled": [
+   30,
+   137,
+   329,
+   991,
+   11,
+   357,
+   1333,
+   6
+  ],
+  "palette": [
+   "#144420",
+   "#72bbdc",
+   "#297a8f",
+   "#0f3d49",
+   "#428673",
+   "#4f8840"
+  ]
+ },
+ {
+  "query": "c0ee89266171394c2215d47b136048d5.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    2610,
+    3488,
+    1896,
+    2399,
+    3545
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1023,
+    2399,
+    3558,
+    3402,
+    3560
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    2399,
+    3402,
+    2610,
+    3558,
+    2536
+   ]
+  },
+  "pooled": [
+   2536,
+   3560,
+   2399,
+   3488,
+   3558,
+   3545,
+   2610,
+   1023,
+   1896,
+   3402
+  ],
+  "palette": [
+   "#b9ad91",
+   "#dadad2",
+   "#a2251b",
+   "#8a8073",
+   "#3f382c",
+   "#44599f"
+  ]
+ },
+ {
+  "query": "c755db6e64df1a4d99f14c282ffbcdf1.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    153,
+    1071,
+    1133,
+    120,
+    95
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    35,
+    1747,
+    3533,
+    984,
+    1215
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    153,
+    1133,
+    984,
+    35,
+    1071
+   ]
+  },
+  "pooled": [
+   95,
+   1133,
+   120,
+   1747,
+   984,
+   3533,
+   1071,
+   35,
+   153,
+   1215
+  ],
+  "palette": [
+   "#a69a94",
+   "#d8cbc4",
+   "#7ca2c6",
+   "#2b4b68",
+   "#4c432d",
+   "#80254d"
+  ]
+ },
+ {
+  "query": "cc4575949600b435c5c2b256c2c6f009.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    2084,
+    82,
+    59,
+    2031,
+    1263
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1527,
+    1309,
+    1263,
+    34,
+    1500
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1263,
+    1527,
+    1500,
+    82,
+    34
+   ]
+  },
+  "pooled": [
+   1263,
+   1500,
+   1527,
+   2084,
+   82,
+   34,
+   2031,
+   59,
+   1309
+  ],
+  "palette": [
+   "#517380",
+   "#251712",
+   "#94b2cc",
+   "#4e4d3d",
+   "#979b66",
+   "#6b4527"
+  ]
+ },
+ {
+  "query": "d5c1e95afbc83628d392e4d0f25d4787.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    352,
+    359,
+    157,
+    357,
+    94
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    352,
+    325,
+    144,
+    157,
+    359
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    352,
+    359,
+    157,
+    325,
+    962
+   ]
+  },
+  "pooled": [
+   357,
+   144,
+   157,
+   359,
+   962,
+   325,
+   352,
+   94
+  ],
+  "palette": [
+   "#97b3d9",
+   "#6eabf3",
+   "#4f88bf",
+   "#c7d6f0",
+   "#1e5c9e",
+   "#375e70"
+  ]
+ },
+ {
+  "query": "dd2f5413ccd271ade053632e09a72735.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    61,
+    1433,
+    1200,
+    1073,
+    59
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    146,
+    2678,
+    154,
+    1118,
+    47
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1118,
+    1200,
+    1073,
+    47,
+    61
+   ]
+  },
+  "pooled": [
+   1118,
+   47,
+   61,
+   59,
+   1433,
+   2678,
+   1200,
+   1073,
+   154,
+   146
+  ],
+  "palette": [
+   "#1f2524",
+   "#3b4223",
+   "#6e6e65",
+   "#b9b49d",
+   "#718243",
+   "#9f6b38"
+  ]
+ },
+ {
+  "query": "e25d7adef5185c99fc6657aad67f39fd.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1630,
+    2214,
+    1350,
+    3559,
+    2245
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1630,
+    2245,
+    1469,
+    1112,
+    88
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1630,
+    2245,
+    2214,
+    3559,
+    1112
+   ]
+  },
+  "pooled": [
+   3559,
+   1350,
+   1469,
+   1630,
+   1112,
+   2214,
+   2245,
+   88
+  ],
+  "palette": [
+   "#6e887b",
+   "#ead5b8",
+   "#516253",
+   "#e6c580",
+   "#213634",
+   "#9d7965"
+  ]
+ },
+ {
+  "query": "e7cb59256c0e98b21a93df6ca6daa9d8.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    3472,
+    1610,
+    2633,
+    84,
+    2803
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1610,
+    1135,
+    1441,
+    3472,
+    1635
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1610,
+    3472,
+    1441,
+    2633,
+    1135
+   ]
+  },
+  "pooled": [
+   2633,
+   1441,
+   2803,
+   84,
+   3472,
+   1610,
+   1635,
+   1135
+  ],
+  "palette": [
+   "#38503b",
+   "#40715c",
+   "#282a20",
+   "#55492a",
+   "#3f6f78",
+   "#3d2f45"
+  ]
+ },
+ {
+  "query": "ee3f287890022bfdbe81e65c48b90c2f.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    1493,
+    1641,
+    1623,
+    154,
+    47
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    1493,
+    2729,
+    1545,
+    1537,
+    1138
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    1493,
+    1641,
+    1623,
+    1138,
+    154
+   ]
+  },
+  "pooled": [
+   154,
+   1641,
+   47,
+   1623,
+   1493,
+   1138,
+   1545,
+   1537,
+   2729
+  ],
+  "palette": [
+   "#838657",
+   "#4d542f",
+   "#bec2a6",
+   "#2b2519",
+   "#bd7d49",
+   "#4e7231"
+  ]
+ },
+ {
+  "query": "f660de992d698e46ba11571f8b7e8bea.jpg",
+  "results": {
+   "Histogram only (stage 1, 8x8x8)": [
+    989,
+    2562,
+    2463,
+    1507,
+    2671
+   ],
+   "Histogram + palette rerank, α=0 (initial design)": [
+    2460,
+    2457,
+    2455,
+    989,
+    3289
+   ],
+   "Histogram + palette rerank, α=0.5 (deployed)": [
+    989,
+    2460,
+    2457,
+    2455,
+    1507
+   ]
+  },
+  "pooled": [
+   3289,
+   2457,
+   2460,
+   2562,
+   989,
+   2463,
+   2455,
+   1507,
+   2671
+  ],
+  "palette": [
+   "#5f5b20",
+   "#424319",
+   "#e3b666",
+   "#8a321d",
+   "#b6763c",
+   "#271914"
+  ]
+ }
+]

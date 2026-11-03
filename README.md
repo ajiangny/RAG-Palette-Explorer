@@ -83,5 +83,5 @@ Set `GEMINI_MODEL` in `.env` to override the generation model (default `gemini-3
 - [x] Phase 5: RAG explanations
 - [x] Phase 5b: web map backend (`/graph`, `/explain-edge`)
 - [x] Phase 6: frontend (React + TS, react-force-graph-2d)
-- [ ] Phase 7: evaluation (automatic test set done; human-labeled P@5 pending)
+- [x] Phase 7: evaluation
 - [ ] Phase 8: deploy
