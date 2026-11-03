@@ -15,6 +15,9 @@ EMBED_MODEL = "gemini-embedding-001"
 EMBED_DIM = 768  # must match text_chunks.embedding
 EMBED_BATCH = 50
 GENERATE_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
+# Gemini 3 thinks before answering by default; for these grounded, short explanations
+# "minimal" halved latency (~10s → ~5s) with the same citations. Empty = model default.
+THINKING_LEVEL = os.environ.get("GEMINI_THINKING_LEVEL", "minimal")
 
 
 @cache
@@ -62,7 +65,9 @@ def embed(texts: list[str], task: str = "RETRIEVAL_DOCUMENT") -> list[np.ndarray
 
 
 def generate(prompt: str, system: str, temperature: float = 0.3) -> str:
-    config = types.GenerateContentConfig(system_instruction=system, temperature=temperature)
+    thinking = types.ThinkingConfig(thinking_level=THINKING_LEVEL) if THINKING_LEVEL else None
+    config = types.GenerateContentConfig(system_instruction=system, temperature=temperature,
+                                         thinking_config=thinking)
     res = _with_backoff(lambda: client().models.generate_content(
         model=GENERATE_MODEL, contents=prompt, config=config))
     return (res.text or "").strip()

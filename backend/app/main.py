@@ -1,8 +1,10 @@
 """FastAPI app. Run from backend/: uvicorn app.main:app --reload"""
 
+import os
 from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import UnidentifiedImageError
 from pydantic import BaseModel, Field, model_validator
 
@@ -14,11 +16,28 @@ from app.retrieve import match_image
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
 app = FastAPI(title="Palette RAG Explorer")
+# In dev the Vite server proxies /api, so CORS only matters for a deployed frontend.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o for o in os.environ.get("FRONTEND_ORIGINS", "http://localhost:5173").split(",") if o],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
+
+
+@app.get("/artworks/random")
+def random_artwork() -> dict:
+    with connect() as conn:
+        row = conn.execute("select id, title, artist from artworks where hist is not null "
+                           "order by random() limit 1").fetchone()
+    if row is None:
+        raise HTTPException(404, "collection is empty")
+    return {"id": row[0], "title": row[1], "artist": row[2]}
 
 
 async def read_upload(file: UploadFile) -> bytes:

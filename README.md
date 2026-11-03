@@ -40,6 +40,17 @@ curl -F file=@some_image.jpg 'localhost:8000/graph?depth=2&k=6'
 curl -X POST localhost:8000/explain-edge -H 'Content-Type: application/json' -d '{"source_id": 1, "target_id": 2}'
 ```
 
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173 (proxies /api to the backend on :8000)
+```
+
+Drop an image (or pick a random painting) to build a palette web. Click a painting for details,
+re-center, or expand it; click a line to get a cited explanation of why two paintings connect.
+
 After the corpus grows, run `python -m ingest.build_index --rebuild-edges` so existing paintings'
 edges can point at the new ones.
 
@@ -57,6 +68,6 @@ Set `GEMINI_MODEL` in `.env` to override the generation model (default `gemini-3
 - [x] Phase 4: two-stage retrieval
 - [x] Phase 5: RAG explanations
 - [x] Phase 5b: web map backend (`/graph`, `/explain-edge`)
-- [ ] Phase 6: frontend
+- [x] Phase 6: frontend (React + TS, react-force-graph-2d)
 - [ ] Phase 7: evaluation
 - [ ] Phase 8: deploy

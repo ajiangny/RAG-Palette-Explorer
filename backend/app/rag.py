@@ -133,6 +133,7 @@ def explain_edge(conn: psycopg.Connection, target_id: int, source_id: int | None
         *(f"- {p['a']} ↔ {p['b']}, {p['share'] * 100:.0f}%, ΔE {p['delta_e']}" for p in pairs),
     ])
     task = ("In 1–2 short paragraphs, explain why A and B are linked by palette, referring to the "
-            "matched colors, and how the artists' approaches to color compare. Cite sources inline.")
+            "matched colors, and how the artists' approaches to color compare. Cite sources inline. "
+            "Refer to paintings by title and to an upload as \"your image\", never as A or B.")
     return {"source": source_id, "target": target_id, "palette_distance": round(distance, 3),
             "matched_colors": pairs, **answer(context, task, retrieve_sources(conn, artworks))}
