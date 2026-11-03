@@ -11,6 +11,9 @@ which system found which painting. P@5 of a system = share of its top 5 labeled 
 Labels accumulate in eval/human_labels.json: after the collection or a system changes,
 `build` shows only paintings that have not been judged yet, and `score` merges them in.
 
+`build --recheck 36` also mixes that many already-judged paintings, half good and half poor, into
+the page, unmarked. Their new answers measure labeler drift and never replace the original labels.
+
 Held-out test of a frozen challenger (see eval/TEST_PROTOCOL.md), with its own images and labels:
     # put ~30 new images in backend/data/eval_human_test/
     python -m eval.label build-test   # → eval/labeling_test.html; label it in one sitting
@@ -36,7 +39,9 @@ from ingest.aic import BACKEND_DIR, image_cache_dir
 HUMAN_DIR = BACKEND_DIR / "data" / "eval_human"
 EVAL_DIR = Path(__file__).parent
 POOL_FILE = EVAL_DIR / "human_pool.json"
-BASELINE_POOL = EVAL_DIR / "human_pool_aic_only.json"
+BASELINE_POOL = EVAL_DIR / "human_pool_pre_nga.json"
+RECHECK = EVAL_DIR / "human_recheck.json"
+RULE = EVAL_DIR / "LABELING_RULE.md"
 LABELS = EVAL_DIR / "human_labels.json"
 PAGE = EVAL_DIR / "labeling.html"
 RESULTS = EVAL_DIR / "RESULTS.md"
@@ -79,8 +84,59 @@ def list_images(image_dir: Path) -> list[Path]:
     return sorted(p for p in image_dir.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"})
 
 
+def rule_text() -> str:
+    """The rule section of LABELING_RULE.md as plain text, for the top of the labeling page."""
+    section = RULE.read_text().split("## Rule\n", 1)[1].split("\n## ", 1)[0]
+    return section.replace("**", "").strip()
+
+
+def sample_recheck(labels: dict[str, dict[str, bool]], eligible: set[int], n: int,
+                   rng: random.Random) -> list[dict[str, Any]]:
+    """n already-judged (image, painting) pairs, split evenly between good and poor where possible."""
+    pairs: dict[bool, list[dict[str, Any]]] = {True: [], False: []}
+    for query in sorted(labels):
+        for painting, good in sorted(labels[query].items()):
+            if int(painting) in eligible:
+                pairs[good].append({"query": query, "id": int(painting), "old": good})
+    n_good = min(n // 2, len(pairs[True]))
+    n_poor = min(n - n_good, len(pairs[False]))
+    n_good = min(n - n_poor, len(pairs[True]))
+    return rng.sample(pairs[True], n_good) + rng.sample(pairs[False], n_poor)
+
+
+def split_recheck(incoming: dict[str, dict[str, bool]], recheck: list[dict[str, Any]],
+                  ) -> tuple[dict[str, dict[str, bool]], list[dict[str, Any]]]:
+    """Separate the downloaded labels into new judgments and answers to the re-check pairs."""
+    fresh = {query: dict(judged) for query, judged in incoming.items()}
+    answers = []
+    for pair in recheck:
+        new = fresh.get(pair["query"], {}).pop(str(pair["id"]), None)
+        if new is None:
+            raise SystemExit(f"re-check pair has no answer: {pair['query']}, painting {pair['id']}; "
+                             "use labels downloaded from the page built with --recheck")
+        answers.append({**pair, "new": new})
+    return fresh, answers
+
+
+def recheck_lines(answers: list[dict[str, Any]]) -> list[str]:
+    """Agreement between the original labels and the new, unmarked second judgments."""
+    if not answers:
+        return []
+    good = [a for a in answers if a["old"]]
+    poor = [a for a in answers if not a["old"]]
+    to_poor = sum(not a["new"] for a in good)
+    to_good = sum(a["new"] for a in poor)
+    agree = len(answers) - to_poor - to_good
+    return [f"Labeler consistency: {len(answers)} already-judged paintings were mixed into this session unmarked. "
+            f"{agree} of {len(answers)} ({agree / len(answers):.0%}) kept their label; "
+            f"{to_good} of {len(poor)} poor became good and {to_poor} of {len(good)} good became poor. "
+            "A sample this small gives a rough check on drift, not a correction. "
+            "P@5 above uses the original labels for these paintings.", ""]
+
+
 def build(image_dir: Path, systems: dict[str, dict | None] = SYSTEMS, pool_file: Path = POOL_FILE,
-          labels_file: Path = LABELS, page: Path = PAGE, download_name: str = "human_labels.json") -> None:
+          labels_file: Path = LABELS, page: Path = PAGE, download_name: str = "human_labels.json",
+          recheck: int = 0, recheck_file: Path | None = RECHECK) -> None:
     images = list_images(image_dir)
     if not images:
         raise SystemExit(f"no images in {image_dir}; add ~30 photos/designs first")
@@ -103,6 +159,15 @@ def build(image_dir: Path, systems: dict[str, dict | None] = SYSTEMS, pool_file:
     judged = json.loads(labels_file.read_text()) if labels_file.exists() else {}
     for q in pool:
         q["new"] = [i for i in q["pooled"] if str(i) not in judged.get(q["query"], {})]
+    queries = {q["query"] for q in pool}
+    rechecks = sample_recheck({k: v for k, v in judged.items() if k in queries}, set(by_id), recheck,
+                              random.Random(1)) if recheck else []
+    if recheck_file:
+        recheck_file.write_text(json.dumps(rechecks, indent=1) + "\n")
+    mix = random.Random(2)
+    for q in pool:
+        q["show"] = q["new"] + [r["id"] for r in rechecks if r["query"] == q["query"]]
+        mix.shuffle(q["show"])
 
     # Embed the cached copies: the page must not depend on museum servers being reachable,
     # since a painting that fails to load would get mislabeled as a poor match.
@@ -112,7 +177,7 @@ def build(image_dir: Path, systems: dict[str, dict | None] = SYSTEMS, pool_file:
 
     blocks = []
     for q, path in zip(pool, images):
-        if not q["new"]:
+        if not q["show"]:
             continue
         data = base64.b64encode(path.read_bytes()).decode()
         mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
@@ -121,7 +186,7 @@ def build(image_dir: Path, systems: dict[str, dict | None] = SYSTEMS, pool_file:
             f'<label class="card"><img src="{thumbnail(i)}">'
             f'<input type="checkbox" data-q="{html.escape(q["query"])}" data-id="{i}"> good match'
             f'<small>{html.escape(by_id[i]["title"][:50])}</small></label>'
-            for i in q["new"])
+            for i in q["show"])
         blocks.append(f'<section><div class="query"><img src="data:{mime};base64,{data}">'
                       f'<div class="sw">{swatches}</div><b>{html.escape(q["query"])}</b></div>'
                       f'<div class="cards">{cards}</div></section>')
@@ -135,11 +200,13 @@ section{{display:flex;gap:1.5rem;padding:1.25rem 0;border-bottom:1px solid #333}
 .card{{width:150px;display:flex;flex-direction:column;gap:.25rem;font-size:.85rem;cursor:pointer}}
 .card img{{width:150px;height:150px;object-fit:cover;border-radius:6px;border:3px solid transparent}}
 .card:has(input:checked) img{{border-color:#e8c66a}} small{{color:#999}}
+.rule{{white-space:pre-wrap;max-width:60rem;line-height:1.45;padding:.75rem 1rem;background:#222;border-radius:6px}}
 #bar{{position:fixed;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:#222;display:flex;gap:1rem;align-items:center}}
 button{{font:inherit;padding:.4rem 1rem;background:#e8c66a;border:0;border-radius:6px;cursor:pointer}}
 </style>
 <h1>Is each painting a good palette match for the image on the left?</h1>
-<p>Judge color only (hues, proportions, light/dark), not subject. Check the good matches; leave poor ones unchecked.</p>
+<div class="rule">{html.escape(rule_text())}</div>
+<p>Check the good matches; leave poor ones unchecked.</p>
 {''.join(blocks)}
 <div id="bar"><button onclick="save()">Download labels</button><span id="n"></span></div>
 <script>
@@ -157,12 +224,15 @@ function save(){{
 """)
     n_new = sum(len(q["new"]) for q in pool)
     n_judged = sum(len(q["pooled"]) for q in pool) - n_new
-    print(f"{len(pool)} queries: {n_new} paintings to label ({n_judged} already judged) → {page}")
+    print(f"{len(pool)} queries: {n_new} paintings to label ({n_judged} already judged), "
+          f"plus {len(rechecks)} unmarked re-checks → {page}")
 
 
 def score(labels_path: Path) -> None:
     labels = json.loads(LABELS.read_text()) if LABELS.exists() else {}
-    for query, judged in json.loads(labels_path.read_text()).items():
+    recheck = json.loads(RECHECK.read_text()) if RECHECK.exists() else []
+    fresh, answers = split_recheck(json.loads(labels_path.read_text()), recheck)
+    for query, judged in fresh.items():
         labels.setdefault(query, {}).update(judged)
     pool = json.loads(POOL_FILE.read_text())
     missing = [(q["query"], i) for q in pool for i in q["pooled"] if str(i) not in labels.get(q["query"], {})]
@@ -202,11 +272,12 @@ def score(labels_path: Path) -> None:
         d = per_query[deployed] - before
         boots = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(10_000)]
         lo, hi = np.percentile(boots, [2.5, 97.5])
-        lines += [f"Adding the Cleveland collection, deployed system: {before.mean():.0%} → {per_query[deployed].mean():.0%} P@5, "
+        lines += [f"Adding the National Gallery collection, deployed system: {before.mean():.0%} → {per_query[deployed].mean():.0%} P@5, "
                   f"{d.mean() * 100:+.1f} points ({lo * 100:+.1f} to {hi * 100:+.1f}, paired bootstrap); "
                   f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images. "
-                  "Paintings new to the pool were labeled in a second session, knowing they were new, so "
+                  "Paintings new to the pool were labeled in a later session, so "
                   "labeler drift could account for some of this.", ""]
+    lines += recheck_lines(answers)
     if TEST_RESULTS.exists():
         lines += ["The finalists above were selected on these same images, so their lift is not a validated result. "
                   "The held-out test of the chosen finalist is in `RESULTS_human_test.md`.", ""]
@@ -222,7 +293,7 @@ def build_test() -> None:
     reused = {digest(p) for p in list_images(HUMAN_DIR)} & {digest(p) for p in list_images(TEST_DIR)}
     if reused:
         raise SystemExit(f"{len(reused)} test image(s) are byte-identical to dev images; replace them")
-    build(TEST_DIR, TEST_SYSTEMS, TEST_POOL, TEST_LABELS, TEST_PAGE, "human_labels_test.json")
+    build(TEST_DIR, TEST_SYSTEMS, TEST_POOL, TEST_LABELS, TEST_PAGE, "human_labels_test.json", recheck_file=None)
 
 
 def score_test(labels_path: Path) -> None:
@@ -255,6 +326,7 @@ if __name__ == "__main__":
     sub = parser.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
     b.add_argument("--images", type=Path, default=HUMAN_DIR)
+    b.add_argument("--recheck", type=int, default=0, help="already-judged paintings to mix in, unmarked")
     s = sub.add_parser("score")
     s.add_argument("labels", type=Path)
     sub.add_parser("build-test")
@@ -262,7 +334,7 @@ if __name__ == "__main__":
     t.add_argument("labels", type=Path)
     args = parser.parse_args()
     if args.cmd == "build":
-        build(args.images)
+        build(args.images, recheck=args.recheck)
     elif args.cmd == "score":
         score(args.labels)
     elif args.cmd == "build-test":
