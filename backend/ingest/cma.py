@@ -82,9 +82,13 @@ on conflict (source, source_id) do update set
 """
 
 
+# Cleveland's "Painting" type includes manuscript pages with no painting on them. Folios with a
+# picture on one side ("A Monk Preaching (recto); Text (verso)") are kept.
+NOT_A_PAINTING = re.compile(r"^text\b|\btext pages?\b|\bblank\b|^genealogical text|:\s*text\s*$", re.I)
+
+
 def exclusion_reason(title: str) -> str | None:
-    """Cleveland's "Painting" type includes pages of manuscript text ("Text, Folio 32 ...")."""
-    return "manuscript text page" if re.match(r"text\b", title, re.I) else None
+    return "manuscript text or blank page" if NOT_A_PAINTING.search(title) else None
 
 
 def row(art: dict[str, Any]) -> dict[str, Any] | None:
