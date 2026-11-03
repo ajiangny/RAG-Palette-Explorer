@@ -53,7 +53,7 @@ python -m eval.label build    # open eval/labeling.html, label blind, download l
 python -m eval.label score ~/Downloads/human_labels.json
 ```
 
-Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (AIC only: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md)).
+Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (AIC only: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md)). Held-out test of a ranking change: [RESULTS_human_test.md](backend/eval/RESULTS_human_test.md); it did not beat the deployed ranking, so the default is unchanged.
 
 ## Frontend
 

@@ -36,3 +36,5 @@ Difference from *Histogram only (stage 1, 8x8x8)* (paired bootstrap over images,
 Good matches per image among the ~13 pooled paintings: median 7 (min 2, max 14). A perfect reordering of the pooled set would score 89% P@5, which is the headroom available to better ranking.
 
 Adding the Cleveland collection, deployed system: 34% → 38% P@5, +3.6 points (-3.6 to +10.7, paired bootstrap); better on 10, worse on 6, tied on 12 images. Paintings new to the pool were labeled in a second session, knowing they were new, so labeler drift could account for some of this.
+
+The finalists above were selected on these same images, so their lift is not a validated result. The held-out test of the chosen finalist is in `RESULTS_human_test.md`.

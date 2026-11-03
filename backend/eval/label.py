@@ -207,6 +207,9 @@ def score(labels_path: Path) -> None:
                   f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images. "
                   "Paintings new to the pool were labeled in a second session, knowing they were new, so "
                   "labeler drift could account for some of this.", ""]
+    if TEST_RESULTS.exists():
+        lines += ["The finalists above were selected on these same images, so their lift is not a validated result. "
+                  "The held-out test of the chosen finalist is in `RESULTS_human_test.md`.", ""]
     text = RESULTS.read_text().split("\n## Human-judged precision@5")[0].rstrip("\n") + "\n"
     RESULTS.write_text(text + "\n".join(lines))
     LABELS.write_text(json.dumps(labels, indent=1) + "\n")
