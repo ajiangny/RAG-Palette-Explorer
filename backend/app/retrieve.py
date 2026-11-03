@@ -24,6 +24,7 @@ DISTANCE_SCALE = 25.0
 # Weight of the stage-1 histogram similarity in the final score. Tuned on the eval dev split
 # (eval/RESULTS.md): 0.5 beat pure palette reranking (0) on both dev and held-out test.
 DEFAULT_ALPHA = 0.5
+DEFAULT_METRIC = "de2000"
 
 
 def _as_arrays(palette: Sequence[Swatch]) -> tuple[np.ndarray, np.ndarray]:
@@ -32,15 +33,29 @@ def _as_arrays(palette: Sequence[Swatch]) -> tuple[np.ndarray, np.ndarray]:
     return lab, w / w.sum()
 
 
-def palette_matching(p: Sequence[Swatch], q: Sequence[Swatch]) -> tuple[float, np.ndarray, np.ndarray]:
-    """EMD between two palettes with CIEDE2000 ground distance → (distance, flow, cost).
+def _ground_distance(lab_p: np.ndarray, lab_q: np.ndarray, metric: str) -> np.ndarray:
+    """Pairwise color distance (n, m). "ab" ignores lightness; "de2000_kL2" halves its weight."""
+    a, b = lab_p[:, None, :], lab_q[None, :, :]
+    if metric == "de2000":
+        return deltaE_ciede2000(a, b)
+    if metric == "de2000_kL2":
+        return deltaE_ciede2000(a, b, kL=2)
+    if metric in ("ab", "ab+chroma"):
+        return np.linalg.norm(a[..., 1:] - b[..., 1:], axis=2)
+    raise ValueError(f"unknown palette metric: {metric}")
 
-    flow[i, j] is the share of pixels matched from p[i] to q[j]; cost[i, j] is their ΔE.
+
+def palette_matching(p: Sequence[Swatch], q: Sequence[Swatch],
+                     metric: str = DEFAULT_METRIC) -> tuple[float, np.ndarray, np.ndarray]:
+    """EMD between two palettes under a ground distance → (distance, flow, cost).
+
+    flow[i, j] is the share of pixels matched from p[i] to q[j]; cost[i, j] is their distance.
+    "ab+chroma" adds the difference in overall colorfulness to the distance.
     """
     lab_p, w_p = _as_arrays(p)
     lab_q, w_q = _as_arrays(q)
     n, m = len(w_p), len(w_q)
-    cost = deltaE_ciede2000(lab_p[:, None, :], lab_q[None, :, :])  # (n, m)
+    cost = _ground_distance(lab_p, lab_q, metric)
 
     # Transport plan f_ij >= 0 with row sums w_p and column sums w_q.
     a_eq = np.zeros((n + m, n * m))
@@ -52,12 +67,19 @@ def palette_matching(p: Sequence[Swatch], q: Sequence[Swatch]) -> tuple[float, n
                   bounds=(0, None), method="highs")
     if not res.success:
         raise RuntimeError(f"palette EMD failed: {res.message}")
-    return float(res.fun), res.x.reshape(n, m), cost
+    distance = float(res.fun)
+    if metric == "ab+chroma":
+        distance += abs(_mean_chroma(lab_p, w_p) - _mean_chroma(lab_q, w_q))
+    return distance, res.x.reshape(n, m), cost
 
 
-def palette_distance(p: Sequence[Swatch], q: Sequence[Swatch]) -> float:
-    """Weighted CIEDE2000 matching cost between two palettes (0 = identical)."""
-    return palette_matching(p, q)[0]
+def _mean_chroma(lab: np.ndarray, weights: np.ndarray) -> float:
+    return float((weights * np.hypot(lab[:, 1], lab[:, 2])).sum())
+
+
+def palette_distance(p: Sequence[Swatch], q: Sequence[Swatch], metric: str = DEFAULT_METRIC) -> float:
+    """Weighted matching cost between two palettes (0 = identical)."""
+    return palette_matching(p, q, metric)[0]
 
 
 def matched_colors(p: Sequence[Swatch], q: Sequence[Swatch], min_share: float = 0.05) -> list[dict[str, Any]]:

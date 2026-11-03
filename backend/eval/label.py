@@ -36,10 +36,14 @@ LABELS = EVAL_DIR / "human_labels.json"
 PAGE = EVAL_DIR / "labeling.html"
 RESULTS = EVAL_DIR / "RESULTS.md"
 TOP = 5
+DEPLOYED_NAME = "Histogram + palette rerank, α=0.5 (deployed)"
 SYSTEMS = {
     "Histogram only (stage 1, 8x8x8)": None,
     "Histogram + palette rerank, α=0 (initial design)": INITIAL,
-    "Histogram + palette rerank, α=0.5 (deployed)": DEPLOYED,
+    DEPLOYED_NAME: DEPLOYED,
+    "Finalist: CIEDE2000 with kL=2, α=0.5": {**DEPLOYED, "metric": "de2000_kL2"},
+    "Finalist: hue/chroma EMD, α=0.5": {**DEPLOYED, "metric": "ab"},
+    "Finalist: hue/chroma EMD + chroma penalty, α=0.5": {**DEPLOYED, "metric": "ab+chroma"},
 }
 
 
@@ -51,7 +55,8 @@ def top_ids(qf: dict[str, Any], H: np.ndarray, corpus_feats: list, ids: list[int
         return [ids[i] for i in order[:TOP]]
     cand = order[:cfg["candidates"]]
     k, alpha = cfg["k"], cfg["alpha"]
-    d = np.array([palette_distance(qf["palette"][k], corpus_feats[i]["palette"][k]) for i in cand])
+    metric = cfg.get("metric", "de2000")
+    d = np.array([palette_distance(qf["palette"][k], corpus_feats[i]["palette"][k], metric) for i in cand])
     score = (1 - alpha) * np.exp(-d / DISTANCE_SCALE) + alpha * sims[cand]
     return [ids[i] for i in cand[np.argsort(-score)][:TOP]]
 
@@ -172,7 +177,7 @@ def score(labels_path: Path) -> None:
     # Same images, same labels, smaller collection: what did adding a museum change?
     if BASELINE_POOL.exists():
         before_pool = {q["query"]: q for q in json.loads(BASELINE_POOL.read_text())}
-        deployed = list(SYSTEMS)[-1]
+        deployed = DEPLOYED_NAME
         before = np.array([np.mean([labels[q["query"]][str(i)] for i in before_pool[q["query"]]["results"][deployed]])
                            for q in pool])
         d = per_query[deployed] - before

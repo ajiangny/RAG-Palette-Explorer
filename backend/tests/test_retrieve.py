@@ -102,3 +102,19 @@ def test_match_endpoint(client):
 def test_match_rejects_non_image(client):
     r = client.post("/match", files={"file": ("x.txt", b"not an image", "text/plain")})
     assert r.status_code == 400
+
+
+def test_ab_metrics_ignore_lightness_and_kl2_discounts_it():
+    dark, light = [swatch((60, 60, 60), 1.0)], [swatch((200, 200, 200), 1.0)]
+    assert palette_distance(dark, light, "ab") == pytest.approx(0, abs=0.5)
+    assert palette_distance(dark, light, "de2000_kL2") == pytest.approx(palette_distance(dark, light) / 2, rel=0.01)
+
+
+def test_chroma_penalty_separates_muted_from_saturated():
+    vivid, muted = [swatch((220, 30, 30), 1.0)], [swatch((150, 110, 110), 1.0)]
+    assert palette_distance(vivid, muted, "ab+chroma") > palette_distance(vivid, muted, "ab")
+
+
+def test_unknown_metric_is_rejected():
+    with pytest.raises(ValueError):
+        palette_distance([swatch(RED, 1.0)], [swatch(BLUE, 1.0)], "nope")
