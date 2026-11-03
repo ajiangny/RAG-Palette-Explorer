@@ -22,6 +22,7 @@ from app.gemini import DailyQuotaExceeded, embed
 from ingest.aic import get_with_retry
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
+MUSEUMS = {"aic": "Art Institute of Chicago", "cma": "Cleveland Museum of Art"}
 HEADERS = {"User-Agent": "palette-rag-explorer/0.1 (andrewjiang74@gmail.com)"}
 REQUEST_DELAY = 0.5
 
@@ -183,14 +184,13 @@ def ingest_wikipedia() -> bool:
 def ingest_descriptions() -> None:
     with connect() as conn:
         rows = conn.execute("""
-            select a.id, a.aic_id, a.title, a.artist, a.description from artworks a
+            select a.id, a.source, a.source_url, a.title, a.artist, a.description from artworks a
             where a.description is not null
               and not exists (select 1 from text_chunks c where c.artwork_id = a.id)
             order by a.id""").fetchall()
     # No embedding: /explain looks these up by artwork_id, never by vector search.
-    docs = [(art_id, artist, f"{title} — Art Institute of Chicago",
-             f"https://www.artic.edu/artworks/{aic_id}", chunk, None)
-            for art_id, aic_id, title, artist, desc in rows
+    docs = [(art_id, artist, f"{title} — {MUSEUMS[source]}", source_url, chunk, None)
+            for art_id, source, source_url, title, artist, desc in rows
             for chunk in pack([desc])]
     with connect() as conn, conn.cursor() as cur:
         cur.executemany(INSERT_SQL, docs)

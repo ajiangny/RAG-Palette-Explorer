@@ -7,7 +7,8 @@ export type NodeId = number | 'upload'
 
 export type GraphNode = {
   id: NodeId
-  aic_id?: number
+  source?: 'aic' | 'cma'
+  source_url?: string
   title: string
   artist: string | null
   date?: string | null
@@ -71,7 +72,8 @@ export function explainEdge(target: number, source: number | Swatch[]) {
   })
 }
 
-/** IIIF lets us ask AIC for a smaller rendition of the same image. */
+/** AIC serves IIIF, so ask for a smaller rendition; other museums' URLs are used as is. */
 export const thumbUrl = (imageUrl: string, width = 200) => imageUrl.replace('/full/843,/', `/full/${width},/`)
 
-export const aicPage = (aicId: number) => `https://www.artic.edu/artworks/${aicId}`
+export const MUSEUMS = { aic: 'Art Institute of Chicago', cma: 'Cleveland Museum of Art' } as const
+export const MUSEUM_SHORT = { aic: 'AIC', cma: 'CMA' } as const

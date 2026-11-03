@@ -86,18 +86,18 @@ def rerank(query_palette: Sequence[Swatch], candidates: list[dict[str, Any]],
 
 
 STAGE1_SQL = """
-select id, aic_id, title, artist, image_url, palette, similarity
+select id, source, source_url, title, artist, image_url, palette, similarity
 from match_palettes(%s::vector, %s)
 """
 
 
 def _candidate(r: tuple) -> dict[str, Any]:
-    return {"id": r[0], "aic_id": r[1], "title": r[2], "artist": r[3], "image_url": r[4],
-            "palette": r[5], "hist_similarity": round(float(r[6]), 4)}
+    return {"id": r[0], "source": r[1], "source_url": r[2], "title": r[3], "artist": r[4],
+            "image_url": r[5], "palette": r[6], "hist_similarity": round(float(r[7]), 4)}
 
 
 def stage1(conn: psycopg.Connection, hist: np.ndarray, candidates: int = 100) -> list[dict[str, Any]]:
-    return [_candidate(r) for r in conn.execute(STAGE1_SQL, (hist, candidates)) if r[5]]
+    return [_candidate(r) for r in conn.execute(STAGE1_SQL, (hist, candidates)) if r[6]]
 
 
 def live_neighbors(conn: psycopg.Connection, artwork_id: int, k: int = 20,
@@ -107,8 +107,8 @@ def live_neighbors(conn: psycopg.Connection, artwork_id: int, k: int = 20,
     if not row or not row[0]:
         return []
     pool = [_candidate(r) for r in conn.execute(
-        "select id, aic_id, title, artist, image_url, palette, similarity from match_palettes_by_id(%s, %s)",
-        (artwork_id, candidates)) if r[5]]
+        "select id, source, source_url, title, artist, image_url, palette, similarity "
+        "from match_palettes_by_id(%s, %s)", (artwork_id, candidates)) if r[6]]
     return rerank(row[0], pool, k)
 
 

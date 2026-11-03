@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { aicPage, thumbUrl, type EdgeExplanation, type GraphNode, type Source } from '../api'
+import { MUSEUMS, MUSEUM_SHORT, thumbUrl, type EdgeExplanation, type GraphNode, type Source } from '../api'
 import PaletteStrip from './PaletteStrip'
 
 type Props = {
@@ -48,12 +48,17 @@ function NodeDetails({ node, preview, isCenter, onRecenter, onExpand }:
       <Thumb node={node} preview={preview} />
       <h2>{node.title}</h2>
       <p className="meta">{[node.artist, node.date, node.style].filter(Boolean).join(' · ') || 'Your uploaded image'}</p>
+      {node.source && <p className="meta">{MUSEUMS[node.source]}</p>}
       <PaletteStrip palette={node.palette} labels />
       {typeof id === 'number' && (
         <div className="actions">
           {!isCenter && <button onClick={() => onRecenter(id)}>Re-center here</button>}
           <button className="secondary" onClick={() => onExpand(id)}>Expand neighbors</button>
-          {node.aic_id && <a className="button secondary" href={aicPage(node.aic_id)} target="_blank" rel="noreferrer">View at AIC ↗</a>}
+          {node.source && node.source_url && (
+            <a className="button secondary" href={node.source_url} target="_blank" rel="noreferrer">
+              View at {MUSEUM_SHORT[node.source]} ↗
+            </a>
+          )}
         </div>
       )}
     </>

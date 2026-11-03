@@ -114,8 +114,10 @@ def download_image(client: httpx.Client, image_id: str, cache: Path) -> bool:
 
 
 UPSERT_SQL = """
-insert into artworks (aic_id, title, artist, date, style, image_id, image_url, description)
-values (%(aic_id)s, %(title)s, %(artist)s, %(date)s, %(style)s, %(image_id)s, %(image_url)s, %(description)s)
+insert into artworks (source, source_id, source_url, aic_id, title, artist, date, style,
+                      image_id, image_url, description)
+values ('aic', %(aic_id)s::text, 'https://www.artic.edu/artworks/' || %(aic_id)s, %(aic_id)s, %(title)s,
+        %(artist)s, %(date)s, %(style)s, %(image_id)s, %(image_url)s, %(description)s)
 on conflict (aic_id) do update set
   title = excluded.title, artist = excluded.artist, date = excluded.date,
   style = excluded.style, image_id = excluded.image_id,

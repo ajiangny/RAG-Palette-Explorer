@@ -8,6 +8,8 @@ Usage (from backend/):
 
 The top 5 of every system are pooled and shuffled per query, so the labeler can't tell
 which system found which painting. P@5 of a system = share of its top 5 labeled "good".
+Labels accumulate in eval/human_labels.json: after the collection or a system changes,
+`build` shows only paintings that have not been judged yet, and `score` merges them in.
 """
 
 import argparse
@@ -29,6 +31,7 @@ from ingest.aic import BACKEND_DIR
 HUMAN_DIR = BACKEND_DIR / "data" / "eval_human"
 EVAL_DIR = Path(__file__).parent
 POOL_FILE = EVAL_DIR / "human_pool.json"
+LABELS = EVAL_DIR / "human_labels.json"
 PAGE = EVAL_DIR / "labeling.html"
 RESULTS = EVAL_DIR / "RESULTS.md"
 TOP = 5
@@ -72,15 +75,20 @@ def build(image_dir: Path) -> None:
         pool.append({"query": path.name, "results": results, "pooled": pooled,
                      "palette": [s["hex"] for s in qf["palette"][6]]})
     POOL_FILE.write_text(json.dumps(pool, indent=1, ensure_ascii=False) + "\n")
+    judged = json.loads(LABELS.read_text()) if LABELS.exists() else {}
+    for q in pool:
+        q["new"] = [i for i in q["pooled"] if str(i) not in judged.get(q["query"], {})]
 
-    # Painting thumbnails come from AIC's IIIF server (no-referrer: it rejects some referers).
+    # Thumbnails load from the museums' servers (no-referrer: AIC rejects some referers).
     image_url = {}
     with connect() as conn:
         for i, url in conn.execute("select id, image_url from artworks where id = any(%s)",
-                                   ([i for q in pool for i in q["pooled"]],)):
+                                   ([i for q in pool for i in q["new"]],)):
             image_url[i] = url.replace("/full/843,/", "/full/300,/")
     blocks = []
     for q, path in zip(pool, images):
+        if not q["new"]:
+            continue
         data = base64.b64encode(path.read_bytes()).decode()
         mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
         swatches = "".join(f'<span style="background:{h}"></span>' for h in q["palette"])
@@ -88,7 +96,7 @@ def build(image_dir: Path) -> None:
             f'<label class="card"><img src="{image_url[i]}" referrerpolicy="no-referrer" loading="lazy">'
             f'<input type="checkbox" data-q="{html.escape(q["query"])}" data-id="{i}"> good match'
             f'<small>{html.escape(by_id[i]["title"][:50])}</small></label>'
-            for i in q["pooled"])
+            for i in q["new"])
         blocks.append(f'<section><div class="query"><img src="data:{mime};base64,{data}">'
                       f'<div class="sw">{swatches}</div><b>{html.escape(q["query"])}</b></div>'
                       f'<div class="cards">{cards}</div></section>')
@@ -122,13 +130,20 @@ function save(){{
 }}
 </script>
 """)
-    n_pooled = sum(len(q["pooled"]) for q in pool)
-    print(f"{len(pool)} queries, {n_pooled} paintings to label → {PAGE}")
+    n_new = sum(len(q["new"]) for q in pool)
+    n_judged = sum(len(q["pooled"]) for q in pool) - n_new
+    print(f"{len(pool)} queries: {n_new} paintings to label ({n_judged} already judged) → {PAGE}")
 
 
 def score(labels_path: Path) -> None:
-    labels = json.loads(labels_path.read_text())
+    labels = json.loads(LABELS.read_text()) if LABELS.exists() else {}
+    for query, judged in json.loads(labels_path.read_text()).items():
+        labels.setdefault(query, {}).update(judged)
     pool = json.loads(POOL_FILE.read_text())
+    missing = [(q["query"], i) for q in pool for i in q["pooled"] if str(i) not in labels.get(q["query"], {})]
+    if missing:
+        raise SystemExit(f"{len(missing)} pooled paintings have no label yet, e.g. {missing[:3]}; "
+                         "re-run `build` and label them")
     lines = ["", "## Human-judged precision@5", "",
              f"{len(pool)} outside images (photos, designs). The top {TOP} of every system were pooled and "
              "shuffled, then labeled blind as good / poor palette matches.", "",
@@ -156,7 +171,7 @@ def score(labels_path: Path) -> None:
               "for outside images.", ""]
     text = RESULTS.read_text().split("\n## Human-judged precision@5")[0].rstrip("\n") + "\n"
     RESULTS.write_text(text + "\n".join(lines))
-    (EVAL_DIR / "human_labels.json").write_text(json.dumps(labels, indent=1) + "\n")
+    LABELS.write_text(json.dumps(labels, indent=1) + "\n")
     print("\n".join(lines))
 
 
