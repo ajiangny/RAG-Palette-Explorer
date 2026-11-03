@@ -10,6 +10,7 @@ from skimage.color import rgb2lab
 import app.main
 import app.retrieve
 from app.retrieve import palette_distance, palette_similarity, rerank
+from ingest.aic import image_cache_dir
 
 
 def swatch(rgb, weight):
@@ -125,3 +126,16 @@ def test_match_rejects_fully_transparent_image(client):
     Image.new("RGBA", (40, 40), (0, 0, 0, 0)).save(buf, format="PNG")
     r = client.post("/match", files={"file": ("blank.png", buf.getvalue(), "image/png")})
     assert r.status_code == 400
+
+
+def test_images_are_served_from_the_cache_without_path_traversal():
+    path = image_cache_dir() / "__test__.jpg"
+    path.write_bytes(png_bytes(RED))
+    try:
+        client = TestClient(app.main.app)
+        r = client.get("/images/__test__.jpg")
+        assert r.status_code == 200 and "immutable" in r.headers["cache-control"]
+        assert client.get("/images/missing.jpg").status_code == 404
+        assert client.get("/images/..%2f..%2f.env").status_code == 404
+    finally:
+        path.unlink()

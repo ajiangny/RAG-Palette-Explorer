@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { MUSEUMS, MUSEUM_SHORT, thumbUrl, type EdgeExplanation, type GraphNode, type Source } from '../api'
+import { MUSEUMS, MUSEUM_SHORT, imageSrc, type EdgeExplanation, type GraphNode, type Source } from '../api'
 import PaletteStrip from './PaletteStrip'
 
 type Props = {
@@ -16,8 +16,8 @@ type Props = {
 }
 
 function Thumb({ node, preview }: { node: GraphNode; preview: string | null }) {
-  const src = node.id === 'upload' ? preview : node.image_url && thumbUrl(node.image_url, 400)
-  return src ? <img className="thumb" src={src} alt={node.title} referrerPolicy="no-referrer" /> : null
+  const src = node.id === 'upload' ? preview : node.image_id && imageSrc(node.image_id)
+  return src ? <img className="thumb" src={src} alt={node.title} /> : null
 }
 
 /** Render "... text [2][3]." with each [n] as a superscript link to its source. */

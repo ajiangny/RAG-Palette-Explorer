@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from PIL import UnidentifiedImageError
 from pydantic import BaseModel, Field, model_validator
 
@@ -12,6 +13,7 @@ from app.db import connect
 from app.graph import graph_for_artwork, graph_for_upload
 from app.rag import explain_edge, explain_matches
 from app.retrieve import DEFAULT_ALPHA, match_image
+from ingest.aic import image_cache_dir
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
@@ -25,6 +27,20 @@ app.add_middleware(
 )
 
 
+class ImmutableStaticFiles(StaticFiles):
+    """Cached paintings never change, so browsers can keep them for a long time."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 200:
+            response.headers["Cache-Control"] = "public, max-age=604800, immutable"
+        return response
+
+
+# Paintings are served from our own copies so the app doesn't depend on museum servers staying reachable.
+app.mount("/images", ImmutableStaticFiles(directory=image_cache_dir()), name="images")
+
+
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
@@ -33,7 +49,7 @@ def health() -> dict:
 @app.get("/artworks/random")
 def random_artwork() -> dict:
     with connect() as conn:
-        row = conn.execute("select id, title, artist from artworks where hist is not null "
+        row = conn.execute("select id, title, artist from artworks where hist is not null and excluded is null "
                            "order by random() limit 1").fetchone()
     if row is None:
         raise HTTPException(404, "collection is empty")

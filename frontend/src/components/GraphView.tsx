@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ForceGraph2D, { type ForceGraphMethods, type LinkObject, type NodeObject } from 'react-force-graph-2d'
-import { thumbUrl, type Graph, type GraphNode, type NodeId } from '../api'
+import { imageSrc, type Graph, type GraphNode, type NodeId } from '../api'
 
 type Node = NodeObject<GraphNode & { img?: string }>
 type Link = LinkObject<Node, { score: number }>
@@ -28,7 +28,6 @@ function getImage(src: string): HTMLImageElement {
   let img = imageCache.get(src)
   if (!img) {
     img = new Image()
-    img.referrerPolicy = 'no-referrer' // AIC's CDN rejects image requests with a localhost referer
     img.src = src
     imageCache.set(src, img)
   }
@@ -67,7 +66,7 @@ export default function GraphView(props: Props) {
   const data = useMemo(() => {
     const nodes: Node[] = graph.nodes.map((n) => ({
       ...n,
-      img: n.id === 'upload' ? uploadPreview ?? undefined : n.image_url && thumbUrl(n.image_url),
+      img: n.id === 'upload' ? uploadPreview ?? undefined : n.image_id && imageSrc(n.image_id),
       ...(n.id === graph.center ? { fx: 0, fy: 0 } : {}),
     }))
     const links: Link[] = graph.edges.map((e) => ({ source: e.source, target: e.target, score: e.score }))

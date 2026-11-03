@@ -13,7 +13,7 @@ export type GraphNode = {
   artist: string | null
   date?: string | null
   style?: string | null
-  image_url?: string
+  image_id?: string
   palette: Swatch[]
   depth: number
 }
@@ -72,8 +72,8 @@ export function explainEdge(target: number, source: number | Swatch[]) {
   })
 }
 
-/** AIC serves IIIF, so ask for a smaller rendition; other museums' URLs are used as is. */
-export const thumbUrl = (imageUrl: string, width = 200) => imageUrl.replace('/full/843,/', `/full/${width},/`)
+/** Paintings are served by our backend, not hotlinked from the museums. */
+export const imageSrc = (imageId: string) => `${BASE}/images/${encodeURIComponent(imageId)}.jpg`
 
 export const MUSEUMS = { aic: 'Art Institute of Chicago', cma: 'Cleveland Museum of Art' } as const
 export const MUSEUM_SHORT = { aic: 'AIC', cma: 'CMA' } as const

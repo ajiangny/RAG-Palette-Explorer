@@ -56,7 +56,7 @@ def build_edges(rebuild: bool) -> None:
     missing = "" if rebuild else \
         "and not exists (select 1 from artwork_edges e where e.source_id = a.id and e.kind = 'palette')"
     with connect() as conn:
-        ids = [r[0] for r in conn.execute(f"select a.id from artworks a where a.hist is not null {missing} order by a.id")]
+        ids = [r[0] for r in conn.execute(f"select a.id from artworks a where a.hist is not null and a.excluded is null {missing} order by a.id")]
     print(f"{len(ids)} artworks need palette edges", flush=True)
 
     start = time.time()

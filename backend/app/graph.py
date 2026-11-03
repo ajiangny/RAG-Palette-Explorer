@@ -96,10 +96,10 @@ def db_lookup(conn: psycopg.Connection) -> Lookup:
 
 
 NODE_SQL = """
-select id, source, source_url, title, artist, date, style, image_url, palette
+select id, source, source_url, title, artist, date, style, image_id, palette
 from artworks where id = any(%s)
 """
-NODE_FIELDS = ("id", "source", "source_url", "title", "artist", "date", "style", "image_url", "palette")
+NODE_FIELDS = ("id", "source", "source_url", "title", "artist", "date", "style", "image_id", "palette")
 
 
 def _to_response(conn: psycopg.Connection, center: Hashable, depth_of: dict[Hashable, int],

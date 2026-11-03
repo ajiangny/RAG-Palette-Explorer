@@ -43,7 +43,7 @@ def corpus() -> list[dict[str, Any]]:
     """Every indexed artwork, in id order."""
     with connect() as conn:
         rows = conn.execute("select id, image_id, title, artist from artworks "
-                            "where hist is not null order by id").fetchall()
+                            "where hist is not null and excluded is null order by id").fetchall()
     return [{"id": r[0], "image_id": r[1], "title": r[2], "artist": r[3]} for r in rows]
 
 

@@ -71,14 +71,20 @@ def download(client: httpx.Client, url: str, path: Path) -> bool:
 
 
 UPSERT_SQL = """
-insert into artworks (source, source_id, source_url, title, artist, date, style, image_id, image_url, description)
+insert into artworks (source, source_id, source_url, title, artist, date, style, image_id, image_url,
+                      description, excluded)
 values ('cma', %(source_id)s, %(source_url)s, %(title)s, %(artist)s, %(date)s, %(style)s,
-        %(image_id)s, %(image_url)s, %(description)s)
+        %(image_id)s, %(image_url)s, %(description)s, %(excluded)s)
 on conflict (source, source_id) do update set
   source_url = excluded.source_url, title = excluded.title, artist = excluded.artist, date = excluded.date,
   style = excluded.style, image_id = excluded.image_id, image_url = excluded.image_url,
-  description = excluded.description
+  description = excluded.description, excluded = excluded.excluded
 """
+
+
+def exclusion_reason(title: str) -> str | None:
+    """Cleveland's "Painting" type includes pages of manuscript text ("Text, Folio 32 ...")."""
+    return "manuscript text page" if re.match(r"text\b", title, re.I) else None
 
 
 def row(art: dict[str, Any]) -> dict[str, Any] | None:
@@ -95,6 +101,7 @@ def row(art: dict[str, Any]) -> dict[str, Any] | None:
         "image_id": f"cma-{art['accession_number']}",
         "image_url": web,
         "description": strip_html(art.get("description")),
+        "excluded": exclusion_reason(art.get("title") or ""),
     }
 
 
