@@ -10,10 +10,16 @@ The top 5 of every system are pooled and shuffled per query, so the labeler can'
 which system found which painting. P@5 of a system = share of its top 5 labeled "good".
 Labels accumulate in eval/human_labels.json: after the collection or a system changes,
 `build` shows only paintings that have not been judged yet, and `score` merges them in.
+
+Held-out test of a frozen challenger (see eval/TEST_PROTOCOL.md), with its own images and labels:
+    # put ~30 new images in backend/data/eval_human_test/
+    python -m eval.label build-test   # → eval/labeling_test.html; label it in one sitting
+    python -m eval.label score-test ~/Downloads/human_labels_test.json
 """
 
 import argparse
 import base64
+import hashlib
 import html
 import json
 import random
@@ -34,6 +40,11 @@ BASELINE_POOL = EVAL_DIR / "human_pool_aic_only.json"
 LABELS = EVAL_DIR / "human_labels.json"
 PAGE = EVAL_DIR / "labeling.html"
 RESULTS = EVAL_DIR / "RESULTS.md"
+TEST_DIR = BACKEND_DIR / "data" / "eval_human_test"
+TEST_POOL = EVAL_DIR / "human_pool_test.json"
+TEST_LABELS = EVAL_DIR / "human_labels_test.json"
+TEST_PAGE = EVAL_DIR / "labeling_test.html"
+TEST_RESULTS = EVAL_DIR / "RESULTS_human_test.md"
 TOP = 5
 DEPLOYED_NAME = "Histogram + palette rerank, α=0.5 (deployed)"
 SYSTEMS = {
@@ -44,6 +55,10 @@ SYSTEMS = {
     "Finalist: hue/chroma EMD, α=0.5": {**DEPLOYED, "metric": "ab"},
     "Finalist: hue/chroma EMD + chroma penalty, α=0.5": {**DEPLOYED, "metric": "ab+chroma"},
 }
+
+
+CHALLENGER_NAME = "Finalist: hue/chroma EMD, α=0.5"
+TEST_SYSTEMS = {DEPLOYED_NAME: SYSTEMS[DEPLOYED_NAME], CHALLENGER_NAME: SYSTEMS[CHALLENGER_NAME]}
 
 
 def top_ids(qf: dict[str, Any], H: np.ndarray, corpus_feats: list, ids: list[int], cfg: dict | None) -> list[int]:
@@ -60,8 +75,13 @@ def top_ids(qf: dict[str, Any], H: np.ndarray, corpus_feats: list, ids: list[int
     return [ids[i] for i in cand[np.argsort(-score)][:TOP]]
 
 
-def build(image_dir: Path) -> None:
-    images = sorted(p for p in image_dir.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"})
+def list_images(image_dir: Path) -> list[Path]:
+    return sorted(p for p in image_dir.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"})
+
+
+def build(image_dir: Path, systems: dict[str, dict | None] = SYSTEMS, pool_file: Path = POOL_FILE,
+          labels_file: Path = LABELS, page: Path = PAGE, download_name: str = "human_labels.json") -> None:
+    images = list_images(image_dir)
     if not images:
         raise SystemExit(f"no images in {image_dir}; add ~30 photos/designs first")
     rows, corpus_feats = corpus_features()
@@ -74,13 +94,13 @@ def build(image_dir: Path) -> None:
     rng = random.Random(0)
     pool = []
     for path, qf in zip(images, query_feats):
-        results = {name: top_ids(qf, H, corpus_feats, ids, cfg) for name, cfg in SYSTEMS.items()}
+        results = {name: top_ids(qf, H, corpus_feats, ids, cfg) for name, cfg in systems.items()}
         pooled = sorted({i for r in results.values() for i in r})
         rng.shuffle(pooled)
         pool.append({"query": path.name, "results": results, "pooled": pooled,
                      "palette": [s["hex"] for s in qf["palette"][6]]})
-    POOL_FILE.write_text(json.dumps(pool, indent=1, ensure_ascii=False) + "\n")
-    judged = json.loads(LABELS.read_text()) if LABELS.exists() else {}
+    pool_file.write_text(json.dumps(pool, indent=1, ensure_ascii=False) + "\n")
+    judged = json.loads(labels_file.read_text()) if labels_file.exists() else {}
     for q in pool:
         q["new"] = [i for i in q["pooled"] if str(i) not in judged.get(q["query"], {})]
 
@@ -105,7 +125,7 @@ def build(image_dir: Path) -> None:
         blocks.append(f'<section><div class="query"><img src="data:{mime};base64,{data}">'
                       f'<div class="sw">{swatches}</div><b>{html.escape(q["query"])}</b></div>'
                       f'<div class="cards">{cards}</div></section>')
-    PAGE.write_text(f"""<!doctype html><meta charset="utf-8"><title>Palette match labeling</title>
+    page.write_text(f"""<!doctype html><meta charset="utf-8"><title>Palette match labeling</title>
 <style>
 body{{font-family:system-ui,sans-serif;margin:0;padding:1rem 1.5rem 5rem;background:#181614;color:#eee}}
 section{{display:flex;gap:1.5rem;padding:1.25rem 0;border-bottom:1px solid #333}}
@@ -131,13 +151,13 @@ function save(){{
   for(const b of boxes){{(labels[b.dataset.q]??={{}})[b.dataset.id]=b.checked}}
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(labels,null,1)],{{type:'application/json'}}));
-  a.download='human_labels.json';a.click();
+  a.download='{download_name}';a.click();
 }}
 </script>
 """)
     n_new = sum(len(q["new"]) for q in pool)
     n_judged = sum(len(q["pooled"]) for q in pool) - n_new
-    print(f"{len(pool)} queries: {n_new} paintings to label ({n_judged} already judged) → {PAGE}")
+    print(f"{len(pool)} queries: {n_new} paintings to label ({n_judged} already judged) → {page}")
 
 
 def score(labels_path: Path) -> None:
@@ -193,6 +213,40 @@ def score(labels_path: Path) -> None:
     print("\n".join(lines))
 
 
+def build_test() -> None:
+    def digest(p: Path) -> str:
+        return hashlib.sha256(p.read_bytes()).hexdigest()
+    reused = {digest(p) for p in list_images(HUMAN_DIR)} & {digest(p) for p in list_images(TEST_DIR)}
+    if reused:
+        raise SystemExit(f"{len(reused)} test image(s) are byte-identical to dev images; replace them")
+    build(TEST_DIR, TEST_SYSTEMS, TEST_POOL, TEST_LABELS, TEST_PAGE, "human_labels_test.json")
+
+
+def score_test(labels_path: Path) -> None:
+    labels = json.loads(labels_path.read_text())
+    pool = json.loads(TEST_POOL.read_text())
+    missing = [(q["query"], i) for q in pool for i in q["pooled"] if str(i) not in labels.get(q["query"], {})]
+    if missing:
+        raise SystemExit(f"{len(missing)} pooled paintings have no label, e.g. {missing[:3]}")
+    per_query = {name: np.array([np.mean([labels[q["query"]][str(i)] for i in q["results"][name]]) for q in pool])
+                 for name in TEST_SYSTEMS}
+    d = per_query[CHALLENGER_NAME] - per_query[DEPLOYED_NAME]
+    rng = np.random.default_rng(0)
+    boots = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(10_000)]
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    lines = ["# Held-out human test", "",
+             f"{len(pool)} new images, labeled in one sitting with both systems' top {TOP} pooled and shuffled. "
+             "Challenger and decision rule were committed first (`TEST_PROTOCOL.md`).", "",
+             "| System | P@5 |", "|---|---|",
+             *(f"| {name} | {p.mean():.0%} |" for name, p in per_query.items()), "",
+             f"Difference: {d.mean() * 100:+.1f} points (95% CI {lo * 100:+.1f} to {hi * 100:+.1f}, paired bootstrap); "
+             f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images.", "",
+             f"Decision rule: {'met' if lo > 0 else 'NOT met'} (lower bound of the CI must be above 0).", ""]
+    TEST_RESULTS.write_text("\n".join(lines))
+    TEST_LABELS.write_text(json.dumps(labels, indent=1) + "\n")
+    print("\n".join(lines))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -200,5 +254,15 @@ if __name__ == "__main__":
     b.add_argument("--images", type=Path, default=HUMAN_DIR)
     s = sub.add_parser("score")
     s.add_argument("labels", type=Path)
+    sub.add_parser("build-test")
+    t = sub.add_parser("score-test")
+    t.add_argument("labels", type=Path)
     args = parser.parse_args()
-    build(args.images) if args.cmd == "build" else score(args.labels)
+    if args.cmd == "build":
+        build(args.images)
+    elif args.cmd == "score":
+        score(args.labels)
+    elif args.cmd == "build-test":
+        build_test()
+    else:
+        score_test(args.labels)

@@ -9,3 +9,4 @@ dist/
 .DS_Store
 # labeling page embeds the evaluator's own photos
 backend/eval/labeling.html
+backend/eval/labeling_test.html

@@ -21,12 +21,18 @@ With 100 test queries, one query is 1 point of Hit@k, so gaps of a few points ar
 | Histogram only (stage 1, 8x8x8) | 39% |
 | Histogram + palette rerank, α=0 (initial design) | 37% |
 | Histogram + palette rerank, α=0.5 (deployed) | 38% |
+| Finalist: CIEDE2000 with kL=2, α=0.5 | 46% |
+| Finalist: hue/chroma EMD, α=0.5 | 56% |
+| Finalist: hue/chroma EMD + chroma penalty, α=0.5 | 61% |
 
 Difference from *Histogram only (stage 1, 8x8x8)* (paired bootstrap over images, 95% CI):
 
 - Histogram + palette rerank, α=0 (initial design): -1.4 points (-10.7 to +8.6); better on 7, worse on 13, tied on 8 images
 - Histogram + palette rerank, α=0.5 (deployed): -0.7 points (-8.6 to +7.1); better on 9, worse on 10, tied on 9 images
+- Finalist: CIEDE2000 with kL=2, α=0.5: +7.9 points (+1.4 to +14.3); better on 11, worse on 4, tied on 13 images
+- Finalist: hue/chroma EMD, α=0.5: +17.1 points (+6.4 to +27.9); better on 16, worse on 4, tied on 8 images
+- Finalist: hue/chroma EMD + chroma penalty, α=0.5: +22.1 points (+11.4 to +32.9); better on 19, worse on 4, tied on 5 images
 
-Good matches per image among the ~9 pooled paintings: median 4 (min 1, max 11). A perfect reordering of the pooled set would score 77% P@5, which is the headroom available to better ranking.
+Good matches per image among the ~13 pooled paintings: median 7 (min 2, max 14). A perfect reordering of the pooled set would score 89% P@5, which is the headroom available to better ranking.
 
 Adding the Cleveland collection, deployed system: 34% → 38% P@5, +3.6 points (-3.6 to +10.7, paired bootstrap); better on 10, worse on 6, tied on 12 images. Paintings new to the pool were labeled in a second session, knowing they were new, so labeler drift could account for some of this.
