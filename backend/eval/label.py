@@ -22,11 +22,10 @@ from typing import Any
 
 import numpy as np
 
-from app.db import connect
 from app.retrieve import DISTANCE_SCALE, palette_distance
 from eval.featurize import corpus_features, featurize_many
 from eval.run_eval import DEPLOYED, INITIAL
-from ingest.aic import BACKEND_DIR
+from ingest.aic import BACKEND_DIR, image_cache_dir
 
 HUMAN_DIR = BACKEND_DIR / "data" / "eval_human"
 EVAL_DIR = Path(__file__).parent
@@ -85,12 +84,12 @@ def build(image_dir: Path) -> None:
     for q in pool:
         q["new"] = [i for i in q["pooled"] if str(i) not in judged.get(q["query"], {})]
 
-    # Thumbnails load from the museums' servers (no-referrer: AIC rejects some referers).
-    image_url = {}
-    with connect() as conn:
-        for i, url in conn.execute("select id, image_url from artworks where id = any(%s)",
-                                   ([i for q in pool for i in q["new"]],)):
-            image_url[i] = url.replace("/full/843,/", "/full/300,/")
+    # Embed the cached copies: the page must not depend on museum servers being reachable,
+    # since a painting that fails to load would get mislabeled as a poor match.
+    def thumbnail(i: int) -> str:
+        path = image_cache_dir() / f"{by_id[i]['image_id']}.jpg"
+        return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode()
+
     blocks = []
     for q, path in zip(pool, images):
         if not q["new"]:
@@ -99,7 +98,7 @@ def build(image_dir: Path) -> None:
         mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
         swatches = "".join(f'<span style="background:{h}"></span>' for h in q["palette"])
         cards = "".join(
-            f'<label class="card"><img src="{image_url[i]}" referrerpolicy="no-referrer" loading="lazy">'
+            f'<label class="card"><img src="{thumbnail(i)}">'
             f'<input type="checkbox" data-q="{html.escape(q["query"])}" data-id="{i}"> good match'
             f'<small>{html.escape(by_id[i]["title"][:50])}</small></label>'
             for i in q["new"])
