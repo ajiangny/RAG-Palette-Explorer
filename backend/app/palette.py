@@ -22,15 +22,21 @@ class Swatch(TypedDict):
 
 
 def load_lab(image: ImageInput, max_side: int = MAX_SIDE) -> np.ndarray:
-    """Load an image, downscale so its longest side is `max_side`, return (N, 3) LAB pixels."""
+    """Load an image, downscale so its longest side is `max_side`, return (N, 3) LAB pixels.
+
+    Transparent pixels are left out: they have no color. Raises OSError if nothing is visible.
+    """
     if isinstance(image, bytes):
         image = Image.open(io.BytesIO(image))
     elif not isinstance(image, Image.Image):
         image = Image.open(image)
-    image = image.convert("RGB")
+    image = image.convert("RGBA")
     image.thumbnail((max_side, max_side))
-    rgb = np.asarray(image, dtype=np.float64) / 255.0
-    return rgb2lab(rgb).reshape(-1, 3)
+    rgba = np.asarray(image, dtype=np.float64) / 255.0
+    visible = rgba[rgba[..., 3] >= 0.5][:, :3]
+    if not len(visible):
+        raise OSError("image is fully transparent")
+    return rgb2lab(visible.reshape(-1, 1, 3)).reshape(-1, 3)
 
 
 def lab_to_hex(lab: np.ndarray) -> str:

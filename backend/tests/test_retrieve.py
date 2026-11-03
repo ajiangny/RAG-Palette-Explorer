@@ -118,3 +118,10 @@ def test_chroma_penalty_separates_muted_from_saturated():
 def test_unknown_metric_is_rejected():
     with pytest.raises(ValueError):
         palette_distance([swatch(RED, 1.0)], [swatch(BLUE, 1.0)], "nope")
+
+
+def test_match_rejects_fully_transparent_image(client):
+    buf = io.BytesIO()
+    Image.new("RGBA", (40, 40), (0, 0, 0, 0)).save(buf, format="PNG")
+    r = client.post("/match", files={"file": ("blank.png", buf.getvalue(), "image/png")})
+    assert r.status_code == 400

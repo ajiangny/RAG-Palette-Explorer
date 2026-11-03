@@ -16,3 +16,5 @@ Committed before any test image was scored.
 **Metric:** mean P@5 per image. **Uncertainty:** 95% paired bootstrap over images.
 
 **Decision rule:** switch to the challenger only if the lower bound of the CI on (challenger − deployed) is above 0. Otherwise keep the deployed system. Either way the result is reported as measured, and the challenger is not re-tuned on these images.
+
+**Exclusion, made before any test labeling:** `download (1).png` was removed because it is 100% transparent and has no visible pixels. Test set: 24 images (about 30 were planned).

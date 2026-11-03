@@ -77,3 +77,16 @@ def test_out_of_range_ab_is_clipped_not_dropped():
     lab = np.array([[50.0, 127.0, -127.0], [50.0, 0.0, 0.0]])
     h = lab_histogram(lab, HistConfig(hellinger=False))
     assert h.sum() == pytest.approx(1.0)
+
+
+def test_transparent_pixels_are_ignored():
+    arr = np.zeros((10, 10, 4), dtype=np.uint8)
+    arr[:5] = (200, 30, 40, 255)  # top half opaque red, bottom half fully transparent black
+    palette = extract_palette(Image.fromarray(arr, "RGBA"))
+    assert [s["hex"] for s in palette] == ["#c81e28"]
+    assert load_lab(Image.fromarray(arr, "RGBA")).shape == (50, 3)
+
+
+def test_fully_transparent_image_is_rejected():
+    with pytest.raises(OSError):
+        load_lab(Image.new("RGBA", (20, 20), (0, 0, 0, 0)))
