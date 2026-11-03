@@ -1,6 +1,6 @@
 # Palette RAG Explorer
 
-Upload an image → extract its color palette → find public-domain paintings (Art Institute of Chicago) with similar palettes → get a Gemini-written explanation of how those artists used color, with cited sources.
+Upload an image → extract its color palette → find public-domain paintings (Art Institute of Chicago + Cleveland Museum of Art) with similar palettes → get a Gemini-written explanation of how those artists used color, with cited sources.
 
 **Stack:** Python (FastAPI) · React + TypeScript · Supabase Postgres + pgvector · Gemini
 
@@ -21,7 +21,8 @@ cp ../.env.example .env   # fill in DATABASE_URL and GEMINI_API_KEY
 python -m app.db
 
 # 5. Ingest paintings and build the palette index (both are resumable)
-python -m ingest.aic --limit 200
+python -m ingest.aic --limit 2000
+python -m ingest.cma
 python -m ingest.build_index    # palettes, histograms, and precomputed palette edges
 python -m ingest.wiki          # Wikipedia + AIC description chunks, embedded with Gemini
 
@@ -52,7 +53,7 @@ python -m eval.label build    # open eval/labeling.html, label blind, download l
 python -m eval.label score ~/Downloads/human_labels.json
 ```
 
-Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md).
+Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (AIC only: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md)).
 
 ## Frontend
 

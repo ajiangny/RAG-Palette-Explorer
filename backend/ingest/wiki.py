@@ -194,7 +194,7 @@ def ingest_descriptions() -> None:
             for chunk in pack([desc])]
     with connect() as conn, conn.cursor() as cur:
         cur.executemany(INSERT_SQL, docs)
-    print(f"{len(rows)} AIC descriptions stored", flush=True)
+    print(f"{len(rows)} museum descriptions stored", flush=True)
 
 
 if __name__ == "__main__":

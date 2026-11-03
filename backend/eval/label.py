@@ -31,6 +31,7 @@ from ingest.aic import BACKEND_DIR
 HUMAN_DIR = BACKEND_DIR / "data" / "eval_human"
 EVAL_DIR = Path(__file__).parent
 POOL_FILE = EVAL_DIR / "human_pool.json"
+BASELINE_POOL = EVAL_DIR / "human_pool_aic_only.json"
 LABELS = EVAL_DIR / "human_labels.json"
 PAGE = EVAL_DIR / "labeling.html"
 RESULTS = EVAL_DIR / "RESULTS.md"
@@ -146,7 +147,7 @@ def score(labels_path: Path) -> None:
                          "re-run `build` and label them")
     lines = ["", "## Human-judged precision@5", "",
              f"{len(pool)} outside images (photos, designs). The top {TOP} of every system were pooled and "
-             "shuffled, then labeled blind as good / poor palette matches.", "",
+             "shuffled, then labeled as good / poor palette matches without showing which system found which.", "",
              "| System | P@5 |", "|---|---|"]
     per_query = {name: np.array([np.mean([labels[q["query"]][str(i)] for i in q["results"][name]]) for q in pool])
                  for name in SYSTEMS}
@@ -167,8 +168,21 @@ def score(labels_path: Path) -> None:
     oracle = np.mean(np.minimum(goods, TOP) / TOP)
     lines += ["", f"Good matches per image among the ~{np.mean([len(q['pooled']) for q in pool]):.0f} pooled paintings: "
               f"median {np.median(goods):.0f} (min {goods.min()}, max {goods.max()}). A perfect reordering of the "
-              f"pooled set would score {oracle:.0%} P@5, so the collection, not the ranking, is the main limit "
-              "for outside images.", ""]
+              f"pooled set would score {oracle:.0%} P@5, which is the headroom available to better ranking.", ""]
+    # Same images, same labels, smaller collection: what did adding a museum change?
+    if BASELINE_POOL.exists():
+        before_pool = {q["query"]: q for q in json.loads(BASELINE_POOL.read_text())}
+        deployed = list(SYSTEMS)[-1]
+        before = np.array([np.mean([labels[q["query"]][str(i)] for i in before_pool[q["query"]]["results"][deployed]])
+                           for q in pool])
+        d = per_query[deployed] - before
+        boots = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(10_000)]
+        lo, hi = np.percentile(boots, [2.5, 97.5])
+        lines += [f"Adding the Cleveland collection, deployed system: {before.mean():.0%} → {per_query[deployed].mean():.0%} P@5, "
+                  f"{d.mean() * 100:+.1f} points ({lo * 100:+.1f} to {hi * 100:+.1f}, paired bootstrap); "
+                  f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images. "
+                  "Paintings new to the pool were labeled in a second session, knowing they were new, so "
+                  "labeler drift could account for some of this.", ""]
     text = RESULTS.read_text().split("\n## Human-judged precision@5")[0].rstrip("\n") + "\n"
     RESULTS.write_text(text + "\n".join(lines))
     LABELS.write_text(json.dumps(labels, indent=1) + "\n")
