@@ -26,7 +26,7 @@ DATA_URL = "https://raw.githubusercontent.com/NationalGalleryOfArt/opendata/main
 DISPLAY_WIDTH = 843  # same as the AIC display images
 
 # The backs of double-sided panels are often coats of arms or bare wood, not a second picture.
-REVERSE_SIDE = re.compile(r"\[reverse\b", re.I)
+REVERSE_SIDE = re.compile(r"\[reverse\b", re.IGNORECASE)
 
 
 def exclusion_reason(title: str) -> str | None:

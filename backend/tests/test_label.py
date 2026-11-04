@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pytest
 
-from eval.label import top_ids, recheck_lines, rule_text, sample_recheck, split_recheck
+from eval.label import recheck_lines, rule_text, sample_recheck, split_recheck, top_ids
 
 LABELS = {"a.jpg": {"1": True, "2": False, "3": True}, "b.jpg": {"4": False, "5": True, "6": False}}
 

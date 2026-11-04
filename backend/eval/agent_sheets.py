@@ -22,7 +22,15 @@ from PIL import Image, ImageDraw, ImageFont
 
 from app.db import connect
 from eval.featurize import corpus_features, featurize_many
-from eval.label import FINAL_POOL, HUMAN_DIR, POOL_FILE, SYSTEMS, TEST_DIR, list_images, top_ids
+from eval.label import (
+    FINAL_POOL,
+    HUMAN_DIR,
+    POOL_FILE,
+    SYSTEMS,
+    TEST_DIR,
+    list_images,
+    top_ids,
+)
 from ingest.aic import BACKEND_DIR, image_cache_dir
 
 OUT = BACKEND_DIR / "data" / "eval_agent"
@@ -37,7 +45,7 @@ CODE_CHARS = "ACDEFGHJKLMNPQRTUVWXY34679"  # no look-alikes such as 0/O or 1/I
 
 def fit(path: Path, box: int) -> Image.Image:
     img = Image.open(path).convert("RGBA")
-    img.thumbnail((box, box), Image.LANCZOS)
+    img.thumbnail((box, box), Image.Resampling.LANCZOS)
     flat = Image.new("RGB", img.size, GRAY)
     flat.paste(img, mask=img.getchannel("A"))
     return flat

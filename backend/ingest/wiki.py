@@ -32,11 +32,11 @@ SKIP_SECTIONS = {"references", "external links", "see also", "further reading", 
                  "bibliography", "sources", "citations", "gallery", "footnotes",
                  "selected works", "list of works", "works cited", "exhibitions"}
 # Sections most likely to talk about color; kept first when an article is long.
-PRIORITY_SECTIONS = re.compile(r"style|technique|method|colou?r|palette|light|brush|painting|works?\b", re.I)
+PRIORITY_SECTIONS = re.compile(r"style|technique|method|colou?r|palette|light|brush|painting|works?\b", re.IGNORECASE)
 # The article lead must look like it is about an artist (AIC's artist field
 # sometimes holds a culture, e.g. "Islamic" → the article on Islam).
 ARTIST_WORDS = re.compile(r"\b(painter|artist|printmaker|illustrator|draughtsman|draftsman|"
-                          r"sculptor|calligrapher|muralist|watercolou?rist)\b", re.I)
+                          r"sculptor|calligrapher|muralist|watercolou?rist)\b", re.IGNORECASE)
 
 
 def _norm_words(text: str) -> set[str]:
@@ -88,7 +88,7 @@ def fetch_article(client: httpx.Client, name: str) -> tuple[str, str, str] | Non
 
 def split_sections(text: str) -> list[tuple[str, str]]:
     """Plaintext extract with `== Heading ==` markers → [(heading, body)], lead first as ''."""
-    parts = re.split(r"^(={2,})\s*(.+?)\s*\1\s*$", text, flags=re.M)
+    parts = re.split(r"^(={2,})\s*(.+?)\s*\1\s*$", text, flags=re.MULTILINE)
     sections = [("", parts[0])]
     top = ""
     for i in range(1, len(parts) - 2, 3):

@@ -46,7 +46,7 @@ def expand(center: Hashable, center_artist: str | None, first_ring: Sequence[Nei
     neighbors: dict[Hashable, Sequence[Neighbor]] = {center: first_ring}
     for level in range(1, depth + 1):
         if level > 1:
-            neighbors = dict(lookup([n for n in frontier if isinstance(n, int)]))
+            neighbors = {n: ring for n, ring in lookup([n for n in frontier if isinstance(n, int)]).items()}
         next_frontier = []
         for node in frontier:
             added = 0
@@ -62,7 +62,8 @@ def expand(center: Hashable, center_artist: str | None, first_ring: Sequence[Nei
                 if artist and per_artist[artist] >= max_per_artist:
                     continue
                 depth_of[nid] = level
-                per_artist[artist] += bool(artist)
+                if artist:
+                    per_artist[artist] += 1
                 link(node, nid, score)
                 next_frontier.append(nid)
                 added += 1
@@ -99,7 +100,7 @@ NODE_SQL = """
 select id, source, source_url, title, artist, date, style, image_id, palette
 from artworks where id = any(%s)
 """
-NODE_FIELDS = ("id", "source", "source_url", "title", "artist", "date", "style", "image_id", "palette")
+NODE_FIELDS: tuple[str, ...] = ("id", "source", "source_url", "title", "artist", "date", "style", "image_id", "palette")
 
 
 def _to_response(conn: psycopg.Connection, center: Hashable, depth_of: dict[Hashable, int],

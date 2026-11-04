@@ -55,7 +55,7 @@ def embed(texts: list[str], task: str = "RETRIEVAL_DOCUMENT") -> list[np.ndarray
     config = types.EmbedContentConfig(task_type=task, output_dimensionality=EMBED_DIM)
     out = []
     for i in range(0, len(texts), EMBED_BATCH):
-        batch = texts[i:i + EMBED_BATCH]
+        batch: list[types.ContentUnion] = list(texts[i:i + EMBED_BATCH])
         res = _with_backoff(lambda: client().models.embed_content(
             model=EMBED_MODEL, contents=batch, config=config))
         for e in res.embeddings or []:
@@ -65,7 +65,7 @@ def embed(texts: list[str], task: str = "RETRIEVAL_DOCUMENT") -> list[np.ndarray
 
 
 def generate(prompt: str, system: str, temperature: float = 0.3) -> str:
-    thinking = types.ThinkingConfig(thinking_level=THINKING_LEVEL) if THINKING_LEVEL else None
+    thinking = types.ThinkingConfig(thinking_level=types.ThinkingLevel(THINKING_LEVEL)) if THINKING_LEVEL else None
     config = types.GenerateContentConfig(system_instruction=system, temperature=temperature,
                                          thinking_config=thinking)
     res = _with_backoff(lambda: client().models.generate_content(

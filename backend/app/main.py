@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from app.db import connect
 from app.graph import graph_for_artwork, graph_for_upload
+from app.palette import Swatch
 from app.rag import explain_edge, explain_matches
 from app.retrieve import DEFAULT_ALPHA, match_image
 from ingest.aic import image_cache_dir
@@ -86,6 +87,9 @@ class SwatchIn(BaseModel):
     hex: str
     weight: float = Field(ge=0, le=1)
 
+    def as_swatch(self) -> Swatch:
+        return {"lab": self.lab, "hex": self.hex, "weight": self.weight}
+
 
 class ExplainRequest(BaseModel):
     query_palette: list[SwatchIn] = Field(min_length=1, max_length=12)
@@ -95,7 +99,7 @@ class ExplainRequest(BaseModel):
 @app.post("/explain")
 def explain(req: ExplainRequest) -> dict:
     with connect() as conn:
-        result = explain_matches(conn, [s.model_dump() for s in req.query_palette], req.artwork_ids)
+        result = explain_matches(conn, [s.as_swatch() for s in req.query_palette], req.artwork_ids)
     if not result["artworks"]:
         raise HTTPException(404, "none of the artwork_ids exist")
     return result
@@ -142,7 +146,7 @@ class ExplainEdgeRequest(BaseModel):
 
 @app.post("/explain-edge")
 def explain_edge_endpoint(req: ExplainEdgeRequest) -> dict:
-    palette = [s.model_dump() for s in req.source_palette] if req.source_palette else None
+    palette = [s.as_swatch() for s in req.source_palette] if req.source_palette else None
     with connect() as conn:
         result = explain_edge(conn, req.target_id, source_id=req.source_id, source_palette=palette)
     if result is None:

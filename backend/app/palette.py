@@ -41,7 +41,7 @@ def load_lab(image: ImageInput, max_side: int = MAX_SIDE) -> np.ndarray:
 
 def lab_to_hex(lab: np.ndarray) -> str:
     rgb = np.clip(lab2rgb(lab.reshape(1, 1, 3)).reshape(3), 0, 1)
-    r, g, b = (int(round(c * 255)) for c in rgb)
+    r, g, b = (round(c * 255) for c in rgb)
     return f"#{r:02x}{g:02x}{b:02x}"
 
 

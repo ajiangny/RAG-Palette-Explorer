@@ -9,11 +9,12 @@ from skimage.color import rgb2lab
 
 import app.main
 import app.retrieve
+from app.palette import Swatch
 from app.retrieve import palette_distance, palette_similarity, rerank
 from ingest.aic import image_cache_dir
 
 
-def swatch(rgb, weight):
+def swatch(rgb, weight) -> Swatch:
     lab = rgb2lab(np.array([[rgb]], dtype=np.float64) / 255).reshape(3)
     return {"lab": lab.tolist(), "hex": "#000000", "weight": weight}
 

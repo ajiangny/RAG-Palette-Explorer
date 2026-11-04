@@ -320,7 +320,7 @@ def build_final() -> None:
         raise SystemExit("a final-test image is byte-identical to an earlier image; replace it")
     with connect() as conn:
         nga = {r[0] for r in conn.execute("select id from artworks where source = 'nga'")}
-    systems = {FINAL_BEFORE: {**DEPLOYED, "exclude": nga}, FINAL_AFTER: DEPLOYED}
+    systems: dict[str, dict | None] = {FINAL_BEFORE: {**DEPLOYED, "exclude": nga}, FINAL_AFTER: DEPLOYED}
     build(TEST_DIR, systems, FINAL_POOL, FINAL_LABELS, FINAL_PAGE, "human_labels_final.json", recheck_file=None)
 
 

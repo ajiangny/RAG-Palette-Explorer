@@ -63,7 +63,7 @@ def download(client: httpx.Client, url: str, path: Path) -> bool:
         return False
     img = img.convert("RGB")
     if img.width > CACHE_WIDTH:
-        img = img.resize((CACHE_WIDTH, round(img.height * CACHE_WIDTH / img.width)), Image.LANCZOS)
+        img = img.resize((CACHE_WIDTH, round(img.height * CACHE_WIDTH / img.width)), Image.Resampling.LANCZOS)
     tmp = path.with_suffix(".part")
     img.save(tmp, format="JPEG", quality=90)
     tmp.rename(path)
@@ -84,7 +84,7 @@ on conflict (source, source_id) do update set
 
 # Cleveland's "Painting" type includes manuscript pages with no painting on them. Folios with a
 # picture on one side ("A Monk Preaching (recto); Text (verso)") are kept.
-NOT_A_PAINTING = re.compile(r"^text\b|\btext pages?\b|\bblank\b|^genealogical text|:\s*text\s*$", re.I)
+NOT_A_PAINTING = re.compile(r"^text\b|\btext pages?\b|\bblank\b|^genealogical text|:\s*text\s*$", re.IGNORECASE)
 
 
 def exclusion_reason(title: str) -> str | None:
