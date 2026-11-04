@@ -1,16 +1,23 @@
-import { useCallback, useRef, useState, type DragEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import {
   explainEdge, graphFromArtwork, graphFromUpload, randomArtwork,
   type EdgeExplanation, type Graph, type GraphEdge, type NodeId,
 } from './api'
 import GraphView, { type EdgeRef } from './components/GraphView'
+import PaletteEditor from './components/PaletteEditor'
 import PaletteStrip from './components/PaletteStrip'
 import SidePanel from './components/SidePanel'
+import { bestMatch, loadCollection, makeDeck, type Painting } from './lib/collection'
+import { hexToLab } from './lib/color'
+import { MAX_DOTS, readUrl, writeUrl } from './lib/queryPalette'
 
 const edgeKey = (a: NodeId, b: NodeId) => [String(a), String(b)].sort().join('~')
+const MATCH_SETTLE_MS = 300
 
 export default function App() {
   const [graph, setGraph] = useState<Graph | null>(null)
+  // Counts webs built from scratch; expanding one keeps the count, so only its new nodes grow.
+  const [generation, setGeneration] = useState(0)
   const [uploadPreview, setUploadPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +28,12 @@ export default function App() {
   const [explainErrors, setExplainErrors] = useState<Record<string, string>>({})
   const [dragging, setDragging] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
+  const [initialUrl] = useState(() => readUrl(window.location.search))
+  // The user's colors. Null until they edit a dot; the dots then show the center painting's colors.
+  const [query, setQuery] = useState<string[] | null>(initialUrl.palette)
+  const [collection, setCollection] = useState<Painting[] | null>(null)
+  const [match, setMatch] = useState<Painting | null>(null)
+  const deal = useMemo(() => (collection?.length ? makeDeck(collection) : null), [collection])
 
   const load = useCallback(async (message: string, fetchGraph: () => Promise<Graph>) => {
     setLoading(message)
@@ -28,6 +41,7 @@ export default function App() {
     try {
       const g = await fetchGraph()
       setGraph(g)
+      setGeneration((n) => n + 1)
       setSelectedNode(g.center)
       setSelectedEdge(null)
     } catch (e) {
@@ -36,6 +50,47 @@ export default function App() {
       setLoading(null)
     }
   }, [])
+
+  // Everything needed to run the palette works in the browser, so fetch it once, in the background.
+  useEffect(() => {
+    let cancelled = false
+    loadCollection()
+      .then((c) => { if (!cancelled) setCollection(c) })
+      .catch(() => { /* Surprise me and the closest painting stay off; Spotlight still works */ })
+    return () => { cancelled = true }
+  }, [])
+
+  // Open a shared link: its painting if it names one, otherwise the closest match to its colors.
+  const opened = useRef(false)
+  useEffect(() => {
+    if (opened.current) return
+    if (initialUrl.center != null) {
+      opened.current = true
+      load('Growing the web…', () => graphFromArtwork(initialUrl.center!))
+    } else if (initialUrl.palette && collection) {
+      opened.current = true
+      const best = bestMatch(collection, initialUrl.palette.map(hexToLab))
+      if (best) load('Growing the web…', () => graphFromArtwork(best.id))
+    }
+  }, [collection, initialUrl, load])
+
+  // Keep the current web and colors in the address bar, so a view can be shared or reloaded.
+  useEffect(() => {
+    if (!graph) return
+    const center = typeof graph.center === 'number' ? graph.center : null
+    // Debounced: browsers throttle history updates, and a slider drag would exceed the limit.
+    const timer = setTimeout(() => {
+      window.history.replaceState(null, '', `${window.location.pathname}${writeUrl({ center, palette: query })}`)
+    }, MATCH_SETTLE_MS)
+    return () => clearTimeout(timer)
+  }, [graph, query])
+
+  // The collection's closest painting to the dots, once they stop moving.
+  useEffect(() => {
+    if (!query?.length || !collection) return
+    const timer = setTimeout(() => setMatch(bestMatch(collection, query.map(hexToLab), graph?.center)), MATCH_SETTLE_MS)
+    return () => clearTimeout(timer)
+  }, [query, collection, graph?.center])
 
   const onFile = (file: File | undefined) => {
     if (!file) return
@@ -106,6 +161,7 @@ export default function App() {
 
   const nodeById = (id: NodeId | null) => graph?.nodes.find((n) => n.id === id) ?? null
   const center = nodeById(graph?.center ?? null)
+  const dots = query ?? center?.palette.slice(0, MAX_DOTS).map((s) => s.hex) ?? []
   // Same order as the explanation request (the upload, if any, is always the source),
   // so thumbnails line up with the matched-color pairs.
   const [edgeA, edgeB] = selectedEdge?.target === 'upload'
@@ -139,10 +195,16 @@ export default function App() {
       <main>
         {graph ? (
           <>
-            <GraphView graph={graph} uploadPreview={uploadPreview} selectedNode={selectedNode} selectedEdge={selectedEdge}
-                       onNodeClick={(id) => { setSelectedEdge(null); setSelectedNode(id) }}
-                       onEdgeClick={selectEdge}
-                       onBackgroundClick={() => { setSelectedNode(null); setSelectedEdge(null) }} />
+            <div className="graph-area">
+              <GraphView graph={graph} uploadPreview={uploadPreview} selectedNode={selectedNode} selectedEdge={selectedEdge}
+                         generation={generation} query={query}
+                         onNodeClick={(id) => { setSelectedEdge(null); setSelectedNode(id) }}
+                         onEdgeClick={selectEdge}
+                         onBackgroundClick={() => { setSelectedNode(null); setSelectedEdge(null) }} />
+              <PaletteEditor colors={dots} active={!!query} onChange={setQuery} onClear={() => setQuery(null)}
+                             onSurprise={deal && (() => setQuery(deal()))}
+                             match={query && match ? { title: match.title, onGrow: () => recenter(match.id) } : null} />
+            </div>
             <SidePanel node={nodeById(selectedNode)} edge={edgeNodes}
                        explanation={key ? explanations[key] ?? null : null}
                        explaining={!!key && explaining.has(key)}

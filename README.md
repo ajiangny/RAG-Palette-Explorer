@@ -26,6 +26,7 @@ python -m ingest.cma
 python -m ingest.nga
 python -m ingest.build_index    # palettes, histograms, and precomputed palette edges
 python -m ingest.wiki          # Wikipedia + AIC description chunks, embedded with Gemini
+python -m ingest.export_palettes # static palette file the browser scores against; rerun when the collection changes
 
 # Tests
 pytest tests
