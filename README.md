@@ -1,6 +1,6 @@
 # Palette RAG Explorer
 
-Upload an image → extract its color palette → find public-domain paintings (Art Institute of Chicago + Cleveland Museum of Art) with similar palettes → get a Gemini-written explanation of how those artists used color, with cited sources.
+Upload an image → extract its color palette → find public-domain paintings (Art Institute of Chicago, Cleveland Museum of Art, National Gallery of Art) with similar palettes → get a Gemini-written explanation of how those artists used color, with cited sources.
 
 **Stack:** Python (FastAPI) · React + TypeScript · Supabase Postgres + pgvector · Gemini
 
@@ -23,6 +23,7 @@ python -m app.db
 # 5. Ingest paintings and build the palette index (both are resumable)
 python -m ingest.aic --limit 2000
 python -m ingest.cma
+python -m ingest.nga
 python -m ingest.build_index    # palettes, histograms, and precomputed palette edges
 python -m ingest.wiki          # Wikipedia + AIC description chunks, embedded with Gemini
 
@@ -53,7 +54,7 @@ python -m eval.label build    # open eval/labeling.html, label blind, download l
 python -m eval.label score ~/Downloads/human_labels.json
 ```
 
-Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (AIC only: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md)). Held-out test of a ranking change: [RESULTS_human_test.md](backend/eval/RESULTS_human_test.md); it did not beat the deployed ranking, so the default is unchanged.
+Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (earlier collections: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md), [RESULTS_pre_nga.md](backend/eval/RESULTS_pre_nga.md)). Held-out test of adding the National Gallery: [RESULTS_final_test.md](backend/eval/RESULTS_final_test.md), 72% → 80% P@5 on 30 new photos with one human labeler, under a [written rule](backend/eval/LABELING_RULE.md) and a [protocol committed first](backend/eval/FINAL_TEST_PROTOCOL.md). Held-out test of a ranking change: [RESULTS_human_test.md](backend/eval/RESULTS_human_test.md); it did not beat the deployed ranking, so the default is unchanged.
 
 ## Frontend
 

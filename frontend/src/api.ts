@@ -7,7 +7,7 @@ export type NodeId = number | 'upload'
 
 export type GraphNode = {
   id: NodeId
-  source?: 'aic' | 'cma'
+  source?: 'aic' | 'cma' | 'nga'
   source_url?: string
   title: string
   artist: string | null
@@ -75,5 +75,5 @@ export function explainEdge(target: number, source: number | Swatch[]) {
 /** Paintings are served by our backend, not hotlinked from the museums. */
 export const imageSrc = (imageId: string) => `${BASE}/images/${encodeURIComponent(imageId)}.jpg`
 
-export const MUSEUMS = { aic: 'Art Institute of Chicago', cma: 'Cleveland Museum of Art' } as const
-export const MUSEUM_SHORT = { aic: 'AIC', cma: 'CMA' } as const
+export const MUSEUMS = { aic: 'Art Institute of Chicago', cma: 'Cleveland Museum of Art', nga: 'National Gallery of Art' } as const
+export const MUSEUM_SHORT = { aic: 'AIC', cma: 'CMA', nga: 'NGA' } as const

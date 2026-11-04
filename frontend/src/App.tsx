@@ -156,7 +156,7 @@ export default function App() {
             <div className="dropzone" onClick={() => fileInput.current?.click()}>
               <h2>Drop an image to find paintings with its palette</h2>
               <p className="muted">A photo, a screenshot, a design. We extract its colors and build a web of
-                public-domain paintings from the Art Institute of Chicago and the Cleveland Museum of Art with similar palettes.</p>
+                public-domain paintings from the Art Institute of Chicago, the Cleveland Museum of Art and the National Gallery of Art with similar palettes.</p>
               <button>Choose an image</button>
             </div>
             <button className="link" onClick={startRandom}>or start from a random painting</button>

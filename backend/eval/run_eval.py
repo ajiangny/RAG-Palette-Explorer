@@ -51,9 +51,10 @@ def metrics(ranks: list[float]) -> dict[str, float]:
 
 
 def main() -> None:
-    testset = json.loads(TESTSET.read_text())
     rows, corpus_feats = corpus_features()
     id_to_idx = {r["id"]: i for i, r in enumerate(rows)}
+    # Paintings excluded after the set was made can no longer be found, so their queries are skipped.
+    testset = [q for q in json.loads(TESTSET.read_text()) if q["source_id"] in id_to_idx]
     truth = [id_to_idx[q["source_id"]] for q in testset]
     print(f"{len(testset)} queries against {len(rows)} paintings; featurizing queries...", flush=True)
     query_feats = featurize_many([QUERY_DIR / q["query"] for q in testset])

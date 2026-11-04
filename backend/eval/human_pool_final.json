@@ -1,0 +1,1078 @@
+[
+ {
+  "query": "palette-final-01.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    3981,
+    1048,
+    3627,
+    3182,
+    7428
+   ],
+   "Deployed, with the National Gallery": [
+    3981,
+    10174,
+    8581,
+    1048,
+    3627
+   ]
+  },
+  "pooled": [
+   7428,
+   3627,
+   3182,
+   1048,
+   8581,
+   3981,
+   10174
+  ],
+  "palette": [
+   "#23211c",
+   "#2c381b",
+   "#6f635a",
+   "#475a25",
+   "#a19c94",
+   "#bde0f1"
+  ]
+ },
+ {
+  "query": "palette-final-02.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    3932,
+    3842,
+    3136,
+    4911,
+    3907
+   ],
+   "Deployed, with the National Gallery": [
+    3932,
+    3842,
+    3136,
+    4911,
+    3907
+   ]
+  },
+  "pooled": [
+   3136,
+   4911,
+   3842,
+   3907,
+   3932
+  ],
+  "palette": [
+   "#5e5447",
+   "#9b8563",
+   "#3a3128",
+   "#bf9d5f",
+   "#795d2b",
+   "#ddcaaa"
+  ]
+ },
+ {
+  "query": "palette-final-03.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    5971,
+    2227,
+    1699,
+    5033,
+    4897
+   ],
+   "Deployed, with the National Gallery": [
+    7737,
+    5971,
+    2227,
+    10099,
+    7639
+   ]
+  },
+  "pooled": [
+   7737,
+   10099,
+   1699,
+   7639,
+   4897,
+   2227,
+   5971,
+   5033
+  ],
+  "palette": [
+   "#6d91bb",
+   "#d9ac5f",
+   "#aab2b7",
+   "#564129",
+   "#a97e42",
+   "#262b31"
+  ]
+ },
+ {
+  "query": "palette-final-04.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    6317,
+    1735,
+    3878,
+    6316,
+    1727
+   ],
+   "Deployed, with the National Gallery": [
+    9524,
+    6317,
+    1735,
+    3878,
+    7870
+   ]
+  },
+  "pooled": [
+   3878,
+   1727,
+   6316,
+   1735,
+   9524,
+   7870,
+   6317
+  ],
+  "palette": [
+   "#98734b",
+   "#68554a",
+   "#c6c7cf",
+   "#67361b",
+   "#b85c21",
+   "#ebaa52"
+  ]
+ },
+ {
+  "query": "palette-final-05.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1210,
+    1133,
+    1071,
+    3560,
+    994
+   ],
+   "Deployed, with the National Gallery": [
+    8777,
+    9873,
+    9320,
+    9866,
+    1210
+   ]
+  },
+  "pooled": [
+   9866,
+   9320,
+   9873,
+   1133,
+   994,
+   3560,
+   1210,
+   8777,
+   1071
+  ],
+  "palette": [
+   "#bdbebe",
+   "#848482",
+   "#4a413e",
+   "#eff2f2",
+   "#bd9586",
+   "#869dbe"
+  ]
+ },
+ {
+  "query": "palette-final-06.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    6023,
+    4058,
+    5404,
+    4400,
+    7452
+   ],
+   "Deployed, with the National Gallery": [
+    6023,
+    4058,
+    5404,
+    4400,
+    7452
+   ]
+  },
+  "pooled": [
+   4058,
+   6023,
+   5404,
+   4400,
+   7452
+  ],
+  "palette": [
+   "#efe2dd",
+   "#bf8e6a",
+   "#2d3d38",
+   "#d4bcac",
+   "#6e5a4a",
+   "#938a73"
+  ]
+ },
+ {
+  "query": "palette-final-07.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1955,
+    4354,
+    1716,
+    1205,
+    4223
+   ],
+   "Deployed, with the National Gallery": [
+    8906,
+    9606,
+    10032,
+    9216,
+    10293
+   ]
+  },
+  "pooled": [
+   4223,
+   1716,
+   1955,
+   8906,
+   9216,
+   10293,
+   1205,
+   4354,
+   10032,
+   9606
+  ],
+  "palette": [
+   "#2f3c36",
+   "#555b4f",
+   "#8f7862",
+   "#dab88b",
+   "#909793",
+   "#dadddd"
+  ]
+ },
+ {
+  "query": "palette-final-08.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    5345,
+    4087,
+    7033,
+    2950,
+    1207
+   ],
+   "Deployed, with the National Gallery": [
+    8421,
+    7645,
+    7975,
+    5345,
+    4087
+   ]
+  },
+  "pooled": [
+   8421,
+   7645,
+   7975,
+   2950,
+   4087,
+   5345,
+   7033,
+   1207
+  ],
+  "palette": [
+   "#142129",
+   "#2a3535",
+   "#495443",
+   "#434f53",
+   "#71818c",
+   "#c6cfd7"
+  ]
+ },
+ {
+  "query": "palette-final-09.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    3558,
+    4934,
+    3763,
+    5961,
+    5987
+   ],
+   "Deployed, with the National Gallery": [
+    3558,
+    9589,
+    4934,
+    3763,
+    5961
+   ]
+  },
+  "pooled": [
+   5961,
+   5987,
+   4934,
+   3763,
+   3558,
+   9589
+  ],
+  "palette": [
+   "#decfb0",
+   "#c8c8b5",
+   "#312d25",
+   "#94947e",
+   "#656a5b",
+   "#7c5535"
+  ]
+ },
+ {
+  "query": "palette-final-10.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    6051,
+    7419,
+    5937,
+    4949,
+    3152
+   ],
+   "Deployed, with the National Gallery": [
+    6051,
+    9861,
+    7419,
+    9287,
+    5937
+   ]
+  },
+  "pooled": [
+   9287,
+   5937,
+   3152,
+   6051,
+   7419,
+   9861,
+   4949
+  ],
+  "palette": [
+   "#d0cbbe",
+   "#e9d8b9",
+   "#acaa9f",
+   "#917e5c",
+   "#57462b",
+   "#221b11"
+  ]
+ },
+ {
+  "query": "palette-final-11.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    2998,
+    2999,
+    3743,
+    327,
+    5409
+   ],
+   "Deployed, with the National Gallery": [
+    2998,
+    2999,
+    3743,
+    10181,
+    327
+   ]
+  },
+  "pooled": [
+   10181,
+   2998,
+   327,
+   3743,
+   5409,
+   2999
+  ],
+  "palette": [
+   "#eceef1",
+   "#3d3b2f",
+   "#b0b1b2",
+   "#171712",
+   "#7d7a76",
+   "#5c593c"
+  ]
+ },
+ {
+  "query": "palette-final-12.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    2,
+    1006,
+    4494,
+    1283,
+    6415
+   ],
+   "Deployed, with the National Gallery": [
+    2,
+    1006,
+    8478,
+    4494,
+    1283
+   ]
+  },
+  "pooled": [
+   4494,
+   1006,
+   8478,
+   2,
+   1283,
+   6415
+  ],
+  "palette": [
+   "#253344",
+   "#c7bfb5",
+   "#958d82",
+   "#3d526a",
+   "#6c6a66",
+   "#58768f"
+  ]
+ },
+ {
+  "query": "palette-final-13.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    6140,
+    6006,
+    2361,
+    5523,
+    2362
+   ],
+   "Deployed, with the National Gallery": [
+    6140,
+    6006,
+    2361,
+    9482,
+    7750
+   ]
+  },
+  "pooled": [
+   6006,
+   2361,
+   7750,
+   5523,
+   2362,
+   6140,
+   9482
+  ],
+  "palette": [
+   "#e9eaf0",
+   "#5e5b61",
+   "#a9a9ad",
+   "#683819",
+   "#301912",
+   "#bc8b59"
+  ]
+ },
+ {
+  "query": "palette-final-14.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1295,
+    3564,
+    1127,
+    3561,
+    2141
+   ],
+   "Deployed, with the National Gallery": [
+    8549,
+    9416,
+    8689,
+    1295,
+    10181
+   ]
+  },
+  "pooled": [
+   3561,
+   10181,
+   1127,
+   9416,
+   2141,
+   1295,
+   3564,
+   8549,
+   8689
+  ],
+  "palette": [
+   "#f2f1ed",
+   "#cacfd3",
+   "#574f2b",
+   "#342d1b",
+   "#a39d85",
+   "#7e7332"
+  ]
+ },
+ {
+  "query": "palette-final-15.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1333,
+    357,
+    2084,
+    1312,
+    1007
+   ],
+   "Deployed, with the National Gallery": [
+    1333,
+    8840,
+    8875,
+    357,
+    8791
+   ]
+  },
+  "pooled": [
+   1007,
+   8840,
+   8875,
+   1333,
+   1312,
+   8791,
+   2084,
+   357
+  ],
+  "palette": [
+   "#d4dae2",
+   "#c0c8d0",
+   "#373f43",
+   "#1e262a",
+   "#97a0a8",
+   "#647177"
+  ]
+ },
+ {
+  "query": "palette-final-16.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    4087,
+    5345,
+    3421,
+    1207,
+    3855
+   ],
+   "Deployed, with the National Gallery": [
+    8421,
+    7645,
+    8761,
+    7785,
+    4087
+   ]
+  },
+  "pooled": [
+   7645,
+   3421,
+   8421,
+   4087,
+   5345,
+   7785,
+   1207,
+   8761,
+   3855
+  ],
+  "palette": [
+   "#112d2f",
+   "#032324",
+   "#2a3f3c",
+   "#505b51",
+   "#80806e",
+   "#baae97"
+  ]
+ },
+ {
+  "query": "palette-final-17.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1386,
+    1551,
+    4817,
+    4528,
+    324
+   ],
+   "Deployed, with the National Gallery": [
+    8252,
+    8845,
+    8251,
+    1386,
+    1551
+   ]
+  },
+  "pooled": [
+   324,
+   8251,
+   1551,
+   8845,
+   4817,
+   1386,
+   8252,
+   4528
+  ],
+  "palette": [
+   "#555358",
+   "#7d7672",
+   "#696666",
+   "#282633",
+   "#413e48",
+   "#cfc6ae"
+  ]
+ },
+ {
+  "query": "palette-final-18.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1514,
+    1759,
+    2779,
+    3130,
+    1311
+   ],
+   "Deployed, with the National Gallery": [
+    1514,
+    1759,
+    2779,
+    3130,
+    1311
+   ]
+  },
+  "pooled": [
+   1311,
+   1514,
+   1759,
+   3130,
+   2779
+  ],
+  "palette": [
+   "#424242",
+   "#575757",
+   "#6f6f6f",
+   "#898989",
+   "#a4a4a4",
+   "#c3c3c3"
+  ]
+ },
+ {
+  "query": "palette-final-19.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    986,
+    133,
+    978,
+    2654,
+    4881
+   ],
+   "Deployed, with the National Gallery": [
+    986,
+    133,
+    978,
+    2654,
+    9883
+   ]
+  },
+  "pooled": [
+   2654,
+   4881,
+   978,
+   9883,
+   986,
+   133
+  ],
+  "palette": [
+   "#0551b6",
+   "#0d3581",
+   "#0860a9",
+   "#184670",
+   "#e47008",
+   "#935328"
+  ]
+ },
+ {
+  "query": "palette-final-20.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    358,
+    1868,
+    141,
+    1170,
+    3287
+   ],
+   "Deployed, with the National Gallery": [
+    8737,
+    358,
+    1868,
+    8738,
+    10259
+   ]
+  },
+  "pooled": [
+   8738,
+   10259,
+   3287,
+   8737,
+   1170,
+   141,
+   358,
+   1868
+  ],
+  "palette": [
+   "#251b19",
+   "#3b261d",
+   "#ecdfc4",
+   "#703f26",
+   "#dbac68",
+   "#b46b35"
+  ]
+ },
+ {
+  "query": "palette-final-21.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1333,
+    1007,
+    352,
+    2084,
+    1434
+   ],
+   "Deployed, with the National Gallery": [
+    1333,
+    8840,
+    8875,
+    8791,
+    1007
+   ]
+  },
+  "pooled": [
+   8875,
+   2084,
+   352,
+   1434,
+   1333,
+   1007,
+   8840,
+   8791
+  ],
+  "palette": [
+   "#cedfe8",
+   "#949da0",
+   "#62757a",
+   "#284b56",
+   "#7bb4c8",
+   "#1b2a2b"
+  ]
+ },
+ {
+  "query": "palette-final-22.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    148,
+    4299,
+    5281,
+    1005,
+    962
+   ],
+   "Deployed, with the National Gallery": [
+    148,
+    8794,
+    4299,
+    5281,
+    1005
+   ]
+  },
+  "pooled": [
+   5281,
+   4299,
+   1005,
+   148,
+   8794,
+   962
+  ],
+  "palette": [
+   "#6c686a",
+   "#8f8e94",
+   "#847e75",
+   "#9e536c",
+   "#4c4749",
+   "#b2aeb8"
+  ]
+ },
+ {
+  "query": "palette-final-23.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1756,
+    2991,
+    1486,
+    2299,
+    2952
+   ],
+   "Deployed, with the National Gallery": [
+    1756,
+    2991,
+    1486,
+    2299,
+    2952
+   ]
+  },
+  "pooled": [
+   1756,
+   2952,
+   2299,
+   2991,
+   1486
+  ],
+  "palette": [
+   "#cdcdcd",
+   "#0d0d0d",
+   "#2b2b2b",
+   "#a9a9a9",
+   "#515151",
+   "#7b7b7b"
+  ]
+ },
+ {
+  "query": "palette-final-24.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    3835,
+    1651,
+    3769,
+    3875,
+    2340
+   ],
+   "Deployed, with the National Gallery": [
+    3835,
+    1651,
+    3769,
+    8539,
+    8765
+   ]
+  },
+  "pooled": [
+   3769,
+   2340,
+   8539,
+   3835,
+   1651,
+   8765,
+   3875
+  ],
+  "palette": [
+   "#a99c82",
+   "#201e1e",
+   "#807b6b",
+   "#cdbf9f",
+   "#463d32",
+   "#75583d"
+  ]
+ },
+ {
+  "query": "palette-final-25.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1013,
+    3852,
+    137,
+    991,
+    1032
+   ],
+   "Deployed, with the National Gallery": [
+    9651,
+    1013,
+    3852,
+    9696,
+    137
+   ]
+  },
+  "pooled": [
+   991,
+   1013,
+   1032,
+   3852,
+   9651,
+   137,
+   9696
+  ],
+  "palette": [
+   "#095c6d",
+   "#268095",
+   "#23261b",
+   "#5b4b3a",
+   "#7e7261",
+   "#a8cfd1"
+  ]
+ },
+ {
+  "query": "palette-final-26.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    3272,
+    3276,
+    3277,
+    2359,
+    3273
+   ],
+   "Deployed, with the National Gallery": [
+    3272,
+    3276,
+    3277,
+    2359,
+    3273
+   ]
+  },
+  "pooled": [
+   3272,
+   3273,
+   3277,
+   3276,
+   2359
+  ],
+  "palette": [
+   "#f1f1df",
+   "#b9baa2",
+   "#7e3f1b",
+   "#a86e21",
+   "#c5a363",
+   "#38160e"
+  ]
+ },
+ {
+  "query": "palette-final-27.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1386,
+    4528,
+    3325,
+    1216,
+    1226
+   ],
+   "Deployed, with the National Gallery": [
+    1386,
+    4528,
+    3325,
+    1216,
+    1226
+   ]
+  },
+  "pooled": [
+   1226,
+   4528,
+   1386,
+   3325,
+   1216
+  ],
+  "palette": [
+   "#775667",
+   "#615252",
+   "#7b8062",
+   "#937a7c",
+   "#a0c676",
+   "#a9be96"
+  ]
+ },
+ {
+  "query": "palette-final-28.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    6396,
+    7472,
+    6398,
+    3951,
+    75
+   ],
+   "Deployed, with the National Gallery": [
+    9415,
+    7649,
+    6396,
+    7472,
+    6398
+   ]
+  },
+  "pooled": [
+   7649,
+   6398,
+   7472,
+   3951,
+   75,
+   6396,
+   9415
+  ],
+  "palette": [
+   "#353233",
+   "#847772",
+   "#5c524d",
+   "#b1a19a",
+   "#c5a871",
+   "#f7d7a6"
+  ]
+ },
+ {
+  "query": "palette-final-29.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    962,
+    4494,
+    1060,
+    1184,
+    326
+   ],
+   "Deployed, with the National Gallery": [
+    962,
+    4494,
+    1060,
+    8166,
+    1184
+   ]
+  },
+  "pooled": [
+   8166,
+   4494,
+   326,
+   962,
+   1184,
+   1060
+  ],
+  "palette": [
+   "#d6d6e3",
+   "#87a5cd",
+   "#133c58",
+   "#476783",
+   "#4b4030",
+   "#908178"
+  ]
+ },
+ {
+  "query": "palette-final-30.jpg",
+  "results": {
+   "Deployed, before the National Gallery": [
+    1524,
+    1482,
+    3506,
+    3538,
+    5793
+   ],
+   "Deployed, with the National Gallery": [
+    1524,
+    1482,
+    9893,
+    3506,
+    3538
+   ]
+  },
+  "pooled": [
+   3538,
+   1524,
+   3506,
+   9893,
+   5793,
+   1482
+  ],
+  "palette": [
+   "#443527",
+   "#efe6e2",
+   "#7c6649",
+   "#beaea9",
+   "#b09373",
+   "#877970"
+  ]
+ }
+]

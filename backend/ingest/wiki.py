@@ -22,7 +22,7 @@ from app.gemini import DailyQuotaExceeded, embed
 from ingest.aic import get_with_retry
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
-MUSEUMS = {"aic": "Art Institute of Chicago", "cma": "Cleveland Museum of Art"}
+MUSEUMS = {"aic": "Art Institute of Chicago", "cma": "Cleveland Museum of Art", "nga": "National Gallery of Art"}
 HEADERS = {"User-Agent": "palette-rag-explorer/0.1 (andrewjiang74@gmail.com)"}
 REQUEST_DELAY = 0.5
 

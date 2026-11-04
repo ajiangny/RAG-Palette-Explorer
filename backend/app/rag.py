@@ -35,8 +35,10 @@ def fetch_artworks(conn: psycopg.Connection, ids: Sequence[int]) -> list[dict[st
     rows = conn.execute(
         "select id, title, artist, date, style, image_url, palette from artworks where id = any(%s)",
         (list(ids),)).fetchall()
-    by_id = {r[0]: dict(zip(("id", "title", "artist", "date", "style", "image_url", "palette"), r))
-             for r in rows}
+    by_id: dict[int, dict[str, Any]] = {
+        r[0]: dict(zip(("id", "title", "artist", "date", "style", "image_url", "palette"), r))
+        for r in rows
+    }
     return [by_id[i] for i in ids if i in by_id]
 
 
