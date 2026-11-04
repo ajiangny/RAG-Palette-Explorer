@@ -18,6 +18,10 @@ Held-out test of a frozen challenger (see eval/TEST_PROTOCOL.md), with its own i
     # put ~30 new images in backend/data/eval_human_test/
     python -m eval.label build-test   # → eval/labeling_test.html; label it in one sitting
     python -m eval.label score-test ~/Downloads/human_labels_test.json
+
+Final test of adding the National Gallery (see eval/FINAL_TEST_PROTOCOL.md), on new images in the same folder:
+    python -m eval.label build-final  # → eval/labeling_final.html
+    python -m eval.label score-final ~/Downloads/human_labels_final.json
 """
 
 import argparse
@@ -31,6 +35,7 @@ from typing import Any
 
 import numpy as np
 
+from app.db import connect
 from app.retrieve import DISTANCE_SCALE, palette_distance
 from eval.featurize import corpus_features, featurize_many
 from eval.run_eval import DEPLOYED, INITIAL
@@ -50,6 +55,13 @@ TEST_POOL = EVAL_DIR / "human_pool_test.json"
 TEST_LABELS = EVAL_DIR / "human_labels_test.json"
 TEST_PAGE = EVAL_DIR / "labeling_test.html"
 TEST_RESULTS = EVAL_DIR / "RESULTS_human_test.md"
+FINAL_POOL = EVAL_DIR / "human_pool_final.json"
+FINAL_LABELS = EVAL_DIR / "human_labels_final.json"
+FINAL_PAGE = EVAL_DIR / "labeling_final.html"
+FINAL_RESULTS = EVAL_DIR / "RESULTS_final_test.md"
+ROUND1_DIR = BACKEND_DIR / "data" / "eval_human_test_round1"
+FINAL_BEFORE = "Deployed, before the National Gallery"
+FINAL_AFTER = "Deployed, with the National Gallery"
 TOP = 5
 DEPLOYED_NAME = "Histogram + palette rerank, α=0.5 (deployed)"
 SYSTEMS = {
@@ -69,7 +81,11 @@ TEST_SYSTEMS = {DEPLOYED_NAME: SYSTEMS[DEPLOYED_NAME], CHALLENGER_NAME: SYSTEMS[
 def top_ids(qf: dict[str, Any], H: np.ndarray, corpus_feats: list, ids: list[int], cfg: dict | None) -> list[int]:
     hq = qf["hist"]["8x8x8"] / np.linalg.norm(qf["hist"]["8x8x8"])
     sims = H @ hq
+    if cfg and cfg.get("exclude"):  # search as if these paintings were not in the collection
+        sims = sims.copy()
+        sims[[i for i, painting in enumerate(ids) if painting in cfg["exclude"]]] = -np.inf
     order = np.argsort(-sims)
+    order = order[np.isfinite(sims[order])]
     if cfg is None:
         return [ids[i] for i in order[:TOP]]
     cand = order[:cfg["candidates"]]
@@ -198,7 +214,7 @@ section{{display:flex;gap:1.5rem;padding:1.25rem 0;border-bottom:1px solid #333}
 .sw{{display:flex;height:16px;margin:.4rem 0}} .sw span{{flex:1}}
 .cards{{display:flex;flex-wrap:wrap;gap:.75rem}}
 .card{{width:150px;display:flex;flex-direction:column;gap:.25rem;font-size:.85rem;cursor:pointer}}
-.card img{{width:150px;height:150px;object-fit:cover;border-radius:6px;border:3px solid transparent}}
+.card img{{width:150px;height:150px;object-fit:contain;background:#808080;border-radius:6px;border:3px solid transparent}}
 .card:has(input:checked) img{{border-color:#e8c66a}} small{{color:#999}}
 .rule{{white-space:pre-wrap;max-width:60rem;line-height:1.45;padding:.75rem 1rem;background:#222;border-radius:6px}}
 #bar{{position:fixed;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:#222;display:flex;gap:1rem;align-items:center}}
@@ -296,28 +312,47 @@ def build_test() -> None:
     build(TEST_DIR, TEST_SYSTEMS, TEST_POOL, TEST_LABELS, TEST_PAGE, "human_labels_test.json", recheck_file=None)
 
 
-def score_test(labels_path: Path) -> None:
+def build_final() -> None:
+    def digest(p: Path) -> str:
+        return hashlib.sha256(p.read_bytes()).hexdigest()
+    earlier = {digest(p) for folder in (HUMAN_DIR, ROUND1_DIR) for p in list_images(folder)}
+    if earlier & {digest(p) for p in list_images(TEST_DIR)}:
+        raise SystemExit("a final-test image is byte-identical to an earlier image; replace it")
+    with connect() as conn:
+        nga = {r[0] for r in conn.execute("select id from artworks where source = 'nga'")}
+    systems = {FINAL_BEFORE: {**DEPLOYED, "exclude": nga}, FINAL_AFTER: DEPLOYED}
+    build(TEST_DIR, systems, FINAL_POOL, FINAL_LABELS, FINAL_PAGE, "human_labels_final.json", recheck_file=None)
+
+
+def score_final(labels_path: Path) -> None:
+    score_test(labels_path, FINAL_BEFORE, FINAL_AFTER, FINAL_POOL, FINAL_LABELS, FINAL_RESULTS,
+               "Final test", "FINAL_TEST_PROTOCOL.md")
+
+
+def score_test(labels_path: Path, base_name: str = DEPLOYED_NAME, new_name: str = CHALLENGER_NAME,
+               pool_file: Path = TEST_POOL, labels_file: Path = TEST_LABELS, results_file: Path = TEST_RESULTS,
+               title: str = "Held-out human test", protocol: str = "TEST_PROTOCOL.md") -> None:
     labels = json.loads(labels_path.read_text())
-    pool = json.loads(TEST_POOL.read_text())
+    pool = json.loads(pool_file.read_text())
     missing = [(q["query"], i) for q in pool for i in q["pooled"] if str(i) not in labels.get(q["query"], {})]
     if missing:
         raise SystemExit(f"{len(missing)} pooled paintings have no label, e.g. {missing[:3]}")
     per_query = {name: np.array([np.mean([labels[q["query"]][str(i)] for i in q["results"][name]]) for q in pool])
-                 for name in TEST_SYSTEMS}
-    d = per_query[CHALLENGER_NAME] - per_query[DEPLOYED_NAME]
+                 for name in (base_name, new_name)}
+    d = per_query[new_name] - per_query[base_name]
     rng = np.random.default_rng(0)
     boots = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(10_000)]
     lo, hi = np.percentile(boots, [2.5, 97.5])
-    lines = ["# Held-out human test", "",
+    lines = [f"# {title}", "",
              f"{len(pool)} new images, labeled in one sitting with both systems' top {TOP} pooled and shuffled. "
-             "Challenger and decision rule were committed first (`TEST_PROTOCOL.md`).", "",
+             f"Comparison and decision rule were committed first (`{protocol}`).", "",
              "| System | P@5 |", "|---|---|",
              *(f"| {name} | {p.mean():.0%} |" for name, p in per_query.items()), "",
              f"Difference: {d.mean() * 100:+.1f} points (95% CI {lo * 100:+.1f} to {hi * 100:+.1f}, paired bootstrap); "
              f"better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, tied on {int((d == 0).sum())} images.", "",
              f"Decision rule: {'met' if lo > 0 else 'NOT met'} (lower bound of the CI must be above 0).", ""]
-    TEST_RESULTS.write_text("\n".join(lines))
-    TEST_LABELS.write_text(json.dumps(labels, indent=1) + "\n")
+    results_file.write_text("\n".join(lines))
+    labels_file.write_text(json.dumps(labels, indent=1) + "\n")
     print("\n".join(lines))
 
 
@@ -332,6 +367,9 @@ if __name__ == "__main__":
     sub.add_parser("build-test")
     t = sub.add_parser("score-test")
     t.add_argument("labels", type=Path)
+    sub.add_parser("build-final")
+    f = sub.add_parser("score-final")
+    f.add_argument("labels", type=Path)
     args = parser.parse_args()
     if args.cmd == "build":
         build(args.images, recheck=args.recheck)
@@ -339,5 +377,9 @@ if __name__ == "__main__":
         score(args.labels)
     elif args.cmd == "build-test":
         build_test()
-    else:
+    elif args.cmd == "score-test":
         score_test(args.labels)
+    elif args.cmd == "build-final":
+        build_final()
+    else:
+        score_final(args.labels)

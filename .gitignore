@@ -10,3 +10,4 @@ dist/
 # labeling page embeds the evaluator's own photos
 backend/eval/labeling.html
 backend/eval/labeling_test.html
+backend/eval/labeling_final.html

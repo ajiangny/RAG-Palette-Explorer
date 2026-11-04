@@ -1,8 +1,9 @@
 import random
 
+import numpy as np
 import pytest
 
-from eval.label import recheck_lines, rule_text, sample_recheck, split_recheck
+from eval.label import top_ids, recheck_lines, rule_text, sample_recheck, split_recheck
 
 LABELS = {"a.jpg": {"1": True, "2": False, "3": True}, "b.jpg": {"4": False, "5": True, "6": False}}
 
@@ -42,3 +43,13 @@ def test_page_rule_keeps_the_rule_and_leaves_out_the_committed_decision():
     text = rule_text()
     assert "good only if all three are true" in text and "mark it poor" in text
     assert "**" not in text and "Committed decision" not in text and "--recheck" not in text
+
+
+def test_excluded_paintings_cannot_be_returned():
+    swatch = [{"lab": [50.0, 0.0, 0.0], "weight": 1.0}]
+    hist = {"hist": {"8x8x8": np.array([1.0, 0.0])}, "palette": {6: swatch}}
+    H = np.array([[1.0, 0.0], [0.9, 0.1], [0.5, 0.5]])
+    feats = [{"palette": {6: swatch}}] * 3
+    cfg = {"candidates": 3, "k": 6, "alpha": 0.5, "exclude": {10}}
+    assert 10 not in top_ids(hist, H, feats, [10, 20, 30], cfg)
+    assert 10 in top_ids(hist, H, feats, [10, 20, 30], {**cfg, "exclude": set()})
