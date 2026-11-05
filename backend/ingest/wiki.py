@@ -37,6 +37,11 @@ PRIORITY_SECTIONS = re.compile(r"style|technique|method|colou?r|palette|light|br
 # sometimes holds a culture, e.g. "Islamic" → the article on Islam).
 ARTIST_WORDS = re.compile(r"\b(painter|artist|printmaker|illustrator|draughtsman|draftsman|"
                           r"sculptor|calligrapher|muralist|watercolou?rist)\b", re.IGNORECASE)
+# The named artist didn't paint this ("Follower of Titian", "Workshop of Titian") or the name is
+# only a guess, so that artist's biography would misdescribe the painting. "Attributed to X" and
+# "X and Workshop" still credit X, so they keep their article.
+NOT_BY_NAMED_ARTIST = re.compile(r"\b(after|follower|imitator|circle|style|manner|school|assistant|possibly|probably|copy)\b"
+                                 r"|(?<!and )\b(workshop|studio)\b", re.IGNORECASE)
 
 
 def _norm_words(text: str) -> set[str]:
@@ -156,7 +161,9 @@ def ingest_wikipedia() -> bool:
               and not exists (select 1 from text_chunks c
                               where c.artist = a.artist and c.artwork_id is null)
             order by 1""")]
-    print(f"{len(artists)} artists to fetch", flush=True)
+    skipped = [a for a in artists if NOT_BY_NAMED_ARTIST.search(a)]
+    artists = [a for a in artists if not NOT_BY_NAMED_ARTIST.search(a)]
+    print(f"{len(artists)} artists to fetch ({len(skipped)} skipped: not by the named artist)", flush=True)
     found = 0
     with httpx.Client(headers=HEADERS, timeout=30) as client:
         for n, artist in enumerate(artists, 1):
