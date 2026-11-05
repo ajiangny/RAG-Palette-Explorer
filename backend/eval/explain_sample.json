@@ -1,0 +1,1582 @@
+[
+ {
+  "id": "edge-rich-00",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 6078,
+  "target_id": 3731,
+  "split": "dev"
+ },
+ {
+  "id": "edge-rich-01",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 7638,
+  "target_id": 58,
+  "split": "test"
+ },
+ {
+  "id": "edge-rich-02",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 6062,
+  "target_id": 5041,
+  "split": "dev"
+ },
+ {
+  "id": "edge-rich-03",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 9376,
+  "target_id": 5652,
+  "split": "test"
+ },
+ {
+  "id": "edge-rich-04",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 4025,
+  "target_id": 3941,
+  "split": "dev"
+ },
+ {
+  "id": "edge-rich-05",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 3986,
+  "target_id": 10031,
+  "split": "test"
+ },
+ {
+  "id": "edge-rich-06",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 9493,
+  "target_id": 5824,
+  "split": "dev"
+ },
+ {
+  "id": "edge-rich-07",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 7942,
+  "target_id": 4452,
+  "split": "test"
+ },
+ {
+  "id": "edge-rich-08",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 3996,
+  "target_id": 10125,
+  "split": "dev"
+ },
+ {
+  "id": "edge-rich-09",
+  "kind": "edge_painting",
+  "stratum": "rich",
+  "source_id": 1655,
+  "target_id": 4764,
+  "split": "test"
+ },
+ {
+  "id": "edge-wiki_only-00",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 9949,
+  "target_id": 9549,
+  "split": "dev"
+ },
+ {
+  "id": "edge-wiki_only-01",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 9036,
+  "target_id": 9035,
+  "split": "test"
+ },
+ {
+  "id": "edge-wiki_only-02",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 7700,
+  "target_id": 8188,
+  "split": "dev"
+ },
+ {
+  "id": "edge-wiki_only-03",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 5579,
+  "target_id": 1414,
+  "split": "test"
+ },
+ {
+  "id": "edge-wiki_only-04",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 1641,
+  "target_id": 10131,
+  "split": "dev"
+ },
+ {
+  "id": "edge-wiki_only-05",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 9442,
+  "target_id": 1350,
+  "split": "test"
+ },
+ {
+  "id": "edge-wiki_only-06",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 9987,
+  "target_id": 7969,
+  "split": "dev"
+ },
+ {
+  "id": "edge-wiki_only-07",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 7815,
+  "target_id": 1402,
+  "split": "test"
+ },
+ {
+  "id": "edge-wiki_only-08",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 1243,
+  "target_id": 7844,
+  "split": "dev"
+ },
+ {
+  "id": "edge-wiki_only-09",
+  "kind": "edge_painting",
+  "stratum": "wiki_only",
+  "source_id": 2456,
+  "target_id": 2458,
+  "split": "test"
+ },
+ {
+  "id": "edge-one_sided-00",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 1445,
+  "target_id": 4050,
+  "split": "dev"
+ },
+ {
+  "id": "edge-one_sided-01",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 1204,
+  "target_id": 10314,
+  "split": "test"
+ },
+ {
+  "id": "edge-one_sided-02",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 3403,
+  "target_id": 6201,
+  "split": "dev"
+ },
+ {
+  "id": "edge-one_sided-03",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 10269,
+  "target_id": 10037,
+  "split": "test"
+ },
+ {
+  "id": "edge-one_sided-04",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 4056,
+  "target_id": 5952,
+  "split": "dev"
+ },
+ {
+  "id": "edge-one_sided-05",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 8109,
+  "target_id": 8099,
+  "split": "test"
+ },
+ {
+  "id": "edge-one_sided-06",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 1141,
+  "target_id": 1996,
+  "split": "dev"
+ },
+ {
+  "id": "edge-one_sided-07",
+  "kind": "edge_painting",
+  "stratum": "one_sided",
+  "source_id": 9517,
+  "target_id": 8487,
+  "split": "test"
+ },
+ {
+  "id": "edge-no_text-00",
+  "kind": "edge_painting",
+  "stratum": "no_text",
+  "source_id": 8882,
+  "target_id": 8485,
+  "split": "dev"
+ },
+ {
+  "id": "edge-no_text-01",
+  "kind": "edge_painting",
+  "stratum": "no_text",
+  "source_id": 7467,
+  "target_id": 7450,
+  "split": "test"
+ },
+ {
+  "id": "edge-upload-00",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "8315bae62525355e893d02469ba54904.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     30.29,
+     12.76,
+     12.78
+    ],
+    "hex": "#603f34",
+    "weight": 0.2623
+   },
+   {
+    "lab": [
+     9.15,
+     3.34,
+     2.32
+    ],
+    "hex": "#1f1817",
+    "weight": 0.2593
+   },
+   {
+    "lab": [
+     53.48,
+     7.4,
+     16.17
+    ],
+    "hex": "#967b64",
+    "weight": 0.1548
+   },
+   {
+    "lab": [
+     63.41,
+     -2.13,
+     -9.51
+    ],
+    "hex": "#8c9baa",
+    "weight": 0.1277
+   },
+   {
+    "lab": [
+     38.3,
+     1.53,
+     -2.16
+    ],
+    "hex": "#5b595e",
+    "weight": 0.1137
+   },
+   {
+    "lab": [
+     82.35,
+     -1.04,
+     4.01
+    ],
+    "hex": "#cecdc5",
+    "weight": 0.0822
+   }
+  ],
+  "target_id": 3648,
+  "split": "dev"
+ },
+ {
+  "id": "edge-upload-01",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "c01606b61bb30cfa06d4d5965c83af1c.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     24.72,
+     -25.2,
+     17.06
+    ],
+    "hex": "#144420",
+    "weight": 0.2175
+   },
+   {
+    "lab": [
+     72.56,
+     -14.0,
+     -23.56
+    ],
+    "hex": "#72bbdc",
+    "weight": 0.2166
+   },
+   {
+    "lab": [
+     47.34,
+     -16.84,
+     -18.57
+    ],
+    "hex": "#297a8f",
+    "weight": 0.1917
+   },
+   {
+    "lab": [
+     23.27,
+     -10.31,
+     -12.25
+    ],
+    "hex": "#0f3d49",
+    "weight": 0.164
+   },
+   {
+    "lab": [
+     51.24,
+     -26.55,
+     3.78
+    ],
+    "hex": "#428673",
+    "weight": 0.1124
+   },
+   {
+    "lab": [
+     51.38,
+     -33.49,
+     32.71
+    ],
+    "hex": "#4f8840",
+    "weight": 0.0978
+   }
+  ],
+  "target_id": 9876,
+  "split": "test"
+ },
+ {
+  "id": "edge-upload-02",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "3d8a2271f8399bb85387fad4f484eeb9.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     95.1,
+     -0.01,
+     0.11
+    ],
+    "hex": "#f1f1f1",
+    "weight": 0.2718
+   },
+   {
+    "lab": [
+     51.32,
+     -5.42,
+     15.61
+    ],
+    "hex": "#7b7c60",
+    "weight": 0.2265
+   },
+   {
+    "lab": [
+     31.54,
+     -4.53,
+     14.14
+    ],
+    "hex": "#4b4c34",
+    "weight": 0.1932
+   },
+   {
+    "lab": [
+     72.95,
+     -9.58,
+     23.55
+    ],
+    "hex": "#b2b788",
+    "weight": 0.1479
+   },
+   {
+    "lab": [
+     76.92,
+     -3.12,
+     8.17
+    ],
+    "hex": "#bfbfaf",
+    "weight": 0.136
+   },
+   {
+    "lab": [
+     54.75,
+     16.34,
+     32.22
+    ],
+    "hex": "#ad774c",
+    "weight": 0.0247
+   }
+  ],
+  "target_id": 3559,
+  "split": "dev"
+ },
+ {
+  "id": "edge-upload-03",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "a90fba440716897eff32e6474b7fc003.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     86.13,
+     0.91,
+     12.62
+    ],
+    "hex": "#e3d6c0",
+    "weight": 0.2238
+   },
+   {
+    "lab": [
+     69.11,
+     1.66,
+     25.86
+    ],
+    "hex": "#bda67a",
+    "weight": 0.201
+   },
+   {
+    "lab": [
+     64.52,
+     10.95,
+     39.44
+    ],
+    "hex": "#c49456",
+    "weight": 0.1993
+   },
+   {
+    "lab": [
+     38.76,
+     13.56,
+     22.44
+    ],
+    "hex": "#7a5237",
+    "weight": 0.1629
+   },
+   {
+    "lab": [
+     15.84,
+     5.19,
+     7.69
+    ],
+    "hex": "#32251d",
+    "weight": 0.1398
+   },
+   {
+    "lab": [
+     60.14,
+     30.12,
+     57.26
+    ],
+    "hex": "#d67a27",
+    "weight": 0.0732
+   }
+  ],
+  "target_id": 3099,
+  "split": "test"
+ },
+ {
+  "id": "edge-upload-04",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "4370d2af04759e0dede3605795b1de6c.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     7.17,
+     -5.75,
+     1.79
+    ],
+    "hex": "#0d1813",
+    "weight": 0.2435
+   },
+   {
+    "lab": [
+     25.89,
+     -19.2,
+     14.3
+    ],
+    "hex": "#244427",
+    "weight": 0.2099
+   },
+   {
+    "lab": [
+     72.95,
+     -17.86,
+     43.98
+    ],
+    "hex": "#aeba60",
+    "weight": 0.1617
+   },
+   {
+    "lab": [
+     90.93,
+     -8.89,
+     10.97
+    ],
+    "hex": "#dce9d0",
+    "weight": 0.1489
+   },
+   {
+    "lab": [
+     45.67,
+     -22.83,
+     29.62
+    ],
+    "hex": "#557539",
+    "weight": 0.1182
+   },
+   {
+    "lab": [
+     58.97,
+     -15.24,
+     9.0
+    ],
+    "hex": "#78957e",
+    "weight": 0.1178
+   }
+  ],
+  "target_id": 8053,
+  "split": "dev"
+ },
+ {
+  "id": "edge-upload-05",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "c755db6e64df1a4d99f14c282ffbcdf1.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     64.47,
+     3.59,
+     4.69
+    ],
+    "hex": "#a69a94",
+    "weight": 0.3071
+   },
+   {
+    "lab": [
+     82.65,
+     3.26,
+     5.26
+    ],
+    "hex": "#d8cbc4",
+    "weight": 0.3062
+   },
+   {
+    "lab": [
+     65.27,
+     -3.99,
+     -22.62
+    ],
+    "hex": "#7ca2c6",
+    "weight": 0.1314
+   },
+   {
+    "lab": [
+     30.87,
+     -2.65,
+     -20.16
+    ],
+    "hex": "#2b4b68",
+    "weight": 0.1269
+   },
+   {
+    "lab": [
+     28.64,
+     0.3,
+     14.68
+    ],
+    "hex": "#4c432d",
+    "weight": 0.0934
+   },
+   {
+    "lab": [
+     30.65,
+     42.37,
+     -2.03
+    ],
+    "hex": "#80254d",
+    "weight": 0.035
+   }
+  ],
+  "target_id": 5502,
+  "split": "test"
+ },
+ {
+  "id": "edge-upload-06",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "4b5535c576a4a09ca7103b14653f49a6.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     63.92,
+     -23.91,
+     7.39
+    ],
+    "hex": "#6fa68d",
+    "weight": 0.2214
+   },
+   {
+    "lab": [
+     24.54,
+     -4.51,
+     -13.21
+    ],
+    "hex": "#233d4e",
+    "weight": 0.196
+   },
+   {
+    "lab": [
+     89.65,
+     -4.09,
+     7.41
+    ],
+    "hex": "#dfe3d3",
+    "weight": 0.1818
+   },
+   {
+    "lab": [
+     39.69,
+     -16.38,
+     -3.7
+    ],
+    "hex": "#376563",
+    "weight": 0.1788
+   },
+   {
+    "lab": [
+     81.93,
+     -11.05,
+     26.7
+    ],
+    "hex": "#cad099",
+    "weight": 0.1345
+   },
+   {
+    "lab": [
+     40.26,
+     10.49,
+     21.73
+    ],
+    "hex": "#7a583c",
+    "weight": 0.0874
+   }
+  ],
+  "target_id": 10271,
+  "split": "dev"
+ },
+ {
+  "id": "edge-upload-07",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "97ba9a5645239f1c06b89d854f095ba7.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     8.43,
+     -0.66,
+     1.27
+    ],
+    "hex": "#181917",
+    "weight": 0.3395
+   },
+   {
+    "lab": [
+     27.6,
+     -5.71,
+     -12.08
+    ],
+    "hex": "#294553",
+    "weight": 0.2336
+   },
+   {
+    "lab": [
+     45.17,
+     -9.11,
+     -24.1
+    ],
+    "hex": "#337193",
+    "weight": 0.228
+   },
+   {
+    "lab": [
+     69.66,
+     16.95,
+     61.41
+    ],
+    "hex": "#e19c34",
+    "weight": 0.0953
+   },
+   {
+    "lab": [
+     51.66,
+     51.04,
+     58.1
+    ],
+    "hex": "#d64e11",
+    "weight": 0.0552
+   },
+   {
+    "lab": [
+     34.63,
+     17.09,
+     28.91
+    ],
+    "hex": "#764623",
+    "weight": 0.0483
+   }
+  ],
+  "target_id": 4061,
+  "split": "test"
+ },
+ {
+  "id": "edge-upload-08",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "09f2c926ddbb3e4cc386d5d82ac3fe35.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     2.65,
+     0.71,
+     0.28
+    ],
+    "hex": "#0c0909",
+    "weight": 0.5585
+   },
+   {
+    "lab": [
+     51.11,
+     14.22,
+     4.64
+    ],
+    "hex": "#947172",
+    "weight": 0.1097
+   },
+   {
+    "lab": [
+     86.35,
+     5.94,
+     13.33
+    ],
+    "hex": "#eed3bf",
+    "weight": 0.1023
+   },
+   {
+    "lab": [
+     31.38,
+     12.81,
+     -26.71
+    ],
+    "hex": "#464574",
+    "weight": 0.1011
+   },
+   {
+    "lab": [
+     56.65,
+     19.8,
+     38.01
+    ],
+    "hex": "#b97946",
+    "weight": 0.0702
+   },
+   {
+    "lab": [
+     86.38,
+     1.97,
+     41.48
+    ],
+    "hex": "#f6d489",
+    "weight": 0.0582
+   }
+  ],
+  "target_id": 8194,
+  "split": "dev"
+ },
+ {
+  "id": "edge-upload-09",
+  "kind": "edge_upload",
+  "stratum": "upload",
+  "image": "0f47f6d98d5e68851b03706cc1b52812.jpg",
+  "source_palette": [
+   {
+    "lab": [
+     52.11,
+     3.67,
+     4.1
+    ],
+    "hex": "#867a75",
+    "weight": 0.2508
+   },
+   {
+    "lab": [
+     21.66,
+     -1.06,
+     0.03
+    ],
+    "hex": "#323434",
+    "weight": 0.2311
+   },
+   {
+    "lab": [
+     57.03,
+     -6.79,
+     -14.38
+    ],
+    "hex": "#6c8da1",
+    "weight": 0.1813
+   },
+   {
+    "lab": [
+     75.15,
+     -1.58,
+     -23.61
+    ],
+    "hex": "#9bbce4",
+    "weight": 0.1424
+   },
+   {
+    "lab": [
+     40.69,
+     -14.24,
+     16.7
+    ],
+    "hex": "#526644",
+    "weight": 0.105
+   },
+   {
+    "lab": [
+     41.38,
+     23.1,
+     14.94
+    ],
+    "hex": "#8c524a",
+    "weight": 0.0893
+   }
+  ],
+  "target_id": 148,
+  "split": "test"
+ },
+ {
+  "id": "matches-10",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "f660de992d698e46ba11571f8b7e8bea.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     37.76,
+     -6.42,
+     33.65
+    ],
+    "hex": "#5f5b20",
+    "weight": 0.4788
+   },
+   {
+    "lab": [
+     27.55,
+     -7.29,
+     25.09
+    ],
+    "hex": "#424319",
+    "weight": 0.2492
+   },
+   {
+    "lab": [
+     76.44,
+     7.19,
+     46.33
+    ],
+    "hex": "#e3b666",
+    "weight": 0.0729
+   },
+   {
+    "lab": [
+     33.52,
+     36.56,
+     32.34
+    ],
+    "hex": "#8a321d",
+    "weight": 0.0719
+   },
+   {
+    "lab": [
+     55.29,
+     19.84,
+     41.68
+    ],
+    "hex": "#b6763c",
+    "weight": 0.0709
+   },
+   {
+    "lab": [
+     10.32,
+     6.31,
+     5.96
+    ],
+    "hex": "#271914",
+    "weight": 0.0564
+   }
+  ],
+  "artwork_ids": [
+   9822,
+   8072,
+   5362,
+   10240,
+   10212
+  ],
+  "split": "dev"
+ },
+ {
+  "id": "matches-11",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "4398cfe7b6acf70455b78c69c5b2f735.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     44.27,
+     -13.91,
+     -10.13
+    ],
+    "hex": "#3f7079",
+    "weight": 0.3391
+   },
+   {
+    "lab": [
+     54.55,
+     -19.48,
+     1.45
+    ],
+    "hex": "#5b8c7f",
+    "weight": 0.2104
+   },
+   {
+    "lab": [
+     57.05,
+     -27.88,
+     16.74
+    ],
+    "hex": "#5d956b",
+    "weight": 0.1733
+   },
+   {
+    "lab": [
+     27.0,
+     -16.31,
+     9.76
+    ],
+    "hex": "#294630",
+    "weight": 0.1379
+   },
+   {
+    "lab": [
+     77.48,
+     2.72,
+     2.45
+    ],
+    "hex": "#c7bebb",
+    "weight": 0.0929
+   },
+   {
+    "lab": [
+     62.66,
+     -18.99,
+     45.52
+    ],
+    "hex": "#909f43",
+    "weight": 0.0463
+   }
+  ],
+  "artwork_ids": [
+   10065,
+   9695,
+   1050,
+   1347,
+   9651
+  ],
+  "split": "test"
+ },
+ {
+  "id": "matches-12",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "6431d3d47fa6ce1414f5737b05c6189e.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     77.4,
+     -29.87,
+     28.41
+    ],
+    "hex": "#98cd89",
+    "weight": 0.2165
+   },
+   {
+    "lab": [
+     98.51,
+     -1.8,
+     3.21
+    ],
+    "hex": "#fafcf4",
+    "weight": 0.1995
+   },
+   {
+    "lab": [
+     58.42,
+     -38.05,
+     38.37
+    ],
+    "hex": "#5a9c46",
+    "weight": 0.1823
+   },
+   {
+    "lab": [
+     89.62,
+     -14.22,
+     24.43
+    ],
+    "hex": "#d8e8b2",
+    "weight": 0.1707
+   },
+   {
+    "lab": [
+     80.26,
+     -31.18,
+     56.02
+    ],
+    "hex": "#aed558",
+    "weight": 0.1439
+   },
+   {
+    "lab": [
+     34.14,
+     -26.36,
+     19.24
+    ],
+    "hex": "#2a5a30",
+    "weight": 0.0871
+   }
+  ],
+  "artwork_ids": [
+   10087,
+   8520,
+   8569,
+   9766,
+   1229
+  ],
+  "split": "dev"
+ },
+ {
+  "id": "matches-13",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "e25d7adef5185c99fc6657aad67f39fd.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     54.43,
+     -12.12,
+     3.91
+    ],
+    "hex": "#6e887b",
+    "weight": 0.285
+   },
+   {
+    "lab": [
+     86.34,
+     2.53,
+     17.07
+    ],
+    "hex": "#ead5b8",
+    "weight": 0.2266
+   },
+   {
+    "lab": [
+     39.84,
+     -9.85,
+     6.39
+    ],
+    "hex": "#516253",
+    "weight": 0.1379
+   },
+   {
+    "lab": [
+     80.97,
+     2.27,
+     38.91
+    ],
+    "hex": "#e6c580",
+    "weight": 0.1244
+   },
+   {
+    "lab": [
+     20.81,
+     -8.78,
+     -1.4
+    ],
+    "hex": "#213634",
+    "weight": 0.1218
+   },
+   {
+    "lab": [
+     53.93,
+     10.99,
+     16.54
+    ],
+    "hex": "#9d7965",
+    "weight": 0.1045
+   }
+  ],
+  "artwork_ids": [
+   8162,
+   10012,
+   9434,
+   1630,
+   5751
+  ],
+  "split": "test"
+ },
+ {
+  "id": "matches-14",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "d5c1e95afbc83628d392e4d0f25d4787.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     72.09,
+     -0.63,
+     -22.23
+    ],
+    "hex": "#97b3d9",
+    "weight": 0.2799
+   },
+   {
+    "lab": [
+     68.81,
+     0.46,
+     -41.91
+    ],
+    "hex": "#6eabf3",
+    "weight": 0.2473
+   },
+   {
+    "lab": [
+     55.01,
+     -1.89,
+     -34.68
+    ],
+    "hex": "#4f88bf",
+    "weight": 0.1763
+   },
+   {
+    "lab": [
+     85.18,
+     0.35,
+     -14.32
+    ],
+    "hex": "#c7d6f0",
+    "weight": 0.157
+   },
+   {
+    "lab": [
+     38.47,
+     5.08,
+     -41.42
+    ],
+    "hex": "#1e5c9e",
+    "weight": 0.0922
+   },
+   {
+    "lab": [
+     37.93,
+     -8.58,
+     -14.13
+    ],
+    "hex": "#375e70",
+    "weight": 0.0473
+   }
+  ],
+  "artwork_ids": [
+   8832,
+   352,
+   359,
+   8770,
+   157
+  ],
+  "split": "dev"
+ },
+ {
+  "id": "matches-15",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "0d21ff75219fd28efbca0d2b55d0f4e9.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     74.36,
+     3.17,
+     -14.83
+    ],
+    "hex": "#afb6d2",
+    "weight": 0.2429
+   },
+   {
+    "lab": [
+     60.89,
+     -1.67,
+     -24.42
+    ],
+    "hex": "#7496be",
+    "weight": 0.2231
+   },
+   {
+    "lab": [
+     37.79,
+     13.3,
+     -50.86
+    ],
+    "hex": "#1757ac",
+    "weight": 0.1923
+   },
+   {
+    "lab": [
+     35.49,
+     5.73,
+     -15.45
+    ],
+    "hex": "#50526c",
+    "weight": 0.1412
+   },
+   {
+    "lab": [
+     72.22,
+     6.13,
+     16.48
+    ],
+    "hex": "#c8ac93",
+    "weight": 0.1166
+   },
+   {
+    "lab": [
+     36.46,
+     -9.82,
+     14.88
+    ],
+    "hex": "#4f5a3e",
+    "weight": 0.084
+   }
+  ],
+  "artwork_ids": [
+   9433,
+   336,
+   962,
+   352,
+   153
+  ],
+  "split": "test"
+ },
+ {
+  "id": "matches-16",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "5f015e7a1856d554e3fcd7a39b84deec.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     52.12,
+     -18.39,
+     20.19
+    ],
+    "hex": "#698459",
+    "weight": 0.1818
+   },
+   {
+    "lab": [
+     80.63,
+     -9.87,
+     -24.71
+    ],
+    "hex": "#93d0f6",
+    "weight": 0.1773
+   },
+   {
+    "lab": [
+     88.35,
+     0.87,
+     2.76
+    ],
+    "hex": "#e2ddd9",
+    "weight": 0.1761
+   },
+   {
+    "lab": [
+     39.61,
+     -9.47,
+     8.09
+    ],
+    "hex": "#526150",
+    "weight": 0.1649
+   },
+   {
+    "lab": [
+     72.41,
+     -20.45,
+     33.27
+    ],
+    "hex": "#a2bb73",
+    "weight": 0.1603
+   },
+   {
+    "lab": [
+     63.38,
+     -1.23,
+     1.02
+    ],
+    "hex": "#989a98",
+    "weight": 0.1396
+   }
+  ],
+  "artwork_ids": [
+   1102,
+   9329,
+   9660,
+   9343,
+   9351
+  ],
+  "split": "dev"
+ },
+ {
+  "id": "matches-17",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "3bdeddac2d87b60e73dd61fceda1cb97.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     33.65,
+     -12.09,
+     25.93
+    ],
+    "hex": "#4a5424",
+    "weight": 0.2284
+   },
+   {
+    "lab": [
+     21.48,
+     -1.33,
+     7.58
+    ],
+    "hex": "#363428",
+    "weight": 0.2194
+   },
+   {
+    "lab": [
+     40.94,
+     -2.14,
+     -4.27
+    ],
+    "hex": "#596267",
+    "weight": 0.2028
+   },
+   {
+    "lab": [
+     57.12,
+     6.71,
+     15.56
+    ],
+    "hex": "#9f846e",
+    "weight": 0.1292
+   },
+   {
+    "lab": [
+     61.09,
+     -16.82,
+     43.02
+    ],
+    "hex": "#8f9a44",
+    "weight": 0.1192
+   },
+   {
+    "lab": [
+     79.85,
+     -0.02,
+     6.15
+    ],
+    "hex": "#cbc5bb",
+    "weight": 0.101
+   }
+  ],
+  "artwork_ids": [
+   10194,
+   1200,
+   9733,
+   6089,
+   132
+  ],
+  "split": "test"
+ },
+ {
+  "id": "matches-18",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "3d79b69f0b99afa72cf19d53f98ee69e.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     72.55,
+     -30.72,
+     42.05
+    ],
+    "hex": "#92bf62",
+    "weight": 0.3808
+   },
+   {
+    "lab": [
+     82.66,
+     -34.09,
+     50.84
+    ],
+    "hex": "#acdd6a",
+    "weight": 0.2767
+   },
+   {
+    "lab": [
+     39.86,
+     -3.4,
+     3.45
+    ],
+    "hex": "#5b5f58",
+    "weight": 0.1223
+   },
+   {
+    "lab": [
+     20.57,
+     0.5,
+     12.08
+    ],
+    "hex": "#393120",
+    "weight": 0.0955
+   },
+   {
+    "lab": [
+     52.79,
+     10.22,
+     29.6
+    ],
+    "hex": "#9e764b",
+    "weight": 0.0642
+   },
+   {
+    "lab": [
+     51.62,
+     -20.08,
+     26.99
+    ],
+    "hex": "#68834c",
+    "weight": 0.0604
+   }
+  ],
+  "artwork_ids": [
+   9705,
+   9811,
+   3996,
+   3641,
+   9715
+  ],
+  "split": "dev"
+ },
+ {
+  "id": "matches-19",
+  "kind": "matches",
+  "stratum": "upload",
+  "image": "16696d255ada950b425365e829d47482.jpg",
+  "query_palette": [
+   {
+    "lab": [
+     56.74,
+     -5.64,
+     -24.31
+    ],
+    "hex": "#5e8db2",
+    "weight": 0.2347
+   },
+   {
+    "lab": [
+     40.85,
+     -1.08,
+     -4.69
+    ],
+    "hex": "#5a6168",
+    "weight": 0.2242
+   },
+   {
+    "lab": [
+     17.15,
+     0.76,
+     3.98
+    ],
+    "hex": "#2e2a25",
+    "weight": 0.1904
+   },
+   {
+    "lab": [
+     35.29,
+     5.37,
+     14.07
+    ],
+    "hex": "#634f3d",
+    "weight": 0.1513
+   },
+   {
+    "lab": [
+     78.15,
+     -5.67,
+     -19.38
+    ],
+    "hex": "#a0c6e5",
+    "weight": 0.1087
+   },
+   {
+    "lab": [
+     66.46,
+     5.35,
+     13.9
+    ],
+    "hex": "#b59e89",
+    "weight": 0.0907
+   }
+  ],
+  "artwork_ids": [
+   8661,
+   10386,
+   10162,
+   7849,
+   2084
+  ],
+  "split": "test"
+ }
+]

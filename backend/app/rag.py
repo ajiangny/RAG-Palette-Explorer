@@ -81,13 +81,22 @@ def clean_citations(text: str, n_sources: int) -> tuple[str, set[int]]:
     return re.sub(r"[ \t]+([.,;:])", r"\1", re.sub(r"[ \t]{2,}", " ", text)).strip(), cited
 
 
-def answer(context: str, task: str, sources: list[dict[str, Any]]) -> dict[str, Any]:
-    """Ask Gemini to do `task` over `context` + numbered sources; return text + validated sources."""
+def answer(context: str, task: str, sources: list[dict[str, Any]],
+           trace: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Ask Gemini to do `task` over `context` + numbered sources; return text + validated sources.
+
+    `trace`, if given, receives the inputs and raw output, including source text the API never returns.
+    """
+    if trace is not None:
+        trace.update(system=SYSTEM_PROMPT, context=context, task=task, sources=sources, raw_answer=None)
     if not sources:
         return {"answer": NO_SOURCES_ANSWER, "sources": []}
     numbered = "\n\n".join(f"[{s['n']}] {s['title']} ({s['url']})\n{s['content']}" for s in sources)
     prompt = f"{context}\n\nSources:\n{numbered}\n\nTask: {task}"
-    text, cited = clean_citations(gemini.generate(prompt, SYSTEM_PROMPT), len(sources))
+    raw = gemini.generate(prompt, SYSTEM_PROMPT)
+    if trace is not None:
+        trace["raw_answer"] = raw
+    text, cited = clean_citations(raw, len(sources))
     return {
         "answer": text,
         "sources": [{"n": s["n"], "title": s["title"], "url": s["url"], "cited": s["n"] in cited}
@@ -102,18 +111,19 @@ def describe_artwork(a: dict[str, Any]) -> str:
 
 
 def explain_matches(conn: psycopg.Connection, query_palette: Sequence[Swatch],
-                    artwork_ids: Sequence[int]) -> dict[str, Any]:
+                    artwork_ids: Sequence[int], trace: dict[str, Any] | None = None) -> dict[str, Any]:
     artworks = fetch_artworks(conn, artwork_ids[:MAX_ARTWORKS])
     context = (f"The user's image has this palette: {format_palette(query_palette)}\n\n"
                "Paintings with the most similar palettes:\n"
                + "\n".join(f"- {describe_artwork(a)}" for a in artworks))
     task = ("In 2–4 short paragraphs, explain how the artists of these paintings used color, "
             "and how that relates to the user's palette. Cite sources inline.")
-    return {"artworks": [a["id"] for a in artworks], **answer(context, task, retrieve_sources(conn, artworks))}
+    return {"artworks": [a["id"] for a in artworks], **answer(context, task, retrieve_sources(conn, artworks), trace)}
 
 
 def explain_edge(conn: psycopg.Connection, target_id: int, source_id: int | None = None,
-                 source_palette: Sequence[Swatch] | None = None) -> dict[str, Any] | None:
+                 source_palette: Sequence[Swatch] | None = None,
+                 trace: dict[str, Any] | None = None) -> dict[str, Any] | None:
     """Why two nodes of the web are linked. The source is a painting or the uploaded image's palette."""
     ids = [i for i in (source_id, target_id) if i is not None]
     artworks = fetch_artworks(conn, ids)
@@ -136,6 +146,7 @@ def explain_edge(conn: psycopg.Connection, target_id: int, source_id: int | None
     ])
     task = ("In 1–2 short paragraphs, explain why A and B are linked by palette, referring to the "
             "matched colors, and how the artists' approaches to color compare. Cite sources inline. "
-            "Refer to paintings by title and to an upload as \"your image\", never as A or B.")
+            + ("Refer to paintings by title and to an upload as \"your image\", never as A or B."
+               if source_id is None else "Refer to paintings by title, never as A or B."))
     return {"source": source_id, "target": target_id, "palette_distance": round(distance, 3),
-            "matched_colors": pairs, **answer(context, task, retrieve_sources(conn, artworks))}
+            "matched_colors": pairs, **answer(context, task, retrieve_sources(conn, artworks), trace)}

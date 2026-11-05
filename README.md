@@ -53,6 +53,11 @@ python -m eval.run_eval       # sweep → eval/results.csv, eval/RESULTS.md
 # Human-judged precision@5: put ~30 photos/designs in backend/data/eval_human/, then
 python -m eval.label build    # open eval/labeling.html, label blind, download labels
 python -m eval.label score ~/Downloads/human_labels.json
+
+# Explanations: save a fixed sample of 50, then run code checks on its dev half
+python -m eval.explanations sample   # already drawn: eval/explain_sample.json
+python -m eval.explanations run      # needs Gemini; resumes where it stopped; eval/explain_runs.jsonl
+python -m eval.explanations check    # no Gemini; eval/RESULTS_explain_checks.md
 ```
 
 Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (earlier collections: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md), [RESULTS_pre_nga.md](backend/eval/RESULTS_pre_nga.md)). Held-out test of adding the National Gallery: [RESULTS_final_test.md](backend/eval/RESULTS_final_test.md), 72% → 80% P@5 on 30 new photos with one human labeler, under a [written rule](backend/eval/LABELING_RULE.md) and a [protocol committed first](backend/eval/FINAL_TEST_PROTOCOL.md). Held-out test of a ranking change: [RESULTS_human_test.md](backend/eval/RESULTS_human_test.md); it did not beat the deployed ranking, so the default is unchanged.

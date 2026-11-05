@@ -44,3 +44,36 @@ def test_answer_validates_citations_and_flags_cited_sources(monkeypatch):
     assert all(s["url"].startswith("https://") for s in out["sources"])
     assert "[3] T3 (https://example.org/3)" in seen["prompt"]
     assert seen["prompt"].startswith("palette ctx")
+
+
+def test_trace_keeps_source_text_and_raw_answer_but_the_response_does_not(monkeypatch):
+    monkeypatch.setattr(rag.gemini, "generate", lambda prompt, system: "Claim [1]. Invented [9].")
+    trace = {}
+    out = answer("ctx", "task", SOURCES, trace)
+    assert trace["raw_answer"] == "Claim [1]. Invented [9]."
+    assert trace["sources"][0]["content"] == "text"
+    assert (trace["context"], trace["task"]) == ("ctx", "task")
+    assert "content" not in out["sources"][0]
+    assert out["answer"] == "Claim [1]. Invented."
+
+
+def test_trace_records_a_run_with_no_sources():
+    trace = {}
+    answer("ctx", "task", [], trace)
+    assert trace["raw_answer"] is None and trace["sources"] == []
+
+
+@pytest.mark.parametrize("source_id, source_palette, mentions_upload", [
+    (1, None, False),
+    (None, [{"lab": [50, 0, 0], "hex": "#777777", "weight": 1.0}], True),
+])
+def test_edge_prompt_only_mentions_your_image_for_an_upload(monkeypatch, source_id, source_palette, mentions_upload):
+    palette = [{"lab": [50, 0, 0], "hex": "#777777", "weight": 1.0}]
+    art = {"id": 2, "title": "T", "artist": "X", "date": None, "palette": palette}
+    monkeypatch.setattr(rag, "fetch_artworks", lambda conn, ids: [{**art, "id": i} for i in ids])
+    monkeypatch.setattr(rag, "retrieve_sources", lambda conn, artworks: SOURCES)
+    monkeypatch.setattr(rag.gemini, "generate", lambda prompt, system: "Claim [1].")
+    trace = {}
+    rag.explain_edge(None, 2, source_id=source_id, source_palette=source_palette, trace=trace)
+    assert ("your image" in trace["task"]) is mentions_upload
+    assert "never as A or B" in trace["task"]
