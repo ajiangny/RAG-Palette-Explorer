@@ -1,15 +1,19 @@
 """FastAPI app. Run from backend/: uvicorn app.main:app --reload"""
 
 import os
+import threading
+from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import UnidentifiedImageError
 from pydantic import BaseModel, Field, model_validator
 
 from app.db import connect
+from app.gemini import DailyQuotaExceeded
 from app.graph import graph_for_artwork, graph_for_upload
 from app.palette import Swatch
 from app.rag import explain_edge, explain_matches
@@ -26,6 +30,35 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
+
+
+@app.exception_handler(DailyQuotaExceeded)
+def quota_exceeded(_: Request, __: DailyQuotaExceeded) -> JSONResponse:
+    return JSONResponse({"detail": "Explanations have reached today's free limit. Please try again tomorrow."}, 503)
+
+
+class ExplanationLimit:
+    """Caps LLM calls per UTC day on a public deployment. 0 = no limit. Resets if the server restarts."""
+
+    def __init__(self, per_day: int):
+        self.per_day = per_day
+        self.day = ""
+        self.used = 0
+        self.lock = threading.Lock()
+
+    def take(self) -> None:
+        if not self.per_day:
+            return
+        today = datetime.now(UTC).date().isoformat()
+        with self.lock:
+            if today != self.day:
+                self.day, self.used = today, 0
+            if self.used >= self.per_day:
+                raise HTTPException(429, "Explanations have reached today's limit. Please try again tomorrow.")
+            self.used += 1
+
+
+explanation_limit = ExplanationLimit(int(os.environ.get("MAX_EXPLANATIONS_PER_DAY", "0")))
 
 
 class ImmutableStaticFiles(StaticFiles):
@@ -98,6 +131,7 @@ class ExplainRequest(BaseModel):
 
 @app.post("/explain")
 def explain(req: ExplainRequest) -> dict:
+    explanation_limit.take()
     with connect() as conn:
         result = explain_matches(conn, [s.as_swatch() for s in req.query_palette], req.artwork_ids)
     if not result["artworks"]:
@@ -146,6 +180,7 @@ class ExplainEdgeRequest(BaseModel):
 
 @app.post("/explain-edge")
 def explain_edge_endpoint(req: ExplainEdgeRequest) -> dict:
+    explanation_limit.take()
     palette = [s.as_swatch() for s in req.source_palette] if req.source_palette else None
     with connect() as conn:
         result = explain_edge(conn, req.target_id, source_id=req.source_id, source_palette=palette)

@@ -74,8 +74,12 @@ export function explainEdge(target: number, source: number | Swatch[]) {
   })
 }
 
-/** Paintings are served by our backend, not hotlinked from the museums. */
-export const imageSrc = (imageId: string) => `${BASE}/images/${encodeURIComponent(imageId)}.jpg`
+/** Our own copies of the paintings: from the backend in dev, from static hosting when deployed. */
+const IMAGE_BASE: string = import.meta.env.VITE_IMAGE_BASE ?? `${BASE}/images`
+export const imageSrc = (imageId: string) => `${IMAGE_BASE}/${encodeURIComponent(imageId)}.jpg`
+
+/** Starts a sleeping free-tier server as soon as the page opens, so the first action waits less. */
+export const wakeBackend = () => fetch(`${BASE}/health`).catch(() => { /* the first real request reports any error */ })
 
 export const MUSEUMS = { aic: 'Art Institute of Chicago', cma: 'Cleveland Museum of Art', nga: 'National Gallery of Art' } as const
 export const MUSEUM_SHORT = { aic: 'AIC', cma: 'CMA', nga: 'NGA' } as const

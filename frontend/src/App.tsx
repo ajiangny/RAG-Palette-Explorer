@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import {
-  explainEdge, graphFromArtwork, graphFromUpload, randomArtwork,
+  explainEdge, graphFromArtwork, graphFromUpload, randomArtwork, wakeBackend,
   type EdgeExplanation, type Graph, type GraphEdge, type NodeId,
 } from './api'
 import GraphView, { type EdgeRef, type MapView } from './components/GraphView'
@@ -17,12 +17,15 @@ const PHONE_QUERY = '(max-width: 760px)'
 /** Matches --panel-width in index.css. */
 const panelWidth = () => Math.min(720, Math.max(420, window.innerWidth * 0.44))
 
+const SLOW_AFTER_MS = 6000
+
 export default function App() {
   const [graph, setGraph] = useState<Graph | null>(null)
   // Counts webs built from scratch; expanding one keeps the count, so only its new nodes grow.
   const [generation, setGeneration] = useState(0)
   const [uploadPreview, setUploadPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
+  const [slow, setSlow] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<NodeId | null>(null)
   const [selectedEdge, setSelectedEdge] = useState<EdgeRef | null>(null)
@@ -54,6 +57,18 @@ export default function App() {
       setLoading(null)
     }
   }, [])
+
+  useEffect(() => { void wakeBackend() }, [])
+
+  // The free backend sleeps when idle, so say why a first request can take a while.
+  useEffect(() => {
+    if (!loading) return
+    const timer = setTimeout(() => setSlow(true), SLOW_AFTER_MS)
+    return () => {
+      clearTimeout(timer)
+      setSlow(false)
+    }
+  }, [loading])
 
   // Everything needed to run the palette works in the browser, so fetch it once, in the background.
   useEffect(() => {
@@ -238,7 +253,12 @@ export default function App() {
             <button className="link" onClick={startRandom}>or start from a random painting</button>
           </div>
         )}
-        {loading && <div className="loading"><span className="spinner" />{loading}</div>}
+        {loading && (
+          <div className="loading">
+            <span className="spinner" />
+            {slow ? 'The free server is waking up. This can take about a minute…' : loading}
+          </div>
+        )}
       </main>
     </div>
   )

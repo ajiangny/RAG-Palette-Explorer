@@ -1,0 +1,17 @@
+# Supabase pauses free projects after about a week of low activity, so query the database daily.
+name: Keep database active
+
+on:
+  schedule:
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    if: vars.VITE_API_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a random painting
+        run: curl --fail --silent --show-error --max-time 180 --retry 2 --output /dev/null "${{ vars.VITE_API_URL }}/artworks/random"

@@ -1,0 +1,54 @@
+# Builds the frontend, adds the painting images from a release, and publishes to GitHub Pages.
+# Waits for the VITE_API_URL repository variable, the deployed API's address.
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+    paths: [frontend/**, .github/workflows/pages.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: vars.VITE_API_URL != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build
+        working-directory: frontend
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_IMAGE_BASE: /${{ github.event.repository.name }}/images
+        run: |
+          npm ci
+          npm test
+          npm run build -- --base=/${{ github.event.repository.name }}/
+      - name: Add painting images
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download images-v1 --pattern images.tar --output images.tar
+          mkdir frontend/dist/images
+          tar -xf images.tar -C frontend/dist/images
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

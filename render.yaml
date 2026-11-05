@@ -1,0 +1,21 @@
+# The API on Render's free tier. The frontend is on GitHub Pages (.github/workflows/pages.yml).
+services:
+  - type: web
+    name: palette-explorer-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.8
+      - key: FRONTEND_ORIGINS
+        value: https://ajiangny.github.io
+      - key: MAX_EXPLANATIONS_PER_DAY
+        value: "200"
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
