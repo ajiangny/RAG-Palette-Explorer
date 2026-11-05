@@ -4,11 +4,11 @@ Split: **dev**. 25 saved explanations: 22 written by gemini-3-flash-preview, 3 w
 
 These checks need no AI and only catch mechanical errors: numbers, quotes and wording against what the model was given. They don't show that a source supports a claim, so passing here is not a measure of faithfulness.
 
-**6 of 22 explanations have at least one error.**
+**5 of 22 explanations have at least one error.**
 
 | Check | Severity | Explanations | Occurrences |
 |---|---|---|---|
-| `quote_altered` | error | 5 | 7 |
+| `quote_altered` | error | 4 | 6 |
 | `quote_wrong_source` | error | 1 | 1 |
 | `uncited_sentence` | warning | 21 | 47 |
 
@@ -19,7 +19,7 @@ These checks need no AI and only catch mechanical errors: numbers, quotes and wo
 - ΔE values: 23
 - Palette distances: 14
 - Pixel shares next to a hex code: 2
-- Quoted phrases: 186 (113 found in a cited source, 65 painting titles or artist names)
+- Quoted phrases: 186 (114 found in a cited source, 65 painting titles or artist names)
 - Sentences: 213
 
 ## By group
@@ -30,7 +30,7 @@ These checks need no AI and only catch mechanical errors: numbers, quotes and wo
 | edge_painting | rich | 5 | 1 |
 | edge_painting | wiki_only | 5 | 1 |
 | edge_upload | upload | 3 | 0 |
-| matches | upload | 5 | 2 |
+| matches | upload | 5 | 1 |
 
 ## Errors
 
@@ -41,4 +41,3 @@ These checks need no AI and only catch mechanical errors: numbers, quotes and wo
 - `edge-one_sided-06` `quote_altered`: "reckless" is not verbatim; [2] says "recklessness"
 - `edge-one_sided-06` `quote_altered`: "random" is not verbatim; [2] says "randomly"
 - `matches-16` `quote_wrong_source`: "ethereal" cites [8] but is in [7]
-- `matches-18` `quote_altered`: "non-representational color" is not verbatim; [3] says "non representational colour"
