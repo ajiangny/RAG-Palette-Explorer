@@ -4,6 +4,7 @@ Usage (from backend/):
     python -m eval.explanations sample            # fixed sample → eval/explain_sample.json (no Gemini calls)
     python -m eval.explanations run               # generate and save → eval/explain_runs.jsonl (resumable)
     python -m eval.explanations check             # code checks on the dev split → eval/RESULTS_explain_checks.md
+    python -m eval.explanations compare A B       # error rates in two runs files, with paired confidence intervals
 
 Half of the sample is held out. `check` reads the dev split unless told otherwise: tune prompts against dev,
 then measure the fix once with `run --out NEW_FILE` and `check --split test --runs NEW_FILE`.
@@ -47,6 +48,10 @@ def edge_stratum(source: dict[str, bool], target: dict[str, bool]) -> str:
     if not source_text or not target_text:
         return "one_sided"
     return "rich" if source["description"] or target["description"] else "wiki_only"
+
+
+def _key(run: dict[str, Any]) -> tuple[str, int]:
+    return run["id"], run.get("repeat", 0)
 
 
 def assign_splits(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -119,7 +124,7 @@ def _facts(artworks: list[dict[str, Any]], upload_palette: list[Swatch] | None,
     }
 
 
-def generate_one(conn: Any, item: dict[str, Any]) -> dict[str, Any]:
+def generate_one(conn: Any, item: dict[str, Any], repeat: int = 0) -> dict[str, Any]:
     trace: dict[str, Any] = {}
     if item["kind"] == "matches":
         ids, upload = item["artwork_ids"], item["query_palette"]
@@ -132,7 +137,7 @@ def generate_one(conn: Any, item: dict[str, Any]) -> dict[str, Any]:
         if result is None:
             raise RuntimeError(f"{item['id']}: artwork not found")
     return {
-        "id": item["id"], "kind": item["kind"], "stratum": item["stratum"], "split": item["split"],
+        "id": item["id"], "repeat": repeat, "kind": item["kind"], "stratum": item["stratum"], "split": item["split"],
         "model": gemini.GENERATE_MODEL, "thinking_level": gemini.THINKING_LEVEL,
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "artwork_ids": ids,
@@ -149,21 +154,62 @@ def load_runs(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def run_all(out: Path, split: str | None) -> None:
+def run_all(out: Path, split: str | None, repeats: int = 1) -> None:
     sample = json.loads(SAMPLE.read_text(encoding="utf-8"))
-    done = {r["id"] for r in load_runs(out)}
-    todo = [s for s in sample if s["id"] not in done and (split is None or s["split"] == split)]
+    done = {_key(r) for r in load_runs(out)}
+    todo = [(s, repeat) for repeat in range(repeats) for s in sample
+            if (s["id"], repeat) not in done and (split is None or s["split"] == split)]
     print(f"{len(todo)} to generate, {len(done)} already saved in {out.name}", flush=True)
     with connect() as conn, out.open("a", encoding="utf-8") as f:
-        for n, item in enumerate(todo, 1):
+        for n, (item, repeat) in enumerate(todo, 1):
             try:
-                record = generate_one(conn, item)
+                record = generate_one(conn, item, repeat)
             except gemini.DailyQuotaExceeded:
                 print("daily quota reached; re-run after it resets to resume", flush=True)
                 return
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
             f.flush()
-            print(f"[{n}/{len(todo)}] {item['id']}: {len(record['sources'])} sources", flush=True)
+            print(f"[{n}/{len(todo)}] {item['id']} #{repeat}: {len(record['sources'])} sources", flush=True)
+
+
+QUOTE_CHECKS = {"quote_altered", "quote_not_found", "quote_wrong_source", "quote_uncited"}
+
+
+def _errors_per_item(runs: list[dict[str, Any]], checks: set[str] | None = None) -> dict[str, float]:
+    """Mean errors per explanation for each item, averaged over its repeats. Runs with no sources are left out."""
+    totals: dict[str, list[int]] = {}
+    for run in runs:
+        if run["sources"]:
+            errors = [f for f in check(run)["findings"] if f["severity"] == "error"
+                      and (checks is None or f["check"] in checks)]
+            totals.setdefault(run["id"], []).append(len(errors))
+    return {item: sum(counts) / len(counts) for item, counts in totals.items()}
+
+
+def paired_change(before: dict[str, float], after: dict[str, float], seed: int = SEED,
+                  rounds: int = 2000) -> tuple[float, float, float, float, int]:
+    """(mean before, mean after, CI low, CI high, items) with a 95% bootstrap over items present in both."""
+    items = sorted(before.keys() & after.keys())
+    if not items:
+        return 0.0, 0.0, 0.0, 0.0, 0
+    diffs = [after[i] - before[i] for i in items]
+    rng = random.Random(seed)
+    means = sorted(sum(rng.choices(diffs, k=len(diffs))) / len(diffs) for _ in range(rounds))
+    return (sum(before[i] for i in items) / len(items), sum(after[i] for i in items) / len(items),
+            means[int(rounds * 0.025)], means[int(rounds * 0.975)], len(items))
+
+
+def compare(before: list[dict[str, Any]], after: list[dict[str, Any]], before_name: str, after_name: str) -> str:
+    names = sorted({f["check"] for r in before + after for f in check(r)["findings"] if f["severity"] == "error"})
+    rows: list[tuple[str, set[str] | None]] = [("All errors", None), ("All quote errors", QUOTE_CHECKS)]
+    rows += [(f"`{name}`", {name}) for name in names]
+    lines = ["# Explanation comparison", "", f"Before: `{before_name}` ({len(before)} runs). After: `{after_name}` ({len(after)} runs).",
+             "", "Errors per explanation, averaged over repeats. 95% paired bootstrap over items.", "",
+             "| Errors | Before | After | Change (95% CI) |", "|---|---|---|---|"]
+    for label, checks in rows:
+        b, a, low, high, n = paired_change(_errors_per_item(before, checks), _errors_per_item(after, checks))
+        lines.append(f"| {label} | {b:.2f} | {a:.2f} | {a - b:+.2f} ({low:+.2f} to {high:+.2f}) |")
+    return "\n".join(lines) + f"\n\n{n} items compared.\n"
 
 
 def report(runs: list[dict[str, Any]], split: str) -> str:
@@ -229,10 +275,15 @@ if __name__ == "__main__":
     run_parser = sub.add_parser("run")
     run_parser.add_argument("--out", type=Path, default=RUNS)
     run_parser.add_argument("--split", choices=["dev", "test"])
+    run_parser.add_argument("--repeats", type=int, default=1)
     check_parser = sub.add_parser("check")
     check_parser.add_argument("--runs", type=Path, default=RUNS)
     check_parser.add_argument("--split", choices=["dev", "test"], default="dev")
     check_parser.add_argument("--out", type=Path, default=RESULTS)
+    compare_parser = sub.add_parser("compare")
+    compare_parser.add_argument("before", type=Path)
+    compare_parser.add_argument("after", type=Path)
+    compare_parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
     if args.command == "sample":
@@ -242,7 +293,12 @@ if __name__ == "__main__":
         SAMPLE.write_text(json.dumps(items, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"{len(items)} items → {SAMPLE.name}: {dict(Counter(i['split'] for i in items))}")
     elif args.command == "run":
-        run_all(args.out, args.split)
+        run_all(args.out, args.split, args.repeats)
+    elif args.command == "compare":
+        text = compare(load_runs(args.before), load_runs(args.after), args.before.name, args.after.name)
+        if args.out:
+            args.out.write_text(text, encoding="utf-8")
+        print(text)
     else:
         runs = [r for r in load_runs(args.runs) if r["split"] == args.split]
         text = report(runs, args.split)

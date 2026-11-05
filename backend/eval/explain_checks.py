@@ -34,6 +34,7 @@ PHANTOM_UPLOAD = re.compile(r"\byour (?:image|upload|photo|picture|palette)\b|\b
 LABEL_LEAK = re.compile(r"\b(?:Painting|Image) [AB]\b|\bA and B\b")
 SHARE_TOLERANCE = 1.0  # points; the prompt shows whole-number shares
 ALTERED_RATIO = 0.8  # "paint the smell" vs "paints the smell" is altered; "calm" vs "calming" is not
+TITLE_RATIO = 0.9  # museum records have typos ("Landsape with Waterfall"), which the model may correct
 
 
 def _hex(value: str) -> str:
@@ -51,6 +52,7 @@ def normalize(text: str) -> str:
     # Quote style, hyphens and editors' brackets ("bea[u]tiful") aren't changes to the wording.
     text = text.translate(str.maketrans({"‘": "'", "’": "'", "“": "'", "”": "'", '"': "'", "–": " ", "—": " ", "-": " "}))
     text = re.sub(r"\[(\w+)\]", r"\1", text)
+    text = re.sub(r"colou?r", "color", re.sub(r"grey", "gray", text, flags=re.IGNORECASE), flags=re.IGNORECASE)
     return re.sub(r"\s+", " ", text).lower()
 
 
@@ -82,6 +84,12 @@ def _nearest(source: str, quote: str) -> tuple[float, str]:
     return best
 
 
+def _is_name(key: str, names: list[str]) -> bool:
+    """A quoted painting title or artist, possibly partial, possessive, or with a record's typo corrected."""
+    key = re.sub(r"'s$", "", key)
+    return any(key in name or SequenceMatcher(None, key, name, autojunk=False).ratio() >= TITLE_RATIO for name in names)
+
+
 def sentence_spans(text: str) -> list[tuple[int, int]]:
     """(start, end) per sentence, with trailing citations kept in the sentence they follow."""
     spans = []
@@ -99,7 +107,7 @@ def sentence_spans(text: str) -> list[tuple[int, int]]:
     return spans
 
 
-def _citations(text: str) -> set[int]:
+def citations(text: str) -> set[int]:
     return {int(n) for group in CITATION.findall(text) for n in group.split(",")}
 
 
@@ -184,11 +192,11 @@ def _check_quotes(run: dict[str, Any], text: str) -> tuple[list[dict[str, str]],
         quote = match[1] or match[2]
         key = normalize(quote).strip(" .,;:!?'")
         counts["quotes"] += 1
-        if any(key in name for name in names):  # painting titles are quoted in the prompt itself
+        if _is_name(key, names):  # painting titles are quoted in the prompt itself
             counts["quotes_names"] += 1
             continue
         sentence = "".join(text[a:b] for a, b in spans if a < match.end() and match.start() < b)
-        cited = _citations(sentence)
+        cited = citations(sentence)
         where = {n for n, content in sources.items() if _contains(content, key)}
         if where & cited:
             counts["quotes_verified"] += 1
@@ -225,7 +233,7 @@ def check(run: dict[str, Any]) -> dict[str, Any]:
         findings += new
         counts.update(new_counts)
 
-    invented = sorted(n for n in _citations(run["raw_answer"] or "") if not 1 <= n <= len(run["sources"]))
+    invented = sorted(n for n in citations(run["raw_answer"] or "") if not 1 <= n <= len(run["sources"]))
     if invented:
         findings.append({"check": "invented_citation", "severity": "error",
                          "detail": f"cited {invented}, with {len(run['sources'])} sources; cleanup removed them"})
@@ -241,10 +249,10 @@ def check(run: dict[str, Any]) -> dict[str, Any]:
 
     spans = sentence_spans(text)
     counts["sentences"] = len(spans)
-    if not _citations(text):
+    if not citations(text):
         findings.append({"check": "no_citations", "severity": "warning", "detail": "no citations in the answer"})
     for a, b in spans:
         sentence = text[a:b]
-        if not _citations(sentence) and not re.search(HEX, sentence) and not ANY_DELTA.search(sentence):
+        if not citations(sentence) and not re.search(HEX, sentence) and not ANY_DELTA.search(sentence):
             findings.append({"check": "uncited_sentence", "severity": "warning", "detail": sentence.strip()})
     return {"findings": findings, "counts": counts}

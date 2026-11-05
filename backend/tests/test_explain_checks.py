@@ -2,7 +2,7 @@ import pytest
 
 from app import rag
 from eval.explain_checks import check, sentence_spans
-from eval.explanations import assign_splits, edge_stratum
+from eval.explanations import assign_splits, edge_stratum, paired_change
 
 SOURCES = [
     {"n": 1, "title": "The Bedroom", "url": "u1",
@@ -20,7 +20,7 @@ def make_run(answer, *, raw=None, kind="edge_painting", upload=False, sources=SO
             "has_upload": upload,
             "palettes": [[{"hex": "#a37918", "weight": 0.179}, {"hex": "#778ca3", "weight": 0.265}],
                          [{"hex": "#91774d", "weight": 0.3}, {"hex": "#7d8f96", "weight": 0.2}]],
-            "titles": ["The Bedroom", "Haystacks", 'Scenes from Dante\'s "Inferno" (recto)'], "artists": ["Georges Seurat"],
+            "titles": ["The Bedroom", "Haystacks", "Landsape with Waterfall", 'Scenes from Dante\'s "Inferno" (recto)'], "artists": ["Georges Seurat"],
             "palette_distance": 11.95,
             "matched_colors": [{"a": "#a37918", "b": "#91774d", "share": 0.179, "delta_e": 9.8}],
         },
@@ -41,6 +41,8 @@ def found(answer, **kwargs):
     'In "The Bedroom" and "Haystacks" the colors agree [1].',  # titles aren't source quotes
     'Refers to "calm" tones [2].',
     'A "clear & beautiful effect" [2].',  # the source's editorial brackets
+    'The "The Bedroom\'s" colors [1].',  # possessive title
+    'In "Landscape with Waterfall" the grays agree [1].',  # corrects a typo in the museum record
     'An "other-worldly" realm [2].',  # hyphen only
     """In "Scenes from Dante's 'Inferno'" the colors agree [1].""",  # nested quotes, partial title
     "Van Gogh's #a37918 and Seurat's #91774d (18% share, ΔE 9.8) agree [1].",
@@ -134,3 +136,13 @@ def test_edge_stratum(source, target, expected):
 
 def test_assign_splits_alternates():
     assert [i["split"] for i in assign_splits([{}, {}, {}])] == ["dev", "test", "dev"]
+
+
+def test_spelling_variants_are_not_altered_quotes():
+    source = [{"n": 1, "title": "t", "url": "u", "content": "soft colour and grey tones"}]
+    assert found('It has "soft color and gray tones" [1].', sources=source) == []
+
+
+def test_paired_change_uses_only_shared_items_and_detects_a_consistent_drop():
+    before, after, low, high, n = paired_change({"a": 2.0, "b": 2.0, "c": 2.0, "gone": 9.0}, {"a": 1.0, "b": 1.0, "c": 1.0})
+    assert (before, after, low, high, n) == (2.0, 1.0, -1.0, -1.0, 3)

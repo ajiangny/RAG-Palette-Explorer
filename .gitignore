@@ -11,3 +11,4 @@ dist/
 backend/eval/labeling.html
 backend/eval/labeling_test.html
 backend/eval/labeling_final.html
+backend/eval/claim_labeling.html
