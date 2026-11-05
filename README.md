@@ -60,6 +60,14 @@ python -m eval.explanations run      # needs Gemini; resumes where it stopped; e
 python -m eval.explanations check    # no Gemini; eval/RESULTS_explain_checks.md
 ```
 
+### Explanation checks
+
+`eval/explain_checks.py` compares each saved explanation with what the model was given, with no AI involved: hex codes, ΔE values, palette distances, color shares, quoted phrases, invented citation numbers, and wording about uploads.
+
+- **Fixed:** painting-to-painting explanations said "your image" with no upload. The prompt now mentions it only for uploads, taking it from 6 occurrences to 0 on held-out explanations ([before](backend/eval/RESULTS_explain_checks_baseline_test.md), [after](backend/eval/RESULTS_explain_checks_edge_prompt_test.md)).
+- **Tried and rejected:** a prompt rule requiring exact quotes did not reduce quote errors ([results](backend/eval/RESULTS_explain_quote_rule.md)).
+- **Not measured:** these checks catch mechanical errors only. Whether sources support each claim has no published measurement yet. [`CLAIM_LABELING_RULE.md`](backend/eval/CLAIM_LABELING_RULE.md) and `python -m eval.claim_label build` set up hand labeling for it.
+
 Results: [backend/eval/RESULTS.md](backend/eval/RESULTS.md) (earlier collections: [RESULTS_aic_only.md](backend/eval/RESULTS_aic_only.md), [RESULTS_pre_nga.md](backend/eval/RESULTS_pre_nga.md)). Held-out test of adding the National Gallery: [RESULTS_final_test.md](backend/eval/RESULTS_final_test.md), 72% → 80% P@5 on 30 new photos with one human labeler, under a [written rule](backend/eval/LABELING_RULE.md) and a [protocol committed first](backend/eval/FINAL_TEST_PROTOCOL.md). Held-out test of a ranking change: [RESULTS_human_test.md](backend/eval/RESULTS_human_test.md); it did not beat the deployed ranking, so the default is unchanged.
 
 ## Frontend
