@@ -3,9 +3,8 @@ import {
   explainEdge, graphFromArtwork, graphFromUpload, randomArtwork,
   type EdgeExplanation, type Graph, type GraphEdge, type NodeId,
 } from './api'
-import GraphView, { type EdgeRef } from './components/GraphView'
+import GraphView, { type EdgeRef, type MapView } from './components/GraphView'
 import PaletteEditor from './components/PaletteEditor'
-import PaletteStrip from './components/PaletteStrip'
 import SidePanel from './components/SidePanel'
 import { bestMatch, loadCollection, makeDeck, type Painting } from './lib/collection'
 import { hexToLab } from './lib/color'
@@ -13,6 +12,10 @@ import { MAX_DOTS, readUrl, writeUrl } from './lib/queryPalette'
 
 const edgeKey = (a: NodeId, b: NodeId) => [String(a), String(b)].sort().join('~')
 const MATCH_SETTLE_MS = 300
+const VIEWS: [MapView, string][] = [['paintings', 'Paintings'], ['pixels', 'Pixels'], ['blocks', 'Blocks']]
+const PHONE_QUERY = '(max-width: 760px)'
+/** Matches --panel-width in index.css. */
+const panelWidth = () => Math.min(720, Math.max(420, window.innerWidth * 0.44))
 
 export default function App() {
   const [graph, setGraph] = useState<Graph | null>(null)
@@ -27,6 +30,7 @@ export default function App() {
   const [explaining, setExplaining] = useState<Set<string>>(new Set())
   const [explainErrors, setExplainErrors] = useState<Record<string, string>>({})
   const [dragging, setDragging] = useState(false)
+  const [view, setView] = useState<MapView>('paintings')
   const fileInput = useRef<HTMLInputElement>(null)
   const [initialUrl] = useState(() => readUrl(window.location.search))
   // The user's colors. Null until they edit a dot; the dots then show the center painting's colors.
@@ -42,7 +46,7 @@ export default function App() {
       const g = await fetchGraph()
       setGraph(g)
       setGeneration((n) => n + 1)
-      setSelectedNode(g.center)
+      setSelectedNode(null)
       setSelectedEdge(null)
     } catch (e) {
       setError(`Couldn't build the web (${(e as Error).message}).`)
@@ -143,7 +147,8 @@ export default function App() {
       const result = await explainEdge(tgt as number, src === 'upload' ? upload!.palette : (src as number))
       setExplanations((m) => ({ ...m, [key]: result }))
     } catch (e) {
-      setExplainErrors((m) => ({ ...m, [key]: `Explanation failed (${(e as Error).message}).` }))
+      console.warn('Explanation failed', e)
+      setExplainErrors((m) => ({ ...m, [key]: 'Couldn\u2019t load the explanation. Click the line to try again.' }))
     } finally {
       setExplaining((s) => {
         const next = new Set(s)
@@ -169,24 +174,34 @@ export default function App() {
     : [selectedEdge?.source ?? null, selectedEdge?.target ?? null]
   const edgeNodes = nodeById(edgeA) && nodeById(edgeB) ? { a: nodeById(edgeA)!, b: nodeById(edgeB)! } : null
   const key = selectedEdge && edgeKey(selectedEdge.source, selectedEdge.target)
+  const panelOpen = !!nodeById(selectedNode) || !!edgeNodes
+  // What the panel hides of the map: the right side, or the bottom on phones. Matches the CSS.
+  const cover = !panelOpen
+    ? { right: 0, bottom: 0 }
+    : window.matchMedia(PHONE_QUERY).matches
+      ? { right: 0, bottom: Math.round(window.innerHeight * 0.55) }
+      : { right: panelWidth(), bottom: 0 }
 
   return (
-    <div className={`app${dragging ? ' dragging' : ''}`}
+    <div className={`app${dragging ? ' dragging' : ''}${panelOpen ? ' panel-open' : ''}`}
          onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
          onDragLeave={(e) => { if (e.currentTarget === e.target) setDragging(false) }}
          onDrop={onDrop}>
       <header>
         <h1>Palette Explorer</h1>
-        {center && (
-          <div className="center-palette">
-            <span className="muted">{center.id === 'upload' ? 'Your palette' : center.title}</span>
-            <PaletteStrip palette={center.palette} />
-          </div>
+        {graph && (
+          <>
+            <div className="view-switch" role="group" aria-label="Show the web as">
+              {VIEWS.map(([id, label]) => (
+                <button key={id} className={view === id ? 'on' : ''} aria-pressed={view === id} onClick={() => setView(id)}>{label}</button>
+              ))}
+            </div>
+            <div className="header-actions">
+              <button className="secondary" onClick={startRandom}>Random</button>
+              <button onClick={() => fileInput.current?.click()}>Upload</button>
+            </div>
+          </>
         )}
-        <div className="header-actions">
-          <button onClick={() => fileInput.current?.click()}>Upload image</button>
-          <button className="secondary" onClick={startRandom}>Random painting</button>
-        </div>
         <input ref={fileInput} type="file" accept="image/*" hidden onChange={(e) => onFile(e.target.files?.[0])} />
       </header>
 
@@ -197,7 +212,7 @@ export default function App() {
           <>
             <div className="graph-area">
               <GraphView graph={graph} uploadPreview={uploadPreview} selectedNode={selectedNode} selectedEdge={selectedEdge}
-                         generation={generation} query={query}
+                         generation={generation} query={query} view={view} cover={cover}
                          onNodeClick={(id) => { setSelectedEdge(null); setSelectedNode(id) }}
                          onEdgeClick={selectEdge}
                          onBackgroundClick={() => { setSelectedNode(null); setSelectedEdge(null) }} />
@@ -217,8 +232,7 @@ export default function App() {
           <div className="empty">
             <div className="dropzone" onClick={() => fileInput.current?.click()}>
               <h2>Drop an image to find paintings with its palette</h2>
-              <p className="muted">A photo, a screenshot, a design. We extract its colors and build a web of
-                public-domain paintings from the Art Institute of Chicago, the Cleveland Museum of Art and the National Gallery of Art with similar palettes.</p>
+              <p className="muted">Public-domain paintings from the Art Institute of Chicago, the Cleveland Museum of Art and the National Gallery of Art.</p>
               <button>Choose an image</button>
             </div>
             <button className="link" onClick={startRandom}>or start from a random painting</button>

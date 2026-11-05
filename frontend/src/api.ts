@@ -14,6 +14,8 @@ export type GraphNode = {
   date?: string | null
   style?: string | null
   image_id?: string
+  /** The museum's larger copy, for the details panel. `image_id` is our 400px one. */
+  image_url?: string
   palette: Swatch[]
   depth: number
 }

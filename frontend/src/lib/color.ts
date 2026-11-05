@@ -1,9 +1,11 @@
 // Color conversions used by the palette editor and the Spotlight score.
 // CIELAB (D65) matches the values the backend stores, so client scores and server palettes share a space.
-// OKLCH is only for the editor's sliders, because its lightness and hue behave predictably when dragged.
+// OKLCH is for Shuffle, because rotating its hue keeps lightness steady. HSV is for the color picker,
+// because its square and hue strip show every color directly.
 
 export type Lab = [number, number, number]
 export type Oklch = { l: number; c: number; h: number }
+export type Hsv = { h: number; s: number; v: number }
 type Rgb = [number, number, number]
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
@@ -94,4 +96,38 @@ export function colorName(hex: string): string {
   const hue = HUES.find(([end]) => h < end)![1]
   if (h >= 30 && h < 90 && l < 0.62 && c < 0.13) return l < 0.35 ? 'dark brown' : 'brown'
   return `${l > 0.78 ? 'light ' : l < 0.42 ? 'dark ' : ''}${c < 0.06 ? 'muted ' : ''}${hue}`
+}
+
+/** A palette's largest colors as solid bands, largest first, each as tall as its share of them. */
+export function paletteBands(palette: { hex: string; weight: number }[], limit = 5): { from: number; to: number; hex: string }[] {
+  const kept = [...palette].sort((a, b) => b.weight - a.weight).slice(0, limit)
+  const total = kept.reduce((sum, s) => sum + s.weight, 0)
+  if (total <= 0) return []
+  let before = 0
+  return kept.map((s) => {
+    const from = before / total
+    before += s.weight
+    return { from, to: before / total, hex: s.hex }
+  })
+}
+
+export function hexToHsv(hex: string): Hsv {
+  const [r, g, b] = hexToRgb(hex).map((c) => c / 255)
+  const max = Math.max(r, g, b)
+  const range = max - Math.min(r, g, b)
+  let h = 0
+  if (range > 0) {
+    if (max === r) h = ((g - b) / range + 6) % 6
+    else if (max === g) h = (b - r) / range + 2
+    else h = (r - g) / range + 4
+  }
+  return { h: h * 60, s: max ? range / max : 0, v: max }
+}
+
+export function hsvToHex({ h, s, v }: Hsv): string {
+  const channel = (n: number) => {
+    const k = (n + h / 60) % 6
+    return v - v * s * Math.max(0, Math.min(k, 4 - k, 1))
+  }
+  return rgbToHex([channel(5), channel(3), channel(1)])
 }

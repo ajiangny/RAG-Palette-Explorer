@@ -17,18 +17,24 @@ export const TIMING = {
   resolve: 300,
 } as const
 
-export const CENTER_RADIUS = 34
-const MIN_RADIUS = 9
-const MAX_RADIUS = 22
+export const CENTER_RADIUS = 58
+export type SizeTier = 'center' | 'closest' | 'other'
+/** Smallest and largest radius. The closest palettes are much larger than all the others. */
+const TIER_RADII: Record<SizeTier, [number, number]> = {
+  center: [CENTER_RADIUS, CENTER_RADIUS],
+  closest: [30, 44],
+  other: [8, 20],
+}
 const SELECTED_GROWTH = 0.22
 
 /**
- * A node's drawn radius. Area follows `similarity` (0–1, to the center's palette), since eyes compare
- * circles by area. `selection` runs 0–1 as the node is selected. The center is always the largest.
+ * A node's drawn radius, wherever it sits in the web. Its tier sets the range; within it, area follows
+ * `similarity` (0–1, to the center's palette), since eyes compare circles by area. So a more similar
+ * painting is never smaller. `selection` runs 0–1 as the node is selected.
  */
-export function nodeRadius(isCenter: boolean, similarity: number, selection: number): number {
-  const base = isCenter ? CENTER_RADIUS : Math.sqrt(MIN_RADIUS ** 2 + (MAX_RADIUS ** 2 - MIN_RADIUS ** 2) * similarity)
-  return base * (1 + SELECTED_GROWTH * selection)
+export function nodeRadius(tier: SizeTier, similarity: number, selection: number): number {
+  const [min, max] = TIER_RADII[tier]
+  return Math.sqrt(min ** 2 + (max ** 2 - min ** 2) * similarity) * (1 + SELECTED_GROWTH * selection)
 }
 
 export const centerDuration = TIMING.dissolve + TIMING.hold + TIMING.centerResolve

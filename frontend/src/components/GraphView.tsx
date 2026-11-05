@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ForceGraph2D, { type ForceGraphMethods, type LinkObject, type NodeObject } from 'react-force-graph-2d'
 import { imageSrc, type Graph, type GraphNode, type NodeId } from '../api'
-import { buildTiles, CENTER_RADIUS, centerDuration, growthEnd, nodeRadius, planBirths, TIMING, type Birth, type Tile } from '../lib/growth'
-import { radialLayout } from '../lib/layout'
-import { chamfer, emphasize, framedIds, similarityToCenter } from '../lib/spotlight'
-import { hexToLab } from '../lib/color'
+import { buildTiles, CENTER_RADIUS, centerDuration, growthEnd, nodeRadius, planBirths, TIMING, type Birth, type SizeTier, type Tile } from '../lib/growth'
+import { panToReveal, radialLayout } from '../lib/layout'
+import { chamfer, closestIds, emphasize, framedIds, similarityToCenter } from '../lib/spotlight'
+import { hexToLab, paletteBands } from '../lib/color'
 import { drawDissolve, makeDissolveSprite, type DissolveSprite } from '../lib/dissolveText'
 
 type Node = NodeObject<GraphNode & {
@@ -13,8 +13,10 @@ type Node = NodeObject<GraphNode & {
   birth?: number
   parent?: NodeId | null
   tiles?: Tile[]
+  tilesFromImage?: boolean
   /** 0–1: how close this palette is to the center's, within this web. Drives the node's size. */
   similarity?: number
+  tier?: SizeTier
   /** Where the layout wants this node. */
   targetX?: number
   targetY?: number
@@ -25,6 +27,7 @@ type Node = NodeObject<GraphNode & {
 type Link = LinkObject<Node, { score: number }>
 
 export type EdgeRef = { source: NodeId; target: NodeId }
+export type MapView = 'paintings' | 'pixels' | 'blocks'
 
 type Props = {
   graph: Graph
@@ -35,18 +38,29 @@ type Props = {
   selectedEdge: EdgeRef | null
   /** The user's colors. Nodes dim by how poorly they match; null means no Spotlight. */
   query: string[] | null
+  /** How paintings are drawn. Anything but `paintings` also picks out the closest palettes. */
+  view: MapView
+  /** The part of the map hidden by the details panel, in pixels from each edge. */
+  cover: { right: number; bottom: number }
   onNodeClick: (id: NodeId) => void
   onEdgeClick: (edge: EdgeRef) => void
   onBackgroundClick: () => void
 }
 
-const TILE_GRID = [36, 16, 11, 9] // tiles across a node, by depth
+const TILE_GRID: Record<SizeTier, number> = { center: 36, closest: 16, other: 11 } // tiles across a node
 const SELECTION_MS = 110 // time constant for easing into and out of selection
 const LAYOUT_PULL = 0.35 // how firmly nodes return to the layout after a drag or an expansion
-const COLORS = { edge: [232, 224, 210], edgeActive: '#e8c66a', ring: '#e8c66a', label: '#f2ece2' }
+const COLORS = { background: '#161412', edge: [232, 224, 210], edgeActive: '#e8c66a', ring: '#e8c66a', label: '#f2ece2' }
 const EDGE_ALPHA = 0.22
+const REST_ALPHA = 0.3 // paintings outside the closest palettes, in the color views
 const DIM_ALPHA = 0.1
 const SETTLE_MS = 350
+const FIT_PADDING = 72 // clears the controls floating over the map
+const REVEAL_MARGIN = 120 // leaves room for half of a long title
+const REVEAL_MS = 300
+const FIT_MS = 600
+const LABEL_FONT = "'Iowan Old Style', Palatino, Georgia, serif"
+const CENTER_RING = 'rgba(242, 236, 226, 0.7)'
 const EDGE_QUESTION = 'What\u2019s the connection?'
 const QUESTION_IN_MS = 650
 const QUESTION_OUT_MS = 380
@@ -101,7 +115,38 @@ function drawPalettePie(ctx: CanvasRenderingContext2D, node: Node, r: number) {
   }
 }
 
-function drawDisc(ctx: CanvasRenderingContext2D, node: Node, r: number) {
+/** The palette as solid bands, clipped to the circle. */
+function drawBlocks(ctx: CanvasRenderingContext2D, node: Node, r: number) {
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(node.x!, node.y!, r, 0, 2 * Math.PI)
+  ctx.clip()
+  for (const band of paletteBands(node.palette)) {
+    ctx.fillStyle = band.hex
+    // A hair of overlap, so the background doesn't show through the seams.
+    ctx.fillRect(node.x! - r, node.y! - r + band.from * 2 * r, 2 * r, (band.to - band.from) * 2 * r + 0.5)
+  }
+  ctx.restore()
+}
+
+/** The painting as a mosaic of its own palette colors, as in the growth animation. */
+function drawPixels(ctx: CanvasRenderingContext2D, node: Node, r: number) {
+  const size = tileSize(node, r) * 1.04
+  for (const t of tilesOf(node)) {
+    ctx.fillStyle = t.color
+    ctx.fillRect(node.x! + t.u * r - size / 2, node.y! + t.v * r - size / 2, size, size)
+  }
+}
+
+function drawDisc(ctx: CanvasRenderingContext2D, node: Node, r: number, view: MapView) {
+  if (view === 'blocks' && node.palette.length) {
+    drawBlocks(ctx, node, r)
+    return
+  }
+  if (view === 'pixels') {
+    drawPixels(ctx, node, r)
+    return
+  }
   const img = node.img ? getImage(node.img) : null
   ctx.save()
   ctx.beginPath()
@@ -120,22 +165,25 @@ function drawDisc(ctx: CanvasRenderingContext2D, node: Node, r: number) {
 }
 
 function tilesOf(node: Node): Tile[] {
-  if (!node.tiles) {
-    const grid = TILE_GRID[Math.min(node.depth, TILE_GRID.length - 1)]
-    node.tiles = buildTiles(node.img ? getImage(node.img) : null, node.palette, grid)
+  const img = node.img ? getImage(node.img) : null
+  const loaded = !!img?.complete && img.naturalWidth > 0
+  // Tiles made before the image arrived are only random palette colors, so redo them once it has.
+  if (!node.tiles || (loaded && !node.tilesFromImage)) {
+    node.tiles = buildTiles(img, node.palette, TILE_GRID[node.tier ?? 'other'])
+    node.tilesFromImage = loaded
   }
   return node.tiles
 }
 
-const tileSize = (node: Node, r: number) => (2 * r) / TILE_GRID[Math.min(node.depth, TILE_GRID.length - 1)]
+const tileSize = (node: Node, r: number) => (2 * r) / TILE_GRID[node.tier ?? 'other']
 
 /** The center: the painting's tiles snap to palette colors from the outside in, then it resolves back. */
-function drawCenterGrowth(ctx: CanvasRenderingContext2D, node: Node, r: number, age: number) {
+function drawCenterGrowth(ctx: CanvasRenderingContext2D, node: Node, r: number, age: number, view: MapView) {
   const tiles = tilesOf(node)
   const size = tileSize(node, r) * 1.04
   const shown = clamp01(age / TIMING.dissolve)
   const resolving = clamp01((age - TIMING.dissolve - TIMING.hold) / TIMING.centerResolve)
-  drawDisc(ctx, node, r)
+  drawDisc(ctx, node, r, view)
   ctx.save()
   ctx.globalAlpha *= 1 - resolving
   for (const t of tiles) {
@@ -147,7 +195,7 @@ function drawCenterGrowth(ctx: CanvasRenderingContext2D, node: Node, r: number, 
 }
 
 /** A new node: palette tiles swarm out of its parent, settle into a disc, then become the thumbnail. */
-function drawNodeGrowth(ctx: CanvasRenderingContext2D, node: Node, parent: Node | undefined, r: number, age: number) {
+function drawNodeGrowth(ctx: CanvasRenderingContext2D, node: Node, parent: Node | undefined, r: number, age: number, view: MapView) {
   const tiles = tilesOf(node)
   const size = tileSize(node, r) * 1.04
   const from = parent ?? node
@@ -158,7 +206,7 @@ function drawNodeGrowth(ctx: CanvasRenderingContext2D, node: Node, parent: Node 
   if (resolving > 0) {
     ctx.save()
     ctx.globalAlpha *= resolving
-    drawDisc(ctx, node, r)
+    drawDisc(ctx, node, r, view)
     ctx.restore()
   }
   ctx.save()
@@ -179,7 +227,7 @@ function drawNodeGrowth(ctx: CanvasRenderingContext2D, node: Node, parent: Node 
 }
 
 export default function GraphView(props: Props) {
-  const { graph, generation, uploadPreview, selectedNode, selectedEdge, query } = props
+  const { graph, generation, uploadPreview, selectedNode, selectedEdge, query, view, cover } = props
   const fgRef = useRef<ForceGraphMethods<Node, Link> | undefined>(undefined)
   const boxRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 800, height: 600 })
@@ -209,8 +257,11 @@ export default function GraphView(props: Props) {
       : planBirths<NodeId>(graph.nodes, graph.edges, graph.center, new Set(prior?.keys() ?? []))
     const origin = prior ? clock.current.origin : null
     const start = origin != null ? performance.now() - origin : 0
-    const layout = radialLayout<NodeId>(graph.nodes, graph.edges, graph.center)
     const similarity = similarityToCenter<NodeId>(graph.nodes, graph.center)
+    const closest = closestIds(similarity, graph.center)
+    const tierOf = (id: NodeId): SizeTier => (id === graph.center ? 'center' : closest.has(id) ? 'closest' : 'other')
+    const layout = radialLayout<NodeId>(graph.nodes, graph.edges, graph.center,
+      (id) => nodeRadius(tierOf(id), similarity.get(id) ?? 0, 0))
     const nodes: Node[] = graph.nodes.map((n) => {
       const before = prior?.get(n.id)
       const target = layout.get(n.id)!
@@ -221,6 +272,7 @@ export default function GraphView(props: Props) {
         img: n.id === 'upload' ? uploadPreview ?? undefined : n.image_id && imageSrc(n.image_id),
         ...(n.id === graph.center ? { fx: 0, fy: 0 } : {}),
         similarity: similarity.get(n.id) ?? 0,
+        tier: tierOf(n.id),
         targetX: target.x,
         targetY: target.y,
         // A new web starts in place, so nodes grow where they will stay.
@@ -247,7 +299,6 @@ export default function GraphView(props: Props) {
     previous.current = { generation, nodes: new Map(data.nodes.map((n) => [n.id as NodeId, n])) }
   }, [data, generation])
 
-  const center = graph.nodes.find((n) => n.id === graph.center)
   const nodeById = useMemo(() => new Map(data.nodes.map((n) => [n.id as NodeId, n])), [data])
 
   // Edge scores rescaled to 0–1 within this web, for width and length.
@@ -256,6 +307,7 @@ export default function GraphView(props: Props) {
     const [lo, hi] = [Math.min(...scores), Math.max(...scores)]
     return (s: number) => (hi > lo ? (s - lo) / (hi - lo) : 1)
   }, [graph])
+  const edgeWidth = (score: number) => 0.6 + 3 * norm(score) ** 2
 
   // Spotlight: how strongly each node answers the query. Rescored on every edit, without a network call.
   const emphasis = useMemo(() => {
@@ -265,11 +317,43 @@ export default function GraphView(props: Props) {
   }, [query, graph])
   const emphasisOf = (id: NodeId) => (emphasis ? emphasis.get(id) ?? 0 : 1)
 
+  // Bring the selected painting or line out from under the panel. The camera otherwise stays still.
+  const reveal = useRef(() => {})
+  const refitOnClose = useRef(false)
+  useLayoutEffect(() => {
+    reveal.current = () => {
+      const fg = fgRef.current
+      if (!fg) return
+      const a = nodeById.get(selectedEdge ? selectedEdge.source : selectedNode as NodeId)
+      const b = selectedEdge ? nodeById.get(selectedEdge.target) : a
+      if (a?.x == null || b?.x == null) return
+      const point = fg.graph2ScreenCoords((a.x + b.x) / 2, (a.y! + b.y!) / 2)
+      const shift = panToReveal(point, sizeRef.current, cover, REVEAL_MARGIN)
+      if (!shift.x && !shift.y) return
+      const at = fg.centerAt()
+      const k = fg.zoom()
+      fg.centerAt(at.x - shift.x / k, at.y - shift.y / k, duration(REVEAL_MS))
+      refitOnClose.current = true
+    }
+  })
+  const revealAfterFit = (ms: number) => { timers.current.push(setTimeout(() => reveal.current(), ms + 30)) }
+
+  useEffect(() => {
+    if (growing) return
+    reveal.current()
+    // The panel has closed: frame everything it moved or hid.
+    if (!cover.right && !cover.bottom && refitOnClose.current) {
+      refitOnClose.current = false
+      if (!emphasis) fgRef.current?.zoomToFit(duration(REVEAL_MS), FIT_PADDING)
+    }
+  }, [selectedNode, selectedEdge, cover.right, cover.bottom, growing, emphasis])
+
   const fitAll = () => {
     if (fitted.current || !engineStopped.current || clock.current.origin === null) return
     if (performance.now() - clock.current.origin < clock.current.end) return
     fitted.current = true
-    fgRef.current?.zoomToFit(duration(700), 60)
+    fgRef.current?.zoomToFit(duration(FIT_MS), FIT_PADDING)
+    revealAfterFit(duration(FIT_MS))
   }
 
   const finishGrowth = () => {
@@ -277,7 +361,8 @@ export default function GraphView(props: Props) {
     timers.current = []
     clock.current.origin = DONE
     setGrowing(false)
-    fgRef.current?.zoomToFit(duration(500), 60)
+    fgRef.current?.zoomToFit(duration(FIT_MS), FIT_PADDING)
+    revealAfterFit(duration(FIT_MS))
   }
 
   useEffect(() => {
@@ -293,6 +378,8 @@ export default function GraphView(props: Props) {
     fg.d3ReheatSimulation()
 
     const { fresh, animated } = data
+    // Paintings added beside an open panel can land behind it.
+    if (animated && !fresh && cover.right + cover.bottom > 0) refitOnClose.current = true
     if (!animated) {
       clock.current.origin ??= DONE
       setGrowing(false)
@@ -311,7 +398,7 @@ export default function GraphView(props: Props) {
       if (fresh) {
         // Pull back in two steps, so each ring is on screen as it arrives.
         timers.current.push(setTimeout(() => fg.zoom(Math.max(1.2, fg.zoom() * 0.45), TIMING.ringGap), TIMING.firstRing))
-        timers.current.push(setTimeout(() => fg.zoomToFit(TIMING.ringGap * 2, 60), TIMING.firstRing + TIMING.ringGap))
+        timers.current.push(setTimeout(() => fg.zoomToFit(TIMING.ringGap * 2, FIT_PADDING), TIMING.firstRing + TIMING.ringGap))
       }
       timers.current.push(setTimeout(() => { setGrowing(false); fitAll() }, remaining + 30))
     }
@@ -343,10 +430,11 @@ export default function GraphView(props: Props) {
       if (!fg) return
       if (emphasis) {
         const framed = framedIds(emphasis, MATCH_THRESHOLD, MIN_FRAMED)
-        fg.zoomToFit(duration(600), 60, (n: Node) => framed.has(n.id as NodeId))
+        fg.zoomToFit(duration(FIT_MS), FIT_PADDING, (n: Node) => framed.has(n.id as NodeId))
       } else {
-        fg.zoomToFit(duration(600), 60)
+        fg.zoomToFit(duration(FIT_MS), FIT_PADDING)
       }
+      setTimeout(() => reveal.current(), duration(FIT_MS) + 30)
     }, SETTLE_MS)
     return () => clearTimeout(timer)
   }, [emphasis, growing])
@@ -357,7 +445,7 @@ export default function GraphView(props: Props) {
     return (a === selectedEdge.source && b === selectedEdge.target) || (a === selectedEdge.target && b === selectedEdge.source)
   }
 
-  const radiusOf = (node: Node) => nodeRadius(node.id === graph.center, node.similarity ?? 0, node.selection ?? 0)
+  const radiusOf = (node: Node) => nodeRadius(node.tier ?? 'other', node.similarity ?? 0, node.selection ?? 0)
 
   /** Moves a node toward its selected or unselected state, by time rather than by frame. */
   const easeSelection = (node: Node) => {
@@ -405,12 +493,11 @@ export default function GraphView(props: Props) {
 
   return (
     <div ref={boxRef} className="graph" onPointerDown={() => { if (growing) finishGrowth() }}>
-      {growing && (
-        <button className="skip-growth secondary" onClick={finishGrowth}>Skip</button>
-      )}
-      {center && (
-        <p className="map-legend">Larger paintings have palettes closer to <span>{center.title}</span></p>
-      )}
+      {growing
+        ? <button className="skip-growth secondary" onClick={finishGrowth}>Skip</button>
+        : <p className="map-legend">{view === 'paintings'
+            ? 'Larger = closer palette · Click a line to see why two connect'
+            : 'Bright = the 5 closest palettes · Click a line to see why two connect'}</p>}
       <ForceGraph2D<Node, Link>
         ref={fgRef}
         width={size.width}
@@ -424,7 +511,7 @@ export default function GraphView(props: Props) {
           engineStopped.current = true
           fitAll()
         }}
-        linkWidth={(l) => (isActiveEdge(l) ? 2 : 0) + 0.6 + 6 * norm(l.score) ** 2}
+        linkWidth={(l) => (isActiveEdge(l) ? 2 : 0) + edgeWidth(l.score)}
         linkHoverPrecision={8}
         linkCanvasObjectMode={() => 'replace'}
         linkCanvasObject={(l, ctx, scale) => {
@@ -440,7 +527,7 @@ export default function GraphView(props: Props) {
           const highlight = isActiveEdge(l) ? 1 : Math.max(a.selection ?? 0, b.selection ?? 0)
           const spot = emphasis ? Math.min(emphasisOf(a.id as NodeId), emphasisOf(b.id as NodeId)) : 1
           const alpha = EDGE_ALPHA * (DIM_ALPHA + (1 - DIM_ALPHA) * spot) * reach
-          const width = 0.6 + 6 * norm(l.score) ** 2
+          const width = edgeWidth(l.score)
           const endX = from.x! + (to.x! - from.x!) * reach
           const endY = from.y! + (to.y! - from.y!) * reach
           ctx.beginPath()
@@ -468,29 +555,42 @@ export default function GraphView(props: Props) {
           const r = radiusOf(node)
           ctx.save()
           const alpha = DIM_ALPHA + (1 - DIM_ALPHA) * spot
-          ctx.globalAlpha = selected ? Math.max(SELECTED_MIN_ALPHA, alpha) : alpha
           const isCenter = node.id === graph.center
+          const resting = view !== 'paintings' && node.tier === 'other'
+          ctx.globalAlpha = selected ? Math.max(SELECTED_MIN_ALPHA, alpha) : resting ? alpha * REST_ALPHA : alpha
           if (isCenter && age < centerDuration) {
-            drawCenterGrowth(ctx, node, r, age)
+            drawCenterGrowth(ctx, node, r, age, view)
             ctx.restore()
             return
           }
           if (!isCenter && age < TIMING.assemble + TIMING.resolve) {
             const parent = node.parent != null ? nodeById.get(node.parent) : undefined
-            drawNodeGrowth(ctx, node, parent, r, age)
+            drawNodeGrowth(ctx, node, parent, r, age, view)
             ctx.restore()
             return
           }
-          drawDisc(ctx, node, r)
-          // Border in the painting's dominant color; gold ring when selected or center.
-          ctx.beginPath()
-          ctx.arc(node.x!, node.y!, r, 0, 2 * Math.PI)
-          ctx.lineWidth = (selected ? 3 : isCenter ? 2 : 1.5) / Math.sqrt(scale)
-          ctx.strokeStyle = selected || isCenter ? COLORS.ring : node.palette[0]?.hex ?? '#888'
-          ctx.stroke()
+          // Faded nodes are see-through, so cover the lines that run to their centers.
+          if (ctx.globalAlpha < 1) {
+            const faded = ctx.globalAlpha
+            ctx.globalAlpha = 1
+            ctx.beginPath()
+            ctx.arc(node.x!, node.y!, r, 0, 2 * Math.PI)
+            ctx.fillStyle = COLORS.background
+            ctx.fill()
+            ctx.globalAlpha = faded
+          }
+          drawDisc(ctx, node, r, view)
+          // Border in the painting's dominant color; gold is kept for the selection.
+          if (selected || isCenter || view === 'paintings') {
+            ctx.beginPath()
+            ctx.arc(node.x!, node.y!, r, 0, 2 * Math.PI)
+            ctx.lineWidth = (selected ? 3 : 1.5) / Math.sqrt(scale)
+            ctx.strokeStyle = selected ? COLORS.ring : isCenter ? CENTER_RING : node.palette[0]?.hex ?? '#888'
+            ctx.stroke()
+          }
           if (node.depth === 0 || selected) {
             const fontSize = 12 / scale
-            ctx.font = `${fontSize}px system-ui, sans-serif`
+            ctx.font = `${fontSize}px ${LABEL_FONT}`
             ctx.textAlign = 'center'
             ctx.textBaseline = 'top'
             ctx.fillStyle = COLORS.label

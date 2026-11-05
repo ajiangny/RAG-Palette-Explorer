@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { MUSEUMS, MUSEUM_SHORT, imageSrc, type EdgeExplanation, type GraphNode, type Source } from '../api'
 import PaletteStrip from './PaletteStrip'
 
@@ -15,24 +15,28 @@ type Props = {
   onClose: () => void
 }
 
+/** Shows our small copy straight away, then the museum's larger one over it. Stays small if that fails. */
 function Thumb({ node, preview }: { node: GraphNode; preview: string | null }) {
-  const src = node.id === 'upload' ? preview : node.image_id && imageSrc(node.image_id)
-  return src ? <img className="thumb" src={src} alt={node.title} /> : null
+  const [failed, setFailed] = useState(false)
+  const small = node.id === 'upload' ? preview : node.image_id && imageSrc(node.image_id)
+  const src = (!failed && node.image_url) || small
+  if (!src) return null
+  return <img className="thumb" src={src} alt={node.title} onError={() => setFailed(true)}
+              style={small ? { backgroundImage: `url("${small}")` } : undefined} />
 }
 
-/** Render "... text [2][3]." with each [n] as a superscript link to its source. */
+/** Render "... *Title* text [2][3]." with *x* in italics and each [n] as a superscript link to its source. */
 function Cited({ text, sources }: { text: string; sources: Source[] }) {
   const byN = new Map(sources.map((s) => [s.n, s]))
   return (
     <>
       {text.split(/\n{2,}/).map((para, i) => (
         <p key={i}>
-          {para.split(/(\[\d+\])/).map((part, j) => {
+          {para.split(/(\[\d+\]|\*[^*\n]+\*)/).map((part, j) => {
             const m = part.match(/^\[(\d+)\]$/)
             const src = m && byN.get(Number(m[1]))
-            return src
-              ? <a key={j} className="cite" href={src.url} target="_blank" rel="noreferrer" title={src.title}>[{src.n}]</a>
-              : <Fragment key={j}>{part}</Fragment>
+            if (src) return <a key={j} className="cite" href={src.url} target="_blank" rel="noreferrer" title={src.title}>[{src.n}]</a>
+            return /^\*.+\*$/.test(part) ? <em key={j}>{part.slice(1, -1)}</em> : <Fragment key={j}>{part}</Fragment>
           })}
         </p>
       ))}
@@ -45,11 +49,11 @@ function NodeDetails({ node, preview, isCenter, onRecenter, onExpand }:
   const id = node.id
   return (
     <>
-      <Thumb node={node} preview={preview} />
+      <Thumb key={node.id} node={node} preview={preview} />
       <h2>{node.title}</h2>
       <p className="meta">{[node.artist, node.date, node.style].filter(Boolean).join(' · ') || 'Your uploaded image'}</p>
       {node.source && <p className="meta">{MUSEUMS[node.source]}</p>}
-      <PaletteStrip palette={node.palette} labels />
+      <PaletteStrip palette={node.palette} />
       {typeof id === 'number' && (
         <div className="actions">
           {!isCenter && <button onClick={() => onRecenter(id)}>Re-center here</button>}
@@ -70,8 +74,8 @@ function EdgeDetails({ a, b, explanation, explaining, explainError, preview }:
   return (
     <>
       <div className="pair">
-        <figure><Thumb node={a} preview={preview} /><figcaption>{a.title}</figcaption></figure>
-        <figure><Thumb node={b} preview={preview} /><figcaption>{b.title}</figcaption></figure>
+        <figure><Thumb key={a.id} node={a} preview={preview} /><figcaption>{a.title}</figcaption></figure>
+        <figure><Thumb key={b.id} node={b} preview={preview} /><figcaption>{b.title}</figcaption></figure>
       </div>
       {explanation && (
         <>
@@ -107,13 +111,7 @@ function EdgeDetails({ a, b, explanation, explaining, explainError, preview }:
 
 export default function SidePanel(props: Props) {
   const { node, edge } = props
-  if (!node && !edge) {
-    return (
-      <aside className="panel">
-        <p className="muted">Click a painting to see its details, or click a line to learn why two paintings are connected.</p>
-      </aside>
-    )
-  }
+  if (!node && !edge) return null
   return (
     <aside className="panel">
       <button className="close" onClick={props.onClose} aria-label="Close">×</button>

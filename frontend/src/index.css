@@ -6,8 +6,10 @@
   --border: #3a3530;
   --text: #f2ece2;
   --muted: #a89f92;
-  --accent: #e8c66a;
-  --accent-text: #1d1a14;
+  --accent: #e8c66a; /* gold means "selected", and nothing else */
+  --float: rgba(22, 20, 18, 0.78);
+  --panel-width: clamp(420px, 44vw, 720px); /* panelWidth() in App.tsx matches this */
+  --serif: 'Iowan Old Style', Palatino, Georgia, serif;
   --error: #f08a7a;
   --radius: 10px;
   color-scheme: dark;
@@ -20,16 +22,16 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
 h1, h2, h3 { margin: 0; font-weight: 600; }
-a { color: var(--accent); }
+a { color: var(--text); }
 
 button, .button {
   font: inherit;
   font-size: 0.9rem;
   padding: 0.45rem 0.9rem;
   border-radius: 8px;
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: var(--accent-text);
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
@@ -37,104 +39,122 @@ button, .button {
 button.secondary, .button.secondary { background: transparent; color: var(--text); border-color: var(--border); }
 button.secondary:hover, .button.secondary:hover { border-color: var(--muted); }
 button.link { background: none; border: none; color: var(--muted); text-decoration: underline; }
-button:focus-visible, .button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, .button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 
 .muted { color: var(--muted); }
 .error { color: var(--error); }
 
-.app { height: 100vh; display: flex; flex-direction: column; }
-.app.dragging main { outline: 2px dashed var(--accent); outline-offset: -8px; }
+.app { height: 100vh; display: flex; flex-direction: column; position: relative; }
+.app.dragging main { outline: 2px dashed var(--muted); outline-offset: -8px; }
 
+/* Floats over the map; the gaps between its items still reach the canvas. */
 header {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+  display: flex; align-items: center; gap: 1.25rem; padding: 0.9rem 1rem;
+  pointer-events: none;
 }
-header h1 { font-size: 1.05rem; letter-spacing: 0.02em; }
-.center-palette { flex: 1; display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
-.center-palette > span { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 16rem; }
-.center-palette .palette { flex: 1; max-width: 28rem; height: 18px; }
-.header-actions { margin-left: auto; display: flex; gap: 0.5rem; }
+header > * { pointer-events: auto; }
+header h1 { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; }
+.header-actions { display: flex; gap: 0.5rem; }
+.header-actions button { font-size: 0.82rem; padding: 0.3rem 0.75rem; }
+.app.panel-open .header-actions { margin-right: var(--panel-width); }
+.view-switch { margin-left: auto; display: flex; padding: 2px; background: var(--float); border: 1px solid var(--border); border-radius: 8px; }
+.view-switch button { background: none; border: none; color: var(--muted); font-size: 0.82rem; padding: 0.22rem 0.6rem; border-radius: 6px; }
+.view-switch button:hover { color: var(--text); }
+.view-switch button.on { background: var(--surface-2); color: var(--text); }
 
 main { flex: 1; display: flex; position: relative; min-height: 0; }
 .graph-area { flex: 1; min-width: 0; position: relative; display: flex; }
 .graph { flex: 1; min-width: 0; overflow: hidden; position: relative; }
-.skip-growth { position: absolute; top: 1rem; right: 1rem; z-index: 2; }
+.skip-growth { position: absolute; bottom: 1rem; right: 1rem; z-index: 2; font-size: 0.8rem; padding: 0.3rem 0.65rem; }
 .map-legend {
-  position: absolute; top: 0.9rem; left: 1rem; z-index: 2; margin: 0; max-width: 60%;
-  font-size: 0.8rem; color: var(--muted); pointer-events: none;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  position: absolute; bottom: 1.1rem; right: 1rem; z-index: 2; margin: 0;
+  font-size: 0.78rem; color: var(--muted); pointer-events: none; white-space: nowrap;
 }
-.map-legend span { color: var(--text); }
+.app.panel-open .map-legend { right: calc(var(--panel-width) + 1rem); }
+.app.panel-open .skip-growth { right: calc(var(--panel-width) + 1rem); }
 
 /* Palette editor: floats over the map so the map stays the result. */
 .palette-editor {
   position: absolute; left: 1rem; bottom: 1rem; z-index: 3; max-width: calc(100% - 2rem);
   display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;
 }
-.editor-row, .editor-match, .color-popover {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-}
-.editor-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; }
+.editor-match, .color-popover, .editor-menu { background: var(--surface); border-radius: var(--radius); }
+.editor-row { display: flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.4rem; background: var(--float); border-radius: 999px; }
 .editor-row button:not(.dot), .editor-match button { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
-.dots { display: flex; align-items: center; gap: 0.35rem; margin-right: 0.25rem; }
+.editor-row .more { background: none; border: none; color: var(--muted); font-size: 1rem; line-height: 1; padding: 0.3rem 0.45rem; }
+.editor-row .more:hover, .editor-row .more[aria-expanded='true'] { color: var(--text); }
+.editor-menu { display: flex; flex-direction: column; align-items: stretch; gap: 0.15rem; padding: 0.3rem; }
+.editor-menu button { background: none; border: none; color: var(--text); text-align: left; font-size: 0.82rem; padding: 0.35rem 0.6rem; border-radius: 6px; }
+.editor-menu button:hover:not(:disabled) { background: var(--surface-2); }
+.dots { display: flex; align-items: center; gap: 0.3rem; }
 .dot {
-  width: 30px; height: 30px; padding: 0; border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.25); transition: transform 0.12s;
+  width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  border: 2px solid transparent; transition: transform 0.12s;
 }
 .dot:hover { transform: scale(1.12); }
 .dot.open { border-color: var(--accent); }
-.dots.inactive .dot:not(.add) { opacity: 0.6; }
-.dot.add { background: transparent; color: var(--muted); border: 2px dashed var(--border); font-size: 1rem; line-height: 1; }
 .editor-match { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.6rem; font-size: 0.82rem; max-width: 100%; }
 .editor-match .muted { white-space: nowrap; }
 .editor-match-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 16rem; }
-.color-popover { width: 15.5rem; padding: 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.45rem; }
-.slider { display: grid; grid-template-columns: 4.6rem 1fr; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--muted); }
-.slider input { width: 100%; accent-color: var(--accent); min-width: 0; }
-.popover-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 0.15rem; }
+.color-popover { width: 17rem; overflow: hidden; display: flex; flex-direction: column; }
+/* Both controls take the pointer directly, and shouldn't scroll the page on touch. */
+.hue-strip, .color-field { position: relative; cursor: crosshair; touch-action: none; }
+.hue-strip {
+  height: 22px;
+  background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+.color-field {
+  height: 10rem;
+  background-image: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
+}
+.hue-handle, .field-handle {
+  position: absolute; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); pointer-events: none;
+}
+.hue-handle { top: 50%; width: 18px; height: 18px; }
+.field-handle { width: 30px; height: 30px; }
+.hue-handle:focus-visible, .field-handle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.popover-foot { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.6rem; }
 .popover-foot input {
   width: 6rem; font: 0.8rem ui-monospace, monospace; color: var(--text); background: var(--surface-2);
   border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.4rem;
 }
-.popover-foot button { font-size: 0.8rem; padding: 0.2rem 0.3rem; }
+.popover-foot .icon { display: flex; padding: 0.3rem; background: none; border: none; color: var(--muted); }
+.popover-foot .icon:hover { color: var(--text); }
 button:disabled { opacity: 0.5; cursor: default; }
 
-.palette { display: flex; height: 28px; border-radius: 6px; overflow: hidden; }
-.palette-swatch { display: flex; align-items: flex-end; justify-content: center; min-width: 4px; }
-.palette-swatch span {
-  font-size: 0.65rem; font-family: ui-monospace, monospace; padding: 1px 4px; margin-bottom: 2px;
-  background: rgba(0, 0, 0, 0.45); color: #fff; border-radius: 3px;
-}
+.palette { display: flex; height: 18px; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+.palette-swatch { min-width: 4px; }
 
+/* Slides over the map rather than resizing it, so the web doesn't jump under the cursor. */
 .panel {
-  width: 380px;
-  flex-shrink: 0;
+  position: absolute; top: 0; right: 0; bottom: 0; z-index: 5;
+  width: var(--panel-width);
   overflow-y: auto;
-  padding: 1.25rem;
-  border-left: 1px solid var(--border);
+  padding: 1rem;
   background: var(--surface);
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  animation: panel-in 0.16s ease-out;
 }
-.panel h2 { font-size: 1.15rem; padding-right: 1.5rem; }
-.panel h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-top: 0.5rem; }
+@keyframes panel-in { from { transform: translateX(24px); opacity: 0; } }
+.panel h2 { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
+.panel h3 { font-size: 0.85rem; font-weight: 500; color: var(--muted); margin-top: 0.5rem; }
 .panel .meta { margin: 0; color: var(--muted); font-size: 0.9rem; }
 .panel .close {
-  position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none;
-  color: var(--muted); font-size: 1.4rem; line-height: 1; padding: 0.2rem 0.4rem;
+  position: absolute; top: 1.4rem; right: 1.4rem; z-index: 1; width: 28px; height: 28px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(22, 20, 18, 0.65); border: none; border-radius: 50%;
+  color: var(--text); font-size: 1.1rem; line-height: 1;
 }
-.thumb { width: 100%; max-height: 260px; object-fit: contain; border-radius: var(--radius); background: var(--surface-2); }
+.thumb { display: block; width: 100%; height: 60vh; flex-shrink: 0; object-fit: contain; background: center / contain no-repeat; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 .pair figure { margin: 0; }
-.pair .thumb { height: 140px; object-fit: cover; }
-.pair figcaption { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+.pair .thumb { height: clamp(220px, 36vh, 340px); }
+.pair figcaption { font-family: var(--serif); font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
 .pairs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; }
 .pairs li { display: flex; align-items: center; gap: 0.35rem; }
 .chip { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.15); }
@@ -144,20 +164,19 @@ button:disabled { opacity: 0.5; cursor: default; }
 
 .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 1rem; }
 .dropzone {
-  max-width: 34rem; text-align: center; padding: 2.5rem 2rem; border: 2px dashed var(--border);
+  max-width: 34rem; text-align: center; padding: 2.5rem 2rem;
   border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
 }
-.dropzone:hover { border-color: var(--accent); }
-.dropzone h2 { font-size: 1.3rem; }
+.dropzone h2 { font-family: var(--serif); font-size: 1.6rem; font-weight: 500; text-wrap: balance; }
 .dropzone p { margin: 0; }
 
 .loading {
-  position: absolute; top: 1rem; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem;
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; font-size: 0.9rem;
+  position: absolute; top: 0.9rem; left: 50%; transform: translateX(-50%); z-index: 4;
+  display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0.9rem;
+  background: var(--float); border-radius: 999px; font-size: 0.82rem; white-space: nowrap;
 }
 .spinner {
-  width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent);
+  width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--text);
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -168,15 +187,28 @@ button:disabled { opacity: 0.5; cursor: default; }
   background: var(--surface-2); border: 1px solid var(--border); padding: 0.6rem 1rem; border-radius: 8px;
 }
 
-/* Phones: panel becomes a bottom sheet under the graph. */
+/* With the panel open there's no room left for the legend beside the dots. */
+@media (max-width: 1100px) {
+  .app.panel-open .map-legend { display: none; }
+}
+/* Phones: the panel becomes a bottom sheet, and the legend sits above the dots. */
 @media (max-width: 760px) {
-  header { flex-wrap: wrap; gap: 0.5rem 1rem; }
-  .center-palette { order: 3; flex-basis: 100%; }
-  main { flex-direction: column; }
-  .graph-area { min-height: 55vh; }
-  .panel { width: 100%; max-height: 45vh; border-left: none; border-top: 1px solid var(--border); }
+  .app.panel-open .header-actions { margin-right: 0; }
+  .app.panel-open .skip-growth { right: 1rem; }
+  .app.panel-open .palette-editor { display: none; }
+  .map-legend { bottom: 3.6rem; right: 1rem; left: 1rem; white-space: normal; }
+  header { gap: 0.5rem; flex-wrap: wrap; }
+  .view-switch { order: 3; margin-left: 0; }
+  .header-actions { margin-left: auto; }
+  .header-actions { gap: 0.3rem; }
+  .header-actions button { padding: 0.3rem 0.5rem; }
+  .loading { top: 5.6rem; }
+  .thumb { height: 28vh; }
+  .pair .thumb { height: 140px; }
+  .panel { top: auto; left: 0; width: 100%; max-height: 55vh; border-radius: var(--radius) var(--radius) 0 0; animation-name: sheet-in; }
+  @keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
 }
 @media (prefers-reduced-motion: reduce) {
-  .spinner, .pulse { animation: none; }
+  .spinner, .pulse, .panel { animation: none; }
   .dot { transition: none; }
 }

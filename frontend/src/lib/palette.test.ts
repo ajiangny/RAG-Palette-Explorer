@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { colorName, hexToLab, hexToOklch, oklchToHex } from './color.ts'
+import { colorName, hexToHsv, hexToLab, hexToOklch, hsvToHex, oklchToHex, paletteBands } from './color.ts'
 import { bestMatch, makeDeck, parseItems } from './collection.ts'
-import { CENTER_RADIUS, centerDuration, growthEnd, nodeRadius, planBirths, TIMING } from './growth.ts'
-import { radialLayout } from './layout.ts'
+import { CENTER_RADIUS, centerDuration, growthEnd, nodeRadius, planBirths, TIMING, type SizeTier } from './growth.ts'
+import { panToReveal, radialLayout } from './layout.ts'
 import { MAX_DOTS, formatPalette, parsePalette, readUrl, shuffleHues, writeUrl } from './queryPalette.ts'
-import { chamfer, emphasize, framedIds, lambdaFor, paletteDistance, similarityToCenter } from './spotlight.ts'
+import { chamfer, closestIds, emphasize, framedIds, lambdaFor, paletteDistance, similarityToCenter } from './spotlight.ts'
 
 const close = (a: number, b: number, eps = 0.05) => assert.ok(Math.abs(a - b) < eps, `${a} !~ ${b}`)
 
@@ -18,6 +18,17 @@ test('hexToLab matches the reference values the backend uses (skimage, D65)', ()
 
 test('oklch round-trips in-gamut colors', () => {
   for (const hex of ['#8a5a3c', '#1d2a4a', '#e8c66a', '#808080']) assert.equal(oklchToHex(hexToOklch(hex)), hex)
+})
+
+test('hsv round-trips colors, and reads the primaries correctly', () => {
+  for (const hex of ['#5f7318', '#c79463', '#8a5a3c', '#1d2a4a', '#808080', '#000000', '#ffffff', '#ff00ff']) {
+    assert.equal(hsvToHex(hexToHsv(hex)), hex)
+  }
+  assert.deepEqual(hexToHsv('#ff0000'), { h: 0, s: 1, v: 1 })
+  assert.deepEqual(hexToHsv('#00ff00'), { h: 120, s: 1, v: 1 })
+  assert.deepEqual(hexToHsv('#0000ff'), { h: 240, s: 1, v: 1 })
+  assert.equal(hsvToHex({ h: 360, s: 1, v: 1 }), '#ff0000')
+  assert.equal(hsvToHex({ h: 200, s: 0, v: 0.5 }), '#808080')
 })
 
 test('oklchToHex keeps out-of-gamut colors valid, with lightness near the request', () => {
@@ -157,17 +168,39 @@ test('a large ring still starts within the spread', () => {
 })
 
 test('the center is the largest circle, whatever the similarity or selection', () => {
-  assert.equal(nodeRadius(true, 0, 0), CENTER_RADIUS)
+  assert.equal(nodeRadius('center', 1, 0), CENTER_RADIUS)
   for (const similarity of [0, 0.5, 1]) {
-    for (const selection of [0, 0.5, 1]) assert.ok(nodeRadius(false, similarity, selection) < CENTER_RADIUS)
+    for (const selection of [0, 0.5, 1]) assert.ok(nodeRadius('closest', similarity, selection) < CENTER_RADIUS)
   }
 })
 
+test('the closest palettes are much larger than the rest, so size never disagrees with similarity', () => {
+  assert.ok(nodeRadius('closest', 0, 0) > nodeRadius('other', 1, 0))
+  assert.ok(nodeRadius('closest', 1, 0) > 2 * nodeRadius('other', 1, 0))
+})
+
+test('paletteBands keep the largest five colors, filling the height in order of share', () => {
+  const palette = [1, 5, 2, 8, 3, 4].map((weight, i) => ({ hex: `#00000${i}`, weight }))
+  const bands = paletteBands(palette)
+  assert.deepEqual(bands.map((b) => b.hex), ['#000003', '#000001', '#000005', '#000004', '#000002'])
+  assert.equal(bands[0].from, 0)
+  assert.equal(bands[4].to, 1)
+  close(bands[0].to, 8 / 22, 0.001)
+  for (let i = 1; i < 5; i++) assert.equal(bands[i].from, bands[i - 1].to)
+  assert.deepEqual(paletteBands([]), [])
+})
+
+test('closestIds picks the most similar paintings and never the center', () => {
+  const similarity = new Map([[0, 1], [1, 0.2], [2, 0.9], [3, 0.5], [4, 0], [5, 0.7], [6, 0.8], [7, 0.1]])
+  assert.deepEqual([...closestIds(similarity, 0)].sort(), [1, 2, 3, 5, 6])
+  assert.equal(closestIds(new Map([[0, 1], [1, 0.5]]), 0).size, 1)
+})
+
 test('more similar paintings are larger, by area, and selecting grows a node slightly', () => {
-  const [low, mid, high] = [0, 0.5, 1].map((s) => nodeRadius(false, s, 0))
+  const [low, mid, high] = [0, 0.5, 1].map((s) => nodeRadius('other', s, 0))
   assert.ok(low < mid && mid < high)
   close(mid ** 2 - low ** 2, high ** 2 - mid ** 2, 0.001)
-  const selected = nodeRadius(false, 0.5, 1)
+  const selected = nodeRadius('other', 0.5, 1)
   assert.ok(selected > mid && selected < mid * 1.5)
 })
 
@@ -232,16 +265,18 @@ test('the layout puts the center in the middle and each depth on its own ring', 
 
 test('no two nodes overlap, and children sit close to their parent', () => {
   const { nodes, edges } = sampleWeb()
-  const at = radialLayout(nodes, edges, 0)
+  // The largest circles can land on any ring, including side by side on the outer one.
+  const closest = new Set([1, 7, 8, 9, 20])
+  const tierOf = (id: number) => (id === 0 ? 'center' : closest.has(id) ? 'closest' : 'other') as SizeTier
+  const sizeOf = (id: number) => nodeRadius(tierOf(id), 1, 0)
+  const at = radialLayout(nodes, edges, 0, sizeOf)
   const distance = (a: number, b: number) => Math.hypot(at.get(a)!.x - at.get(b)!.x, at.get(a)!.y - at.get(b)!.y)
-  // Worst case: the largest paintings side by side, with one of them selected.
-  const largest = nodeRadius(false, 1, 0)
-  const selected = nodeRadius(false, 1, 1)
-  const center = nodeRadius(true, 1, 1)
+  // Worst case for each pair: both at their largest, with the bigger one selected.
   for (const a of nodes) {
     for (const b of nodes) {
       if (a.id >= b.id) continue
-      const room = a.id === 0 ? center + selected : selected + largest
+      const [big, small] = sizeOf(a.id) >= sizeOf(b.id) ? [a, b] : [b, a]
+      const room = nodeRadius(tierOf(big.id), 1, 1) + sizeOf(small.id)
       assert.ok(distance(a.id, b.id) > room, `${a.id} and ${b.id} overlap`)
     }
   }
@@ -261,4 +296,22 @@ test('the same web always lays out the same way, and short links win', () => {
   const at = radialLayout(nodes, edges, 0)
   const crossLink = Math.hypot(at.get(1)!.x - at.get(4)!.x, at.get(1)!.y - at.get(4)!.y)
   assert.ok(crossLink < 2 * Math.hypot(at.get(1)!.x, at.get(1)!.y) * 0.9, 'cross-linked hubs are pulled together')
+})
+
+test('panToReveal leaves a visible point alone', () => {
+  const shift = panToReveal({ x: 500, y: 300 }, { width: 1400, height: 800 }, { right: 376, bottom: 0 }, 48)
+  assert.equal(shift.x, 0)
+  assert.equal(shift.y, 0)
+})
+
+test('panToReveal moves a point out from under a right-hand panel, by just enough', () => {
+  const shift = panToReveal({ x: 1200, y: 300 }, { width: 1400, height: 800 }, { right: 376, bottom: 0 }, 48)
+  assert.equal(shift.x, 976 - 1200)
+  assert.equal(shift.y, 0)
+})
+
+test('panToReveal moves a point up from under a bottom sheet', () => {
+  const shift = panToReveal({ x: 200, y: 700 }, { width: 390, height: 844 }, { right: 0, bottom: 464 }, 48)
+  assert.equal(shift.x, 0)
+  assert.equal(shift.y, 332 - 700)
 })

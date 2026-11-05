@@ -77,3 +77,9 @@ export function framedIds<T>(emphasis: Map<T, number>, threshold: number, min: n
   const ranked = [...emphasis].sort((a, b) => b[1] - a[1])
   return new Set(ranked.filter(([, e], i) => e > threshold || i < min).map(([id]) => id))
 }
+
+/** The ids with the highest similarity to the center, leaving out the center itself. */
+export function closestIds<T>(similarity: Map<T, number>, center: T, count = 5): Set<T> {
+  const others = [...similarity].filter(([id]) => id !== center).sort((a, b) => b[1] - a[1])
+  return new Set(others.slice(0, count).map(([id]) => id))
+}
